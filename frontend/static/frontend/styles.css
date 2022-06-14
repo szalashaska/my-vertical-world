@@ -1,0 +1,72 @@
+/* Load fonts */
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap");
+
+/* Variables */
+:root {
+  --ff-body: "Montserrat", sans-serif;
+  --ff-heading: "Montserrat", sans-serif;
+
+  --fs-xxl: 7rem;
+  --fs-xl: 4rem;
+  --fs-l: 3rem;
+  --fs-m: 1.5rem;
+  --fs-s: 1rem;
+  --fs-xs: 0.75rem;
+
+  --clr-black: #210f04;
+  --clr-pink: #a14a76;
+  --clr-orange-light: #f19143;
+  --clr-orange-orange: #ff773d;
+  --clr-orange-strong: #f55536;
+}
+
+/* Reset settings */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+p {
+  color: var(--clr-black);
+}
+
+h1 {
+  font-size: var(--fs-xl);
+  font-family: var(--ff-heading);
+}
+
+h2 {
+  font-size: var(--fs-l);
+  font-family: var(--ff-heading);
+}
+
+h3 {
+  font-size: var(--fs-m);
+  font-family: var(--ff-heading);
+}
+
+p {
+  font-size: var(--fs-s);
+  font-family: var(--ff-body);
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.75em 2.5em;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 10px;
+}

@@ -1,0 +1,14 @@
+.navbar-container {
+  background-color: var(--clr-orange-strong);
+  display: flex;
+}
+
+nav a {
+  display: inline-block;
+  padding: 1em;
+}
+
+.navbar__menu {
+  display: flex;
+  list-style: none;
+}
