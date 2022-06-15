@@ -1,0 +1,21 @@
+.forminput > * {
+  display: block;
+}
+
+.forminput span {
+  font-size: var(--fs-xs);
+  color: red;
+  visibility: hidden;
+}
+
+.forminput__input {
+  padding: 1em;
+}
+
+.forminput__input[data-isfocused="true"]:invalid {
+  border: 1px solid red;
+}
+
+.forminput__input[data-isfocused="true"]:invalid ~ span {
+  visibility: visible;
+}
