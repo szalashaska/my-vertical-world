@@ -20,10 +20,10 @@ const Navbar = () => {
           <Link to="/add-route">Add route</Link>
         </li>
         <li>
-          <Link to="/login">Sign up</Link>
+          <Link to="/sign-up">Sign up</Link>
         </li>
         <li>{user && <p>Logged user: {user.username}</p>}</li>
-        {user && <button onClick={logoutUser}>Log out</button>}
+        <li>{user && <button onClick={logoutUser}>Log out</button>}</li>
       </ul>
     </nav>
   );

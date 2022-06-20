@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import AddRoute from "./pages/AddRoute";
 
 import PrivateRoute from "./helpers/PrivateRoute";
@@ -16,7 +16,7 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route path="/sign-up" element={<SignUp />} />
           <Route
             path="/add-route"
             element={

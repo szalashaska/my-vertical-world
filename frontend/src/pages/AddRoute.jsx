@@ -17,6 +17,7 @@ const AddRoute = () => {
         Authorization: "Bearer " + String(authenticationTokens.access),
       },
     });
+
     let data = await response.json();
 
     if (response.status === 200) {

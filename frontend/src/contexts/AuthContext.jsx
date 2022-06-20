@@ -1,27 +1,48 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import jwt_decode from "jwt-decode";
+import dayjs from "dayjs";
 
 const AuthContext = createContext();
 
 export default AuthContext;
 
-//Provider
-
 export const AuthProvider = ({ children }) => {
-  // Authorization token name in local storage
+  // Authorization token name in local storage.
   const tokensName = "authTokens";
   const tokensItem = localStorage.getItem(tokensName);
-  const [loading, setLoading] = useState(true);
-
-  // Check if there is existing token in local storage; parse() opposite to stringify
+  // Check if there is existing token in local storage; parse() opposite to stringify.
   const [authenticationTokens, setAuthenticationTokens] = useState(
     () => tokensItem && JSON.parse(tokensItem)
   );
   const [user, setUser] = useState(() => tokensItem && jwt_decode(tokensItem));
+  const [pageIsLoading, setPageIsLoading] = useState(true);
+  const [unableToLogin, setUnableToLogin] = useState(null);
+
+  // Set interval for updating token before expiry date (for protected content).
+  useEffect(() => {
+    if (authenticationTokens) {
+      // Calculate how long token would be valid
+      const expiryTime = dayjs.unix(user.exp).diff(dayjs());
+      // Set interval for updating, leve 5 seconds for delay
+      const updateInterval = expiryTime - 5000;
+
+      let interval = setInterval(() => {
+        updateTokens();
+      }, updateInterval);
+      return () => clearInterval(interval);
+    }
+  }, [authenticationTokens]);
+
+  // Update token every time page is loaded for the first time.
+  useEffect(() => {
+    updateTokens();
+  }, []);
+
   const navigate = useNavigate();
 
-  // Login user and saves authorization token
+  // Login user and save authorization token.
   const loginUser = async (username, password) => {
     const requestOptions = {
       method: "POST",
@@ -36,25 +57,26 @@ export const AuthProvider = ({ children }) => {
     const data = await response.json();
 
     if (response.status === 200) {
-      // Save tokens and username as state
+      // Save tokens and username as state.
       setAuthenticationTokens(data);
       setUser(jwt_decode(data.access));
 
-      // Save token i local storage; data can only be stored as a string
+      // Save token in local storage; data can only be stored as a string.
       const tokensData = JSON.stringify(data);
       localStorage.setItem(tokensName, tokensData);
 
       // Navigate user to the homepage
       navigate("/");
     } else if (response.status === 401) {
-      // No active account found with the given credentials
-      console.log("Wrong password or user");
+      // No active account found with the given credentials.
+      setUnableToLogin("No active account found with the given credentials.");
     } else {
       console.log(response.status, data);
+      setUnableToLogin("Something went wrong, try again later.");
     }
   };
 
-  // Logout user
+  // Logout user.
   const logoutUser = () => {
     setAuthenticationTokens(null);
     setUser(null);
@@ -62,9 +84,12 @@ export const AuthProvider = ({ children }) => {
     navigate("/");
   };
 
-  // Update token
+  // Update token only if user is signed in. Change loading state after done updating.
   const updateTokens = async () => {
-    console.log("updated tokens");
+    if (!authenticationTokens) {
+      setPageIsLoading(false);
+      return;
+    }
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -86,36 +111,24 @@ export const AuthProvider = ({ children }) => {
       logoutUser();
     }
 
-    if (loading) {
-      setLoading(false);
+    if (pageIsLoading) {
+      setPageIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (loading) {
-      updateTokens();
-    }
-    // Should be less than backends settings for token lifetime
-    const updateInterval = 1000 * 60 * 4.5;
-    let interval = setInterval(() => {
-      if (authenticationTokens) {
-        updateTokens();
-      }
-    }, updateInterval);
-    return () => clearInterval(interval);
-  }, [authenticationTokens, loading]);
-
-  // Data provided by Authorization context
+  // Data provided by Authorization context.
   let providedData = {
     authenticationTokens: authenticationTokens,
     user: user,
+    unableToLogin: unableToLogin,
     loginUser: loginUser,
     logoutUser: logoutUser,
   };
 
   return (
     <AuthContext.Provider value={providedData}>
-      {!loading && children}
+      {/* show content after done updating token. */}
+      {!pageIsLoading && children}
     </AuthContext.Provider>
   );
 };

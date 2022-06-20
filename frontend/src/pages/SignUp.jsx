@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 
 import FormInput from "../components/FormInput";
 import AuthContext from "../contexts/AuthContext";
-import "./Login.css";
+import "./SignUp.css";
 
-const Login = () => {
+const SignUp = () => {
   const [loginUserData, setLoginUserData] = useState({
     username: "",
     password: "",
@@ -12,12 +12,11 @@ const Login = () => {
 
   const [registerUserData, setRegisterUserData] = useState({
     username: "",
-    email: "",
     password: "",
     confirmPassword: "",
   });
-
-  const { loginUser } = useContext(AuthContext);
+  const [unableToRegister, setUnableToRegister] = useState(null);
+  const { loginUser, unableToLogin } = useContext(AuthContext);
 
   const loginInputs = [
     {
@@ -80,7 +79,7 @@ const Login = () => {
     });
   };
 
-  const handleFormSubmit = async (e) => {
+  const handleRegisterUser = async (e) => {
     e.preventDefault();
     const requestOptions = {
       method: "POST",
@@ -96,7 +95,19 @@ const Login = () => {
       const data = await fetch("/api/register", requestOptions);
       const response = await data.json();
 
-      console.log(response);
+      if (data.status === 200) {
+        loginUser(registerUserData.username, registerUserData.password);
+      } else {
+        setUnableToRegister(response.message);
+        console.log(e.target);
+        e.target.reset();
+
+        // setRegisterUserData({
+        //   username: "",
+        //   password: "",
+        //   confirmPassword: "",
+        // });
+      }
     } catch (err) {
       console.log(err);
     }
@@ -117,16 +128,18 @@ const Login = () => {
               key={input.id}
               {...input}
               onChange={onLoginInputChange}
-              value={loginUser[input.name]}
+              value={loginUserData[input.name]}
             />
           ))}
           <button type="submit">Login</button>
         </form>
       </section>
 
+      {unableToLogin && <div className="signup-errormsg">{unableToLogin}</div>}
+
       <section className="login__register">
         <h1>Register</h1>
-        <form onSubmit={handleFormSubmit}>
+        <form onSubmit={handleRegisterUser}>
           {RegisterInputs.map((input) => (
             <FormInput
               key={input.id}
@@ -138,8 +151,12 @@ const Login = () => {
           <button type="submit">Register</button>
         </form>
       </section>
+
+      {unableToRegister && (
+        <div className="signup-errormsg">{unableToRegister}</div>
+      )}
     </div>
   );
 };
 
-export default Login;
+export default SignUp;
