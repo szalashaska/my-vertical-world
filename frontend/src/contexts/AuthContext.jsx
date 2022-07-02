@@ -19,6 +19,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => tokensItem && jwt_decode(tokensItem));
   const [pageIsLoading, setPageIsLoading] = useState(true);
   const [unableToLogin, setUnableToLogin] = useState(null);
+  const navigate = useNavigate();
 
   // Set interval for updating token before expiry date (for protected content).
   useEffect(() => {
@@ -39,8 +40,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     updateTokens();
   }, []);
-
-  const navigate = useNavigate();
 
   // Login user and save authorization token.
   const loginUser = async (username, password) => {
@@ -118,11 +117,11 @@ export const AuthProvider = ({ children }) => {
 
   // Data provided by Authorization context.
   let providedData = {
-    authenticationTokens: authenticationTokens,
-    user: user,
-    unableToLogin: unableToLogin,
-    loginUser: loginUser,
-    logoutUser: logoutUser,
+    authenticationTokens,
+    user,
+    unableToLogin,
+    loginUser,
+    logoutUser,
   };
 
   return (

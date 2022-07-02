@@ -1,47 +1,130 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
+import Canvas from "../components/Canvas";
 import AuthContext from "../contexts/AuthContext";
 
 const AddRoute = () => {
-  const [notes, setNotes] = useState([]);
   const { authenticationTokens, logoutUser } = useContext(AuthContext);
+  const [routeImage, setRouteImage] = useState(null);
+  const [showRouteImage, setShowRouteImage] = useState(null);
+  const [show, setShow] = useState({
+    show: false,
+    url: "",
+  });
 
-  useEffect(() => {
-    getNotes();
-  }, []);
+  const showImageRef = useRef();
 
-  let getNotes = async () => {
-    let response = await fetch("/api/notes", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + String(authenticationTokens.access),
-      },
-    });
+  const handleUploadImageForm = async (e) => {
+    e.preventDefault();
+    if (!routeImage) return;
 
-    let data = await response.json();
+    const imageAsFormData = new FormData();
+    imageAsFormData.append("image", routeImage);
 
-    if (response.status === 200) {
-      setNotes(data);
-    } else if (response.statusText === "Unauthorized") {
-      logoutUser();
+    const requestOptions = {
+      method: "POST",
+      body: imageAsFormData,
+    };
+
+    try {
+      const data = await fetch("/api/route/image", requestOptions);
+      const response = await data.json();
+
+      if (data.status === 200) {
+        setShow({
+          show: true,
+          url: `/media/${response.url}`,
+        });
+      }
+    } catch (err) {
+      console.log(err);
     }
+  };
+
+  const handleImageUploadForm = async (e) => {
+    e.preventDefault();
+    if (!showRouteImage) return;
+
+    const reader = new FileReader();
+    reader.readAsDataURL(showRouteImage);
+
+    reader.onload = () => {
+      const imageURL = reader.result;
+      showImageRef.current.style.backgroundImage = `url(${imageURL})`;
+    };
   };
 
   return (
     <div>
-      Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sed illo
-      obcaecati facere itaque quis et nulla autem, deleniti quia totam veniam
-      consequuntur neque eos cumque quos veritatis dolor voluptates officiis
-      dicta odit rerum tempore impedit. Repudiandae delectus sapiente, eius
-      veritatis ipsam praesentium laboriosam cumque mollitia, quaerat nobis,
-      architecto rerum consequuntur!
-      <ul>
-        {notes.map((note) => (
-          <li key={note.id}>{note.body}</li>
-        ))}
-      </ul>
+      <form onSubmit={handleUploadImageForm}>
+        <label htmlFor="upload-photo">
+          Upload photo
+          <input
+            accept="image/jpeg, image/png, image/jpg"
+            id="upload-photo"
+            type="file"
+            name="route-image"
+            onChange={(e) => {
+              const fileList = e.target.files;
+              if (fileList) {
+                setRouteImage(fileList[0]);
+              }
+            }}
+          />
+        </label>
+        <button type="submit" className="btn">
+          Upload Route Picture!
+        </button>
+      </form>
+
+      <form onSubmit={handleImageUploadForm}>
+        <label htmlFor="show-photo">
+          Show photo
+          <input
+            accept="image/jpeg, image/png, image/jpg"
+            id="show-photo"
+            type="file"
+            name="route-image"
+            onChange={(e) => {
+              const fileList = e.target.files;
+              if (fileList) {
+                setShowRouteImage(fileList[0]);
+              }
+            }}
+          />
+        </label>
+        <button type="submit" className="btn">
+          Show Route Picture!
+        </button>
+      </form>
+
+      {show.show && <img src={show.url} alt="" />}
+      <hr />
+      <Canvas height={500} width={500} />
+      <div className="show-image-container" ref={showImageRef}></div>
     </div>
   );
 };
 
 export default AddRoute;
+
+// useEffect(() => {
+//   getNotes();
+// }, []);
+
+// let getNotes = async () => {
+//   let response = await fetch("/api/notes", {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//       Authorization: "Bearer " + String(authenticationTokens.access),
+//     },
+//   });
+
+//   let data = await response.json();
+
+//   if (response.status === 200) {
+//     setNotes(data);
+//   } else if (response.statusText === "Unauthorized") {
+//     logoutUser();
+//   }
+// };

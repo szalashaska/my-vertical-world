@@ -9,8 +9,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import User
-from .serilizers import NoteSerializer
+from .models import User, Route
+
 
 # Customizing Token
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -20,7 +20,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
+        
         # Add custom claims
         token['username'] = user.username
         
@@ -41,9 +41,7 @@ def register(request):
     if password != confirm_password:
         return Response({"message": "Passwords must match."}, status=status.HTTP_403_FORBIDDEN)
 
-    print(username, password)
-
-    # Attempt to register user  Hint: create_user(username, email, password)
+     # Attempt to register user  Hint: create_user(username, email, password)
     try:
         new_user = User.objects.create_user(username, "", password)
         new_user.save()
@@ -54,10 +52,25 @@ def register(request):
     return Response({'message': 'Success.'}, status=status.HTTP_200_OK)
         
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def getNotes(request):
-    user = request.user
-    notes = user.note_set.all()
-    serializer = NoteSerializer(notes, many=True)
-    return Response(serializer.data)
+@api_view(['POST'])
+def route_image(request):
+    if request.method == "POST":
+      
+        image = request.data["image"]
+        new_image = Route.objects.create(image=image)
+
+        return Response({'message': 'Success.', "url": str(new_image.image)}, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+# @api_view(['GET'])
+# @permission_classes([IsAuthenticated])
+# def getNotes(request):
+#     user = request.user
+#     notes = user.note_set.all()
+#     serializer = NoteSerializer(notes, many=True)
+#     return Response(serializer.data)

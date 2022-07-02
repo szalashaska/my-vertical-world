@@ -99,14 +99,6 @@ const SignUp = () => {
         loginUser(registerUserData.username, registerUserData.password);
       } else {
         setUnableToRegister(response.message);
-        console.log(e.target);
-        e.target.reset();
-
-        // setRegisterUserData({
-        //   username: "",
-        //   password: "",
-        //   confirmPassword: "",
-        // });
       }
     } catch (err) {
       console.log(err);

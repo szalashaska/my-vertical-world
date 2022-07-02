@@ -62,11 +62,22 @@ p {
   font-family: var(--ff-body);
 }
 
+a {
+  font-size: var(--fs-s);
+  font-family: var(--ff-body);
+}
+
 /* Buttons */
 .btn {
+  font-family: var(--ff-body);
   display: inline-block;
-  padding: 0.75em 2.5em;
+  padding: 0.5em 1em;
   text-decoration: none;
   cursor: pointer;
   border-radius: 10px;
+}
+
+.show-image-container {
+  width: 500px;
+  height: 500px;
 }
