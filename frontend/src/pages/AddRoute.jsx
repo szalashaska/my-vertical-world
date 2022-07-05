@@ -5,13 +5,8 @@ import AuthContext from "../contexts/AuthContext";
 const AddRoute = () => {
   const { authenticationTokens, logoutUser } = useContext(AuthContext);
   const [routeImage, setRouteImage] = useState(null);
+  const [canvasImage, setCanvasImage] = useState(null);
   const [showRouteImage, setShowRouteImage] = useState(null);
-  const [show, setShow] = useState({
-    show: false,
-    url: "",
-  });
-
-  const showImageRef = useRef();
 
   const handleUploadImageForm = async (e) => {
     e.preventDefault();
@@ -44,13 +39,23 @@ const AddRoute = () => {
     e.preventDefault();
     if (!showRouteImage) return;
 
-    const reader = new FileReader();
-    reader.readAsDataURL(showRouteImage);
+    const image = new Image();
 
-    reader.onload = () => {
-      const imageURL = reader.result;
-      showImageRef.current.style.backgroundImage = `url(${imageURL})`;
+    image.src = window.URL.createObjectURL(showRouteImage);
+    image.onload = () => {
+      setCanvasImage({
+        height: image.height,
+        width: image.width,
+        url: image.src,
+      });
     };
+
+    // const reader = new FileReader();
+    // reader.readAsDataURL(showRouteImage);
+    // reader.onload = () => {
+    //   const imageURL = reader.result;
+    //   showImageRef.current.style.backgroundImage = `url(${imageURL})`;
+    // };
   };
 
   return (
@@ -97,34 +102,16 @@ const AddRoute = () => {
         </button>
       </form>
 
-      {show.show && <img src={show.url} alt="" />}
       <hr />
-      <Canvas height={500} width={500} />
-      <div className="show-image-container" ref={showImageRef}></div>
+      {canvasImage && (
+        <Canvas
+          height={canvasImage.height}
+          width={canvasImage.width}
+          url={canvasImage.url}
+        />
+      )}
     </div>
   );
 };
 
 export default AddRoute;
-
-// useEffect(() => {
-//   getNotes();
-// }, []);
-
-// let getNotes = async () => {
-//   let response = await fetch("/api/notes", {
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//       Authorization: "Bearer " + String(authenticationTokens.access),
-//     },
-//   });
-
-//   let data = await response.json();
-
-//   if (response.status === 200) {
-//     setNotes(data);
-//   } else if (response.statusText === "Unauthorized") {
-//     logoutUser();
-//   }
-// };
