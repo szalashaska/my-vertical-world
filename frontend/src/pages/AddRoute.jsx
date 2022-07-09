@@ -7,10 +7,14 @@ const AddRoute = () => {
   const [routeImage, setRouteImage] = useState(null);
   const [canvasImage, setCanvasImage] = useState(null);
   const [showRouteImage, setShowRouteImage] = useState(null);
+  const [error, setError] = useState("");
 
   const handleUploadImageForm = async (e) => {
     e.preventDefault();
-    if (!routeImage) return;
+    if (!routeImage) {
+      setError("Faild to load the image.");
+      return;
+    }
 
     const imageAsFormData = new FormData();
     imageAsFormData.append("image", routeImage);
@@ -35,12 +39,19 @@ const AddRoute = () => {
     }
   };
 
-  const handleImageUploadForm = async (e) => {
+  const handleShowImageForm = async (e) => {
     e.preventDefault();
-    if (!showRouteImage) return;
+    if (!showRouteImage) {
+      setError("Faild to load the image.");
+      return;
+    }
+
+    if (showRouteImage.size > 2048000) {
+      setError("Image should be less than 2 mb.");
+      return;
+    }
 
     const image = new Image();
-
     image.src = window.URL.createObjectURL(showRouteImage);
     image.onload = () => {
       setCanvasImage({
@@ -81,7 +92,7 @@ const AddRoute = () => {
         </button>
       </form>
 
-      <form onSubmit={handleImageUploadForm}>
+      <form onSubmit={handleShowImageForm}>
         <label htmlFor="show-photo">
           Show photo
           <input
@@ -101,6 +112,7 @@ const AddRoute = () => {
           Show Route Picture!
         </button>
       </form>
+      {error && <p>{error}</p>}
 
       <hr />
       {canvasImage && (
@@ -110,6 +122,7 @@ const AddRoute = () => {
           url={canvasImage.url}
         />
       )}
+      {/* <Canvas height={500} width={500} /> */}
     </div>
   );
 };
