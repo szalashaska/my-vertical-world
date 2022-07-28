@@ -1,22 +1,26 @@
-import React, { useState, useEffect, useContext, useRef } from "react";
-import Canvas from "../components/Canvas";
-import AuthContext from "../contexts/AuthContext";
+import React, { useState } from "react";
+import CanvasCreate from "../components/CanvasCreate";
+import CanvasShow from "../components/CanvasShow";
 
 const AddRoute = () => {
-  const { authenticationTokens, logoutUser } = useContext(AuthContext);
   const [routeImage, setRouteImage] = useState(null);
+  const [routePath, setRoutePath] = useState(null);
   const [canvasImage, setCanvasImage] = useState(null);
-  const [showRouteImage, setShowRouteImage] = useState(null);
-  const [error, setError] = useState("");
 
-  const handleUploadImageForm = async (e) => {
-    e.preventDefault();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  //Another component
+  const [newImage, setNewImage] = useState(null);
+  const [newRoutePath, setNewRoutePath] = useState(null);
+
+  const handleUploadRouteImage = async () => {
     if (!routeImage) {
-      setError("Faild to load the image.");
+      setError("There is no image to upload.");
       return;
     }
 
-    const imageAsFormData = new FormData();
+    let imageAsFormData = new FormData();
     imageAsFormData.append("image", routeImage);
 
     const requestOptions = {
@@ -28,31 +32,36 @@ const AddRoute = () => {
       const data = await fetch("/api/route/image", requestOptions);
       const response = await data.json();
 
-      if (data.status === 200) {
-        setShow({
-          show: true,
-          url: `/media/${response.url}`,
+      if (data.status === 201) {
+        setSuccess(response.msg);
+        // TO SHOW
+        setNewImage({
+          width: response.width,
+          height: response.height,
+          url: response.url,
         });
+      } else {
+        setError("Could not upload image.");
       }
     } catch (err) {
-      console.log(err);
+      console.log("Unexpected error", err);
     }
   };
 
   const handleShowImageForm = async (e) => {
     e.preventDefault();
-    if (!showRouteImage) {
-      setError("Faild to load the image.");
+    if (!routeImage) {
+      setError("There is no image to show.");
       return;
     }
 
-    if (showRouteImage.size > 2048000) {
+    if (routeImage.size > 2048000) {
       setError("Image should be less than 2 mb.");
       return;
     }
 
-    const image = new Image();
-    image.src = window.URL.createObjectURL(showRouteImage);
+    let image = new Image();
+    image.src = window.URL.createObjectURL(routeImage);
     image.onload = () => {
       setCanvasImage({
         height: image.height,
@@ -60,38 +69,43 @@ const AddRoute = () => {
         url: image.src,
       });
     };
+  };
 
-    // const reader = new FileReader();
-    // reader.readAsDataURL(showRouteImage);
-    // reader.onload = () => {
-    //   const imageURL = reader.result;
-    //   showImageRef.current.style.backgroundImage = `url(${imageURL})`;
-    // };
+  const handleUploadRoutePath = async () => {
+    if (!routePath) {
+      setError("Could not record route path.");
+      return;
+    }
+
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: routePath }),
+    };
+
+    try {
+      const data = await fetch("/api/route/path", requestOptions);
+      const response = await data.json();
+
+      if (data.status === 201) {
+        setSuccess(response.msg);
+        // TO UPLOAD
+        setNewRoutePath(response.path);
+      } else {
+        setError("Could not upload route.");
+      }
+    } catch (err) {
+      console.log("Unexpected error", err);
+    }
+  };
+
+  const handleUploadRoute = () => {
+    handleUploadRouteImage();
+    handleUploadRoutePath();
   };
 
   return (
     <div>
-      <form onSubmit={handleUploadImageForm}>
-        <label htmlFor="upload-photo">
-          Upload photo
-          <input
-            accept="image/jpeg, image/png, image/jpg"
-            id="upload-photo"
-            type="file"
-            name="route-image"
-            onChange={(e) => {
-              const fileList = e.target.files;
-              if (fileList) {
-                setRouteImage(fileList[0]);
-              }
-            }}
-          />
-        </label>
-        <button type="submit" className="btn">
-          Upload Route Picture!
-        </button>
-      </form>
-
       <form onSubmit={handleShowImageForm}>
         <label htmlFor="show-photo">
           Show photo
@@ -103,7 +117,7 @@ const AddRoute = () => {
             onChange={(e) => {
               const fileList = e.target.files;
               if (fileList) {
-                setShowRouteImage(fileList[0]);
+                setRouteImage(fileList[0]);
               }
             }}
           />
@@ -112,17 +126,42 @@ const AddRoute = () => {
           Show Route Picture!
         </button>
       </form>
+
       {error && <p>{error}</p>}
+      {success && <p>{success}</p>}
 
       <hr />
+      <br />
+      <br />
+      <br />
       {canvasImage && (
-        <Canvas
-          height={canvasImage.height}
-          width={canvasImage.width}
-          url={canvasImage.url}
-        />
+        <>
+          <CanvasCreate
+            height={canvasImage.height}
+            width={canvasImage.width}
+            url={canvasImage.url}
+            setRoutePath={setRoutePath}
+          />
+        </>
       )}
-      {/* <Canvas height={500} width={500} /> */}
+      {routePath && (
+        <button type="button" className="btn" onClick={handleUploadRoute}>
+          Upload Route!
+        </button>
+      )}
+
+      {/* -------------- For another component ----------------------- */}
+      {newImage && newRoutePath && (
+        <>
+          <p>Here we should see our new route:</p>
+          <CanvasShow
+            height={newImage.height}
+            width={newImage.width}
+            url={newImage.url}
+            routePath={newRoutePath}
+          />
+        </>
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+from importlib.resources import path
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db import IntegrityError
@@ -39,17 +40,17 @@ def register(request):
 
     # Ensure password matches confirmation
     if password != confirm_password:
-        return Response({"message": "Passwords must match."}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"msg": "Passwords must match."}, status=status.HTTP_403_FORBIDDEN)
 
      # Attempt to register user  Hint: create_user(username, email, password)
     try:
         new_user = User.objects.create_user(username, "", password)
         new_user.save()
     except IntegrityError:
-        return Response({"message": "Username already taken."}, status=status.HTTP_409_CONFLICT)   
+        return Response({"msg": "Username already taken."}, status=status.HTTP_409_CONFLICT)   
 
 
-    return Response({'message': 'Success.'}, status=status.HTTP_200_OK)
+    return Response({'msg': 'Successfully registered user.'}, status=status.HTTP_201_CREATED)
         
 
 @api_view(['POST'])
@@ -57,13 +58,19 @@ def route_image(request):
     if request.method == "POST":
       
         image = request.data["image"]
+        Route.objects.create(image=image)
+        # return Response({'msg': 'Successfully uploaded route image.'}, status=status.HTTP_201_CREATED)
         new_image = Route.objects.create(image=image)
+        return Response({'msg': 'Success.', "width": new_image.image.width, "height": new_image.image.height, "url": str(new_image.image)}, status=status.HTTP_201_CREATED)
 
-        return Response({'message': 'Success.', "url": str(new_image.image)}, status=status.HTTP_200_OK)
+@api_view(['POST'])
+def route_path(request):
+    if request.method == "POST":
 
-
-
-
+        path = request.data.get("path")
+        if path is not None:
+            new_path = Route.objects.create(path=path)
+            return Response({'msg': 'Successfully uploaded route path.', 'path': new_path.path}, status=status.HTTP_201_CREATED)
 
 
 

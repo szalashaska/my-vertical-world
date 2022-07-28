@@ -95,7 +95,7 @@ const SignUp = () => {
       const data = await fetch("/api/register", requestOptions);
       const response = await data.json();
 
-      if (data.status === 200) {
+      if (data.status === 201) {
         loginUser(registerUserData.username, registerUserData.password);
       } else {
         setUnableToRegister(response.message);

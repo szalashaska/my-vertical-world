@@ -51,10 +51,10 @@ class Route(models.Model):
         ("9c", "9c"),
         
     )
-
+    # null=True -> null values allowed, blank=True -> allows empty input
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=rename_image)
-    #routepath = ??? TODO
+    path = models.JSONField(null=True)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
     grade = models.CharField(max_length=5, null=True, choices=GRADES)
     description = models.TextField(max_length=500, null=True, blank=True)
