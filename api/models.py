@@ -14,14 +14,23 @@ def rename_image(instance, filename):
 class User(AbstractUser):
     pass
 
-class Follows(models.Model):
+
+class Follow(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     followed_users = models.ManyToManyField(User, related_name="followed_users", blank=True)
 
 
 class Location(models.Model):
     name =  models.TextField(max_length=50, null=True)
-    # coords = models.CharField(null=True) ??
+    coordinates = models.JSONField(null=True) 
+    likes = models.ManyToManyField(User, related_name="liked_locations")
+
+
+class Wall(models.Model):
+    name = models.TextField(max_length=50, null=True)
+    image = models.ImageField(blank=True, null=True, upload_to=rename_image)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="walls")
+    likes = models.ManyToManyField(User, related_name="liked_walls")
 
 
 class Route(models.Model):
@@ -53,9 +62,10 @@ class Route(models.Model):
     )
     # null=True -> null values allowed, blank=True -> allows empty input
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    image = models.ImageField(blank=True, null=True, upload_to=rename_image)
+    name = models.TextField(max_length=50, null=True)
     path = models.JSONField(null=True)
-    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="routes")
+    wall = models.ForeignKey(Wall, on_delete=models.SET_NULL, null=True, related_name="routes")
     grade = models.CharField(max_length=5, null=True, choices=GRADES)
     description = models.TextField(max_length=500, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name="liked_route")
@@ -63,7 +73,9 @@ class Route(models.Model):
 
 class Comment(models.Model):
     author =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    route = models.ForeignKey(Route, on_delete=models.CASCADE)
+    route = models.ForeignKey(Route, on_delete=models.CASCADE, null=True, related_name="comments")
+    wall = models.ForeignKey(Wall, on_delete=models.CASCADE, null=True, related_name="comments")
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, related_name="comments")
     body = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True, null=True)
 

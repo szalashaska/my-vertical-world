@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 
 import FormInput from "../components/FormInput";
 import AuthContext from "../contexts/AuthContext";
-import "./SignUp.css";
 
 const SignUp = () => {
   const [loginUserData, setLoginUserData] = useState({

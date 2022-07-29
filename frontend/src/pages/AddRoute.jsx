@@ -1,27 +1,106 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import CanvasCreate from "../components/CanvasCreate";
-import CanvasShow from "../components/CanvasShow";
+import routeGrades from "../constans/RouteGrades";
 
 const AddRoute = () => {
-  const [routeImage, setRouteImage] = useState(null);
+  const [routeName, setRouteName] = useState("routeName");
+  const [routeDescription, setRouteDescription] = useState("Description");
+  const [routeGrade, setRouteGrade] = useState("6a");
   const [routePath, setRoutePath] = useState(null);
+
+  const [wallName, setWallName] = useState("WallName");
+  const [wallImage, setWallImage] = useState(null);
+
+  const [locationName, setLocationName] = useState("LocationName");
+
   const [canvasImage, setCanvasImage] = useState(null);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  //Another component
-  const [newImage, setNewImage] = useState(null);
-  const [newRoutePath, setNewRoutePath] = useState(null);
+  const id = useId();
 
-  const handleUploadRouteImage = async () => {
-    if (!routeImage) {
+  const handleLocationForm = (e) => {
+    e.preventDefault();
+  };
+
+  const showRouteImage = async () => {
+    if (!wallImage) {
+      setError("There is no image to show.");
+      return;
+    }
+
+    if (wallImage.size > 2048000) {
+      setError("Image should be less than 2 mb.");
+      return;
+    }
+
+    let image = new Image();
+    image.src = window.URL.createObjectURL(wallImage);
+    image.onload = () => {
+      setCanvasImage({
+        height: image.height,
+        width: image.width,
+        url: image.src,
+      });
+    };
+  };
+
+  const handleWallForm = async (e) => {
+    e.preventDefault();
+    showRouteImage();
+  };
+
+  const handleUploadRouteWallAndLocation = async () => {
+    if (
+      !locationName ||
+      !wallName ||
+      !routeName ||
+      !routePath ||
+      !routeDescription
+    ) {
+      setError("Could not record route path.");
+      return;
+    }
+
+    const uploadData = {
+      location_name: locationName,
+      wall_name: wallName,
+      route_name: routeName,
+      route_path: routePath,
+      route_grade: routeGrade,
+      route_description: routeDescription,
+    };
+
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(uploadData),
+    };
+
+    try {
+      const data = await fetch("/api/routes", requestOptions);
+      const response = await data.json();
+
+      if (data.status === 201) {
+        setSuccess(response.msg);
+        console.log(response.wall_id);
+      } else {
+        setError("Could not upload route.");
+      }
+    } catch (err) {
+      console.log("Unexpected error", err);
+    }
+  };
+
+  const handleUploadWallImage = async () => {
+    if (!wallImage) {
       setError("There is no image to upload.");
       return;
     }
 
     let imageAsFormData = new FormData();
-    imageAsFormData.append("image", routeImage);
+    imageAsFormData.append("image", wallImage);
 
     const requestOptions = {
       method: "POST",
@@ -34,12 +113,6 @@ const AddRoute = () => {
 
       if (data.status === 201) {
         setSuccess(response.msg);
-        // TO SHOW
-        setNewImage({
-          width: response.width,
-          height: response.height,
-          url: response.url,
-        });
       } else {
         setError("Could not upload image.");
       }
@@ -48,92 +121,68 @@ const AddRoute = () => {
     }
   };
 
-  const handleShowImageForm = async (e) => {
+  const handleRouteForm = (e) => {
     e.preventDefault();
-    if (!routeImage) {
-      setError("There is no image to show.");
-      return;
-    }
-
-    if (routeImage.size > 2048000) {
-      setError("Image should be less than 2 mb.");
-      return;
-    }
-
-    let image = new Image();
-    image.src = window.URL.createObjectURL(routeImage);
-    image.onload = () => {
-      setCanvasImage({
-        height: image.height,
-        width: image.width,
-        url: image.src,
-      });
-    };
-  };
-
-  const handleUploadRoutePath = async () => {
-    if (!routePath) {
-      setError("Could not record route path.");
-      return;
-    }
-
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path: routePath }),
-    };
-
-    try {
-      const data = await fetch("/api/route/path", requestOptions);
-      const response = await data.json();
-
-      if (data.status === 201) {
-        setSuccess(response.msg);
-        // TO UPLOAD
-        setNewRoutePath(response.path);
-      } else {
-        setError("Could not upload route.");
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
-    }
-  };
-
-  const handleUploadRoute = () => {
-    handleUploadRouteImage();
-    handleUploadRoutePath();
+    handleUploadRouteWallAndLocation();
   };
 
   return (
     <div>
-      <form onSubmit={handleShowImageForm}>
-        <label htmlFor="show-photo">
-          Show photo
+      <form onSubmit={handleLocationForm}>
+        <label htmlFor={`location-${id}`}>
+          Location name:
+          <input
+            id={`location-${id}`}
+            type="text"
+            placeholder="Location name..."
+            value={locationName}
+            onChange={(e) => setLocationName(e.target.value)}
+            required
+          />
+        </label>
+
+        <button type="submit">Add location</button>
+      </form>
+
+      <hr />
+
+      <form onSubmit={handleWallForm}>
+        <label htmlFor={`wall-${id}`}>
+          Wall name:
+          <input
+            id={`wall-${id}`}
+            type="text"
+            placeholder="Wall name..."
+            value={wallName}
+            onChange={(e) => setWallName(e.target.value)}
+            required
+          />
+        </label>
+
+        <label htmlFor={`image-${id}`}>
+          Add photo:
           <input
             accept="image/jpeg, image/png, image/jpg"
-            id="show-photo"
+            id={`image-${id}`}
             type="file"
-            name="route-image"
+            required
             onChange={(e) => {
               const fileList = e.target.files;
               if (fileList) {
-                setRouteImage(fileList[0]);
+                setWallImage(fileList[0]);
               }
             }}
           />
         </label>
-        <button type="submit" className="btn">
-          Show Route Picture!
-        </button>
+
+        <button type="submit">Add wall</button>
       </form>
 
       {error && <p>{error}</p>}
       {success && <p>{success}</p>}
 
       <hr />
-      <br />
-      <br />
-      <br />
+
       {canvasImage && (
         <>
           <CanvasCreate
@@ -142,26 +191,60 @@ const AddRoute = () => {
             url={canvasImage.url}
             setRoutePath={setRoutePath}
           />
+
+          <form onSubmit={handleRouteForm}>
+            <label htmlFor={`routename-${id}`}>
+              Route name:
+              <input
+                id={`routename-${id}`}
+                type="text"
+                placeholder="Route name..."
+                value={routeName}
+                onChange={(e) => setRouteName(e.target.value)}
+                required
+              />
+            </label>
+
+            <label htmlFor={`grade-${id}`}>
+              Grade:
+              <select
+                id={`grade-${id}`}
+                value={routeGrade}
+                onChange={(e) => setRouteGrade(e.target.value)}
+                required
+              >
+                {routeGrades.map((grade) => (
+                  <option key={grade} value={grade}>
+                    {grade}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label htmlFor={`description-${id}`}>
+              <textarea
+                placeholder="Description..."
+                value={routeDescription}
+                onChange={(e) => setRouteDescription(e.target.value)}
+                id={`description-${id}`}
+              />
+            </label>
+
+            <button type="submit">Add route</button>
+          </form>
         </>
-      )}
-      {routePath && (
-        <button type="button" className="btn" onClick={handleUploadRoute}>
-          Upload Route!
-        </button>
       )}
 
-      {/* -------------- For another component ----------------------- */}
-      {newImage && newRoutePath && (
-        <>
-          <p>Here we should see our new route:</p>
-          <CanvasShow
-            height={newImage.height}
-            width={newImage.width}
-            url={newImage.url}
-            routePath={newRoutePath}
-          />
-        </>
-      )}
+      <div>
+        {routeName} <br />
+        {routeDescription}
+        <br />
+        {routeGrade} <br />
+        {wallName}
+        <br />
+        {locationName}
+        <br />
+      </div>
     </div>
   );
 };

@@ -8,10 +8,12 @@ import SignUp from "./pages/SignUp";
 import AddRoute from "./pages/AddRoute";
 
 import PrivateRoute from "./helpers/PrivateRoute";
+import GlobalStyles from "./constans/GlobalStyles";
 
 const App = () => {
   return (
     <Router>
+      <GlobalStyles />
       <AuthProvider>
         <Navbar />
         <Routes>

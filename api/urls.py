@@ -14,8 +14,12 @@ from rest_framework_simplejwt.views import (
 urlpatterns = [
     path('register', views.register, name="register"),
 
+    path('routes', views.routes, name="routes"),
+
+    ##########################################################
     path('route/image', views.route_image, name="route_image"),
     path('route/path', views.route_path, name="route_path"),
+    ##########################################################
     
     path('token', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
