@@ -19,18 +19,30 @@ class Follow(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     followed_users = models.ManyToManyField(User, related_name="followed_users", blank=True)
 
+    def __str__(self):
+        return f"{self.user}"
+
 
 class Location(models.Model):
     name =  models.TextField(max_length=50, null=True)
     coordinates = models.JSONField(null=True) 
     likes = models.ManyToManyField(User, related_name="liked_locations")
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Wall(models.Model):
     name = models.TextField(max_length=50, null=True)
-    image = models.ImageField(blank=True, null=True, upload_to=rename_image)
+    image = models.ImageField(blank=True, null=True, upload_to=rename_image, height_field="image_height", width_field="image_width")
+    image_height = models.PositiveIntegerField(null=True, blank=True, editable=False, default="0")
+    image_width = models.PositiveIntegerField(null=True, blank=True, editable=False, default="0")
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="walls")
     likes = models.ManyToManyField(User, related_name="liked_walls")
+
+    def __str__(self):
+        return f"{self.name}"
+    
 
 
 class Route(models.Model):
@@ -61,7 +73,7 @@ class Route(models.Model):
         
     )
     # null=True -> null values allowed, blank=True -> allows empty input
-    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="route_author")
     name = models.TextField(max_length=50, null=True)
     path = models.JSONField(null=True)
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="routes")
@@ -69,6 +81,10 @@ class Route(models.Model):
     grade = models.CharField(max_length=5, null=True, choices=GRADES)
     description = models.TextField(max_length=500, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name="liked_route")
+    created = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f"{self.name} {self.grade} by {self.author}"
 
 
 class Comment(models.Model):
@@ -78,4 +94,7 @@ class Comment(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, related_name="comments")
     body = models.CharField(max_length=500)
     created = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __str__(self):
+        return f"{self.author}'s comment created {self.created}"
 

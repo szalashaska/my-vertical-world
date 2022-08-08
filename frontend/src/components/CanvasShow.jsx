@@ -1,8 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyledCanvas } from "./styled/Canvas.styled";
 
-const LOCAL_MEDIA_PATH = "/media/";
-
 const CanvasShow = ({ height, width, url, routePath }) => {
   const canvasRef = useRef(null);
   const [ctx, setCtx] = useState(null);
@@ -31,10 +29,6 @@ const CanvasShow = ({ height, width, url, routePath }) => {
     });
   };
 
-  const clearCanvas = () => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  };
-
   useEffect(() => {
     if (canvasRef.current) {
       setCtx(canvasRef.current.getContext("2d"));
@@ -53,20 +47,8 @@ const CanvasShow = ({ height, width, url, routePath }) => {
         ref={canvasRef}
         height={height}
         width={width}
-        url={`${LOCAL_MEDIA_PATH}${url}`}
+        url={`${url}`}
       />
-      <button className="btn" type="button" onClick={clearCanvas}>
-        Clear
-      </button>
-      <button
-        className="btn"
-        type="button"
-        onClick={() => {
-          drawUsersLine(routePath);
-        }}
-      >
-        Show
-      </button>
     </>
   );
 };

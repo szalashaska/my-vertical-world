@@ -1,7 +1,7 @@
 from importlib.resources import path
 from pydoc import describe
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import IntegrityError
 # from django.contrib.auth import authenticate, login, logout
 
@@ -12,7 +12,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import User, Follow, Location, Wall, Route, Comment
+from .serilizers import RouteSerializer
 
+import json
 
 # Customizing Token
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -66,20 +68,24 @@ def route_path(request):
             return Response({'msg': 'Successfully uploaded route path.', 'path': new_path.path}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 # @permission_classes([IsAuthenticated])
 def routes(request):
     if request.method == "POST":
         location_name = request.data.get("location_name")
         wall_name = request.data.get("wall_name")
+        wall_image = request.data.get("wall_image")
         route_name = request.data.get("route_name")
         route_path = request.data.get("route_path")
         route_grade = request.data.get("route_grade")
         route_description = request.data.get("route_description")
 
-        print(request.user)
-          
-        if location_name == None or wall_name == None or route_name == None or route_path == None or route_grade == None or route_description == None:
+        # print(route_path)
+        # return Response(status=status.HTTP_200_OK)
+  
+        if (location_name == None or wall_name == None or wall_image == None or 
+        route_name == None or route_path == None or route_grade == None or 
+        route_description == None):
             return Response({"msg": "Provided data was incorrect."}, status=status.HTTP_400_BAD_REQUEST)
         
         # Get users object
@@ -99,6 +105,8 @@ def routes(request):
             wall = Wall.objects.get(name=wall_name)
         except Wall.DoesNotExist:
             wall = Wall.objects.create(name=wall_name) 
+            wall.image = wall_image
+            wall.save()
 
         try:
             Location.objects.get(walls=wall)
@@ -107,10 +115,18 @@ def routes(request):
             wall.save()
 
         # Create route
-        Route.objects.create(author=author, name=route_name, path=route_path, location=location, wall=wall, grade=route_grade, description=route_description)
+        Route.objects.create(author=author, name=route_name, path=json.loads(route_path), location=location, wall=wall, grade=route_grade, description=route_description)
 
-        return Response({"msg": "Successfully created new route", "wall_id": wall.id}, status=status.HTTP_201_CREATED)
-     
+        return Response({"msg": "Successfully created new route"}, status=status.HTTP_201_CREATED)
+
+    if request.method == "GET":
+        routes = Route.objects.all().order_by("-created")
+ 
+        data = RouteSerializer(routes, many=True).data
+        # print(data)
+
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
 
 @api_view(['POST'])
 # @permission_classes([IsAuthenticated])

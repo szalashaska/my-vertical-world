@@ -1,40 +1,49 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import AuthContext from "../contexts/AuthContext";
-import "./Navbar.css";
+import {
+  NavbarStyled,
+  NavbarUsername,
+  NavbarList,
+  NavbarListItem,
+  NavbarLogOut,
+} from "./styled/Navbar.styled";
 
 const Navbar = () => {
   const { user, logoutUser } = useContext(AuthContext);
 
   return (
-    <nav className="navbar-container">
-      <div className="nav__logo">
-        <Link to="/">My Vertical World </Link>
-      </div>
+    <NavbarStyled>
+      <Link to="/">My Vertical World </Link>
 
-      <ul className="navbar__menu">
-        <li>
+      <NavbarList>
+        <NavbarListItem>
           <Link to="/">Home</Link>
-        </li>
-        <li>
+        </NavbarListItem>
+
+        <NavbarListItem>
           <Link to="/add-route">Add route</Link>
-        </li>
+        </NavbarListItem>
+
         {user ? (
           <>
-            <li>
-              <p>Logged user: {user.username}</p>
-            </li>
-            <li>
-              <p onClick={logoutUser}>Log out</p>
-            </li>
+            <NavbarListItem onClick={logoutUser}>
+              <NavbarLogOut>Log out</NavbarLogOut>
+            </NavbarListItem>
+
+            <NavbarListItem>
+              <Link to="/">
+                Hello <NavbarUsername>{user.username}</NavbarUsername>
+              </Link>
+            </NavbarListItem>
           </>
         ) : (
-          <li>
+          <NavbarListItem>
             <Link to="/sign-up">Sign up</Link>
-          </li>
+          </NavbarListItem>
         )}
-      </ul>
-    </nav>
+      </NavbarList>
+    </NavbarStyled>
   );
 };
 

@@ -43,21 +43,21 @@ export default GlobalStyles;
 // https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/
 // min-vv=360px, max vv=1500px
 
-export const h1Styled = styled.h1`
+export const H1Styled = styled.h1`
   color: var(--clr-black);
   font-size: clamp(5rem, 4.6842rem + 1.4035vw, 6rem);
   letter-spacing: -1.5px;
 `;
-export const h2Styled = styled.h2`
+export const H2Styled = styled.h2`
   color: var(--clr-black);
   font-size: clamp(3rem, 2.6842rem + 1.4035vw, 4rem);
   letter-spacing: -0.5px;
 `;
-export const h3Styled = styled.h3`
+export const H3Styled = styled.h3`
   color: var(--clr-black);
   font-size: clamp(2rem, 1.6842rem + 1.4035vw, 3rem);
 `;
-export const pStyled = styled.p`
+export const PStyled = styled.p`
   color: var(--clr-black);
   font-size: clamp(0.8rem, 0.6737rem + 0.5614vw, 1.2rem);
 `;
@@ -67,6 +67,7 @@ export const ButtonStyled = styled.button`
   display: inline-block;
   padding: 0.5em 1em;
   text-decoration: none;
+  border: none;
   cursor: pointer;
   border-radius: 10px;
   &:hover,
