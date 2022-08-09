@@ -1,25 +1,31 @@
-import React, { useContext, useId, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CanvasCreate from "../components/CanvasCreate";
+import FormInput from "../components/FormInput";
+import { ButtonStyled } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
 import AuthContext from "../contexts/AuthContext";
+import { AddRouteStyled } from "./Pages.styled";
 
 const AddRoute = () => {
+  const [locationsList, setLocationsList] = useState([]);
+  const [wallsList, setWallsList] = useState([]);
+
   const [routeName, setRouteName] = useState("");
   const [routeDescription, setRouteDescription] = useState("");
   const [routeGrade, setRouteGrade] = useState("6a");
   const [routePath, setRoutePath] = useState(null);
-
   const [wallName, setWallName] = useState("");
   const [wallImage, setWallImage] = useState(null);
-
   const [locationName, setLocationName] = useState("");
 
   const [canvasImage, setCanvasImage] = useState(null);
 
+  const [showLocationForm, setShowLocationForm] = useState(true);
+  const [showWallForm, setShowWallForm] = useState(false);
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const id = useId();
   const { authTokens } = useContext(AuthContext);
 
   const locationInputs = [
@@ -48,13 +54,12 @@ const AddRoute = () => {
     },
     {
       id: 3,
+      accept: "image/jpeg, image/png, image/jpg",
       name: "wall_image",
       type: "file",
       placeholder: "Wall image...",
       label: "Wall image:",
       required: true,
-      accept: "image/jpeg, image/png, image/jpg",
-      value: wallImage,
       onChange: (e) => e.target.files && setWallImage(e.target.files[0]),
     },
   ];
@@ -73,17 +78,61 @@ const AddRoute = () => {
     {
       id: 5,
       name: "route_grade",
-      type: "text",
+      type: "select",
+      options: routeGrades,
       placeholder: "Route grade...",
       label: "Route grade:",
       required: true,
       value: routeGrade,
       onChange: (e) => setRouteGrade(e.target.value),
     },
+    {
+      id: 6,
+      name: "route_description",
+      type: "textarea",
+      placeholder: "Route description...",
+      label: "Route description:",
+      required: true,
+      value: routeDescription,
+      onChange: (e) => setRouteDescription(e.target.value),
+    },
   ];
+
+  const getLocations = async () => {
+    const endpoint = "/api/locations";
+    try {
+      const data = await fetch(endpoint);
+      const response = await data.json();
+
+      if (data.status === 200) {
+        setLocationsList(response);
+
+        console.log(response);
+      }
+    } catch (err) {
+      console.log("Unexpected error", err);
+    }
+  };
+
+  const getWalls = async () => {
+    const endpoint = "/api/walls";
+    try {
+      const data = await fetch(endpoint);
+      const response = await data.json();
+
+      if (data.status === 200) {
+        setWallsList(response);
+        console.log(response);
+      }
+    } catch (err) {
+      console.log("Unexpected error", err);
+    }
+  };
 
   const handleLocationForm = (e) => {
     e.preventDefault();
+    setShowWallForm(true);
+    setShowLocationForm(false);
   };
 
   const showRouteImage = async () => {
@@ -110,6 +159,7 @@ const AddRoute = () => {
 
   const handleWallForm = async (e) => {
     e.preventDefault();
+    setShowWallForm(false);
     showRouteImage();
   };
 
@@ -149,81 +199,9 @@ const AddRoute = () => {
 
       if (data.status === 201) {
         setSuccess(response.msg);
+        setCanvasImage(null);
       } else {
         setError("Could not upload route.");
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
-    }
-  };
-
-  // const handleUploadRouteWallAndLocation = async () => {
-  //   if (
-  //     !locationName ||
-  //     !wallName ||
-  //     !routeName ||
-  //     !routePath ||
-  //     !routeDescription
-  //   ) {
-  //     setError("Could not record route path.");
-  //     return;
-  //   }
-
-  //   const uploadData = {
-  //     location_name: locationName,
-  //     wall_name: wallName,
-  //     route_name: routeName,
-  //     route_path: routePath,
-  //     route_grade: routeGrade,
-  //     route_description: routeDescription,
-  //   };
-
-  //   const requestOptions = {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: `Bearer ${String(authTokens.access)}`,
-  //     },
-  //     body: JSON.stringify(uploadData),
-  //   };
-
-  //   try {
-  //     const data = await fetch("/api/routes", requestOptions);
-  //     const response = await data.json();
-
-  //     if (data.status === 201) {
-  //       setSuccess(response.msg);
-  //       console.log(response.wall_id);
-  //     } else {
-  //       setError("Could not upload route.");
-  //     }
-  //   } catch (err) {
-  //     console.log("Unexpected error", err);
-  //   }
-  // };
-
-  const handleUploadWallImage = async () => {
-    if (!wallImage) {
-      setError("There is no image to upload.");
-      return;
-    }
-
-    let body = new FormData();
-    body.append("image", wallImage);
-
-    const requestOptions = {
-      method: "POST",
-      body: body,
-    };
-
-    try {
-      const data = await fetch("/api/route/image", requestOptions);
-      const response = await data.json();
-
-      if (data.status === 201) {
-        setSuccess(response.msg);
-      } else {
-        setError("Could not upload image.");
       }
     } catch (err) {
       console.log("Unexpected error", err);
@@ -235,62 +213,87 @@ const AddRoute = () => {
     handleUploadRouteWallAndLocation();
   };
 
+  useEffect(() => {
+    getLocations();
+    getWalls();
+  }, []);
+
   return (
-    <div>
-      <form onSubmit={handleLocationForm}>
-        <label htmlFor={`location-${id}`}>
-          Location name:
-          <input
-            id={`location-${id}`}
-            type="text"
-            placeholder="Location name..."
-            value={locationName}
-            onChange={(e) => setLocationName(e.target.value)}
-            required
-          />
-        </label>
-
-        <button type="submit">Add location</button>
-      </form>
-
-      <hr />
-
-      <form onSubmit={handleWallForm}>
-        <label htmlFor={`wall-${id}`}>
-          Wall name:
-          <input
-            id={`wall-${id}`}
-            type="text"
-            placeholder="Wall name..."
-            value={wallName}
-            onChange={(e) => setWallName(e.target.value)}
-            required
-          />
-        </label>
-
-        <label htmlFor={`image-${id}`}>
-          Add photo:
-          <input
-            accept="image/jpeg, image/png, image/jpg"
-            id={`image-${id}`}
-            type="file"
-            required
-            onChange={(e) => {
-              const fileList = e.target.files;
-              if (fileList) {
-                setWallImage(fileList[0]);
-              }
-            }}
-          />
-        </label>
-
-        <button type="submit">Add wall</button>
-      </form>
-
+    <AddRouteStyled>
       {error && <p>{error}</p>}
       {success && <p>{success}</p>}
+      {showLocationForm && (
+        <>
+          <form onSubmit={handleLocationForm}>
+            {locationInputs.map((input) => (
+              <FormInput key={input.id} {...input} />
+            ))}
+            <ButtonStyled type="submit">Add location</ButtonStyled>
+          </form>
 
-      <hr />
+          {locationsList.length > 0 && (
+            <ul>
+              {locationsList.map((item) => (
+                <li key={item.id}>
+                  {item.name}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setLocationName(item.name);
+                      setShowLocationForm(false);
+                      setShowWallForm(true);
+                    }}
+                  >
+                    wybierz
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <hr />
+        </>
+      )}
+
+      {showWallForm && (
+        <>
+          <form onSubmit={handleWallForm}>
+            {wallInputs.map((input) => (
+              <FormInput key={input.id} {...input} />
+            ))}
+
+            <ButtonStyled type="submit">Add wall</ButtonStyled>
+          </form>
+
+          {wallsList.length > 0 && (
+            <ul>
+              {wallsList.map((item) => (
+                <li key={item.id}>
+                  +{item.name}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowWallForm(false);
+
+                      setWallName(item.name);
+                      setWallImage(item.image);
+                      setCanvasImage({
+                        height: item.image_height,
+                        width: item.image_width,
+                        url: item.image,
+                      });
+                    }}
+                  >
+                    wybierz
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <hr />
+        </>
+      )}
 
       {canvasImage && (
         <>
@@ -302,59 +305,16 @@ const AddRoute = () => {
           />
 
           <form onSubmit={handleRouteForm}>
-            <label htmlFor={`routename-${id}`}>
-              Route name:
-              <input
-                id={`routename-${id}`}
-                type="text"
-                placeholder="Route name..."
-                value={routeName}
-                onChange={(e) => setRouteName(e.target.value)}
-                required
-              />
-            </label>
+            {routeInputs.map((input) => (
+              <FormInput key={input.id} {...input} />
+            ))}
 
-            <label htmlFor={`grade-${id}`}>
-              Grade:
-              <select
-                id={`grade-${id}`}
-                value={routeGrade}
-                onChange={(e) => setRouteGrade(e.target.value)}
-                required
-              >
-                {routeGrades.map((grade) => (
-                  <option key={grade} value={grade}>
-                    {grade}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label htmlFor={`description-${id}`}>
-              <textarea
-                placeholder="Description..."
-                value={routeDescription}
-                onChange={(e) => setRouteDescription(e.target.value)}
-                id={`description-${id}`}
-              />
-            </label>
-
-            <button type="submit">Add route</button>
+            <ButtonStyled type="submit">Add route</ButtonStyled>
           </form>
+          <hr />
         </>
       )}
-
-      <div>
-        {routeName} <br />
-        {routeDescription}
-        <br />
-        {routeGrade} <br />
-        {wallName}
-        <br />
-        {locationName}
-        <br />
-      </div>
-    </div>
+    </AddRouteStyled>
   );
 };
 

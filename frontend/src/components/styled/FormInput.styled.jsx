@@ -9,8 +9,15 @@ export const FormInputStyled = styled.input`
   margin-top: 0.5rem;
   border-radius: 10px;
 `;
+export const FormTextAreaStyled = styled.textarea`
+  display: block;
+`;
 export const FormLabelStyled = styled.label``;
 export const FormErrorMessage = styled.span``;
+export const FormSelect = styled.select`
+  display: block;
+`;
+export const FormOption = styled.option``;
 
 // .forminput > * {
 //     display: block;

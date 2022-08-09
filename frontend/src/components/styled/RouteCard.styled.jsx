@@ -5,4 +5,5 @@ export const RouteCardStyled = styled.div`
   border-radius: 25px;
   margin-top: 1rem;
   padding: 1rem;
+  max-width: 52rem;
 `;

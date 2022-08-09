@@ -4,7 +4,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
-import SignUp from "./pages/SignUp";
+import SignIn from "./pages/SignIn";
 import AddRoute from "./pages/AddRoute";
 
 import PrivateRoute from "./helpers/PrivateRoute";
@@ -18,7 +18,7 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-up" element={<SignIn />} />
           <Route
             path="/add-route"
             element={

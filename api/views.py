@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import User, Follow, Location, Wall, Route, Comment
-from .serilizers import RouteSerializer
+from .serilizers import RouteSerializer, LocationSerializer, WallSerializer
 
 import json
 
@@ -54,19 +54,7 @@ def register(request):
 
 
     return Response({'msg': 'Successfully registered user.'}, status=status.HTTP_201_CREATED)
-        
-
-
-
-@api_view(['POST'])
-def route_path(request):
-    if request.method == "POST":
-
-        path = request.data.get("path")
-        if path is not None:
-            new_path = Route.objects.create(path=path)
-            return Response({'msg': 'Successfully uploaded route path.', 'path': new_path.path}, status=status.HTTP_201_CREATED)
-
+      
 
 @api_view(['POST', 'GET'])
 # @permission_classes([IsAuthenticated])
@@ -80,7 +68,6 @@ def routes(request):
         route_grade = request.data.get("route_grade")
         route_description = request.data.get("route_description")
 
-        # print(route_path)
         # return Response(status=status.HTTP_200_OK)
   
         if (location_name == None or wall_name == None or wall_image == None or 
@@ -121,29 +108,24 @@ def routes(request):
 
     if request.method == "GET":
         routes = Route.objects.all().order_by("-created")
- 
         data = RouteSerializer(routes, many=True).data
-        # print(data)
+     
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+    
+
+@api_view(['GET'])
+def walls(request):
+    if request.method == "GET":
+        walls = Wall.objects.all().order_by("name")
+        data = WallSerializer(walls, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
 
-@api_view(['POST'])
-# @permission_classes([IsAuthenticated])
-def route_image(request):
-    if request.method == "POST":
-      
-        image = request.data["image"]
-        Route.objects.create(image=image)
-        # return Response({'msg': 'Successfully uploaded route image.'}, status=status.HTTP_201_CREATED)
-        new_image = Route.objects.create(image=image)
-        return Response({'msg': 'Success.', "width": new_image.image.width, "height": new_image.image.height, "url": str(new_image.image)}, status=status.HTTP_201_CREATED)
+@api_view(['GET'])
+def locations(request):
+    if request.method == "GET":
+        locations = Location.objects.all().order_by("name")
+        data = LocationSerializer(locations, many=True).data
 
-
-# @api_view(['GET'])
-# @permission_classes([IsAuthenticated])
-# def getNotes(request):
-#     user = request.user
-#     notes = user.note_set.all()
-#     serializer = NoteSerializer(notes, many=True)
-#     return Response(serializer.data)
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)

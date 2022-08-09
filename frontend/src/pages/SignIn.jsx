@@ -5,7 +5,7 @@ import { SignUpStyled } from "./Pages.styled";
 import FormInput from "../components/FormInput";
 import { ButtonStyled, H1Styled } from "../constans/GlobalStyles";
 
-const SignUp = () => {
+const SignIn = () => {
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -108,4 +108,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

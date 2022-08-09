@@ -39,7 +39,7 @@ const Navbar = () => {
           </>
         ) : (
           <NavbarListItem>
-            <Link to="/sign-up">Sign up</Link>
+            <Link to="/sign-up">Sign in</Link>
           </NavbarListItem>
         )}
       </NavbarList>

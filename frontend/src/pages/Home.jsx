@@ -12,6 +12,7 @@ const Home = () => {
       const response = await data.json();
       if (data.status === 200) {
         setRoutesData(response);
+        console.log(response);
       }
     } catch (err) {
       console.log("Unexpected error", err);

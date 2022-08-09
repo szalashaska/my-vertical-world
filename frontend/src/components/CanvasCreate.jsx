@@ -20,7 +20,7 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
     if (isMouseDown) {
       ctx.beginPath();
       ctx.strokeStyle = "red";
-      ctx.lineWidth = 10;
+      ctx.lineWidth = 8;
       ctx.lineJoin = "round";
       ctx.moveTo(position.x, position.y);
       ctx.lineTo(x, y);
@@ -33,7 +33,10 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
 
   const recordLine = (x, y) => {
     if (isMouseDown) {
-      setUserPath([...userPath, { x: Math.floor(x), y: Math.floor(y) }]);
+      setUserPath([
+        ...userPath,
+        { x: Math.floor((x * 100) / width), y: Math.floor((y * 100) / height) },
+      ]);
     }
   };
 
@@ -115,7 +118,6 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
       </button>
 
       <button
-        className="btn"
         type="button"
         disabled={userPath.length === 0 ? true : false}
         onClick={() => {
