@@ -12,7 +12,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
   const drawLine = (x, y) => {
     ctx.beginPath();
     ctx.strokeStyle = "blue";
-    ctx.lineWidth = 8;
+    ctx.lineWidth = 2;
     ctx.lineJoin = "round";
     ctx.moveTo(position.x, position.y);
     ctx.lineTo(x, y);

@@ -18,6 +18,7 @@ urlpatterns = [
     path('routes', views.routes, name="routes"),
     path('walls', views.walls, name="walls"),
     path('locations', views.locations, name="locations"),
+    path('location/<int:location_id>', views.location, name="location"),
     
     # Tokens
     path('token', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),

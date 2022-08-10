@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import CanvasCreate from "../components/CanvasCreate";
 import FormInput from "../components/FormInput";
-import { ButtonStyled } from "../constans/GlobalStyles";
+import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
 import AuthContext from "../contexts/AuthContext";
 import { AddRouteStyled } from "./Pages.styled";
@@ -106,23 +106,20 @@ const AddRoute = () => {
 
       if (data.status === 200) {
         setLocationsList(response);
-
-        console.log(response);
       }
     } catch (err) {
       console.log("Unexpected error", err);
     }
   };
 
-  const getWalls = async () => {
-    const endpoint = "/api/walls";
+  const getWalls = async (locationId) => {
+    const endpoint = `/api/walls?location_id=${locationId}`;
     try {
       const data = await fetch(endpoint);
       const response = await data.json();
 
       if (data.status === 200) {
         setWallsList(response);
-        console.log(response);
       }
     } catch (err) {
       console.log("Unexpected error", err);
@@ -215,7 +212,6 @@ const AddRoute = () => {
 
   useEffect(() => {
     getLocations();
-    getWalls();
   }, []);
 
   return (
@@ -224,12 +220,17 @@ const AddRoute = () => {
       {success && <p>{success}</p>}
       {showLocationForm && (
         <>
+          <H2Styled>Add new location:</H2Styled>
           <form onSubmit={handleLocationForm}>
             {locationInputs.map((input) => (
               <FormInput key={input.id} {...input} />
             ))}
             <ButtonStyled type="submit">Add location</ButtonStyled>
           </form>
+
+          <hr />
+
+          <H2Styled>Add to existing location:</H2Styled>
 
           {locationsList.length > 0 && (
             <ul>
@@ -242,6 +243,7 @@ const AddRoute = () => {
                       setLocationName(item.name);
                       setShowLocationForm(false);
                       setShowWallForm(true);
+                      getWalls(item.id);
                     }}
                   >
                     wybierz
@@ -257,6 +259,7 @@ const AddRoute = () => {
 
       {showWallForm && (
         <>
+          <H2Styled>Add new wall:</H2Styled>
           <form onSubmit={handleWallForm}>
             {wallInputs.map((input) => (
               <FormInput key={input.id} {...input} />
@@ -265,11 +268,14 @@ const AddRoute = () => {
             <ButtonStyled type="submit">Add wall</ButtonStyled>
           </form>
 
+          <hr />
+
+          <H2Styled>Add to existing wall:</H2Styled>
           {wallsList.length > 0 && (
             <ul>
               {wallsList.map((item) => (
                 <li key={item.id}>
-                  +{item.name}
+                  {item.name}
                   <button
                     type="button"
                     onClick={() => {

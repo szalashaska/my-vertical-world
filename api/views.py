@@ -68,6 +68,11 @@ def routes(request):
         route_grade = request.data.get("route_grade")
         route_description = request.data.get("route_description")
 
+        # Store all names in lowercase, remove whitespace
+        location_name = location_name.lower().strip()
+        wall_name = wall_name.lower().strip()
+        route_name = route_name.lower().strip()
+
         # return Response(status=status.HTTP_200_OK)
   
         if (location_name == None or wall_name == None or wall_image == None or 
@@ -116,8 +121,13 @@ def routes(request):
 @api_view(['GET'])
 def walls(request):
     if request.method == "GET":
-        walls = Wall.objects.all().order_by("name")
-        data = WallSerializer(walls, many=True).data
+        queryset = Wall.objects.all().order_by("name")
+
+        location_id = request.query_params.get("location_id")
+        if location:
+            queryset = queryset.filter(location__pk=location_id)
+
+        data = WallSerializer(queryset, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
@@ -127,5 +137,18 @@ def locations(request):
     if request.method == "GET":
         locations = Location.objects.all().order_by("name")
         data = LocationSerializer(locations, many=True).data
+
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+
+@api_view(['GET'])
+def location(request, location_id):
+    if request.method == "GET":
+        try:
+            location = Location.objects.get(pk=location_id)
+        except Location.DoesNotExist:
+            return JsonResponse({"error": "Location not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+        
+        data = LocationSerializer(location, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
