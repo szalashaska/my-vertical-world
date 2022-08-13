@@ -21,12 +21,11 @@ const Navbar = () => {
           <Link to="/">Home</Link>
         </NavbarListItem>
 
-        <NavbarListItem>
-          <Link to="/add-route">Add route</Link>
-        </NavbarListItem>
-
         {user ? (
           <>
+            <NavbarListItem>
+              <Link to="/add-route">Add route</Link>
+            </NavbarListItem>
             <NavbarListItem onClick={logoutUser}>
               <NavbarLogOut>Log out</NavbarLogOut>
             </NavbarListItem>

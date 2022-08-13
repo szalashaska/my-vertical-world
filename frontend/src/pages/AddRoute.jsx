@@ -22,11 +22,22 @@ const AddRoute = () => {
 
   const [showLocationForm, setShowLocationForm] = useState(true);
   const [showWallForm, setShowWallForm] = useState(false);
+  const [wallAlreadyExist, setWallAlreadyExist] = useState(false);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const { authTokens } = useContext(AuthContext);
+
+  const checkUserWallNameInput = (userInput) => {
+    if (wallsList.length === 0) return;
+
+    const wall = userInput.trim().toLowerCase();
+    const match = wallsList.find((item) => item.name === wall);
+    if (match) {
+      setWallAlreadyExist(true);
+    } else setWallAlreadyExist(false);
+  };
 
   const locationInputs = [
     {
@@ -50,7 +61,10 @@ const AddRoute = () => {
       label: "Wall name:",
       required: true,
       value: wallName,
-      onChange: (e) => setWallName(e.target.value),
+      onChange: (e) => {
+        setWallName(e.target.value);
+        checkUserWallNameInput(e.target.value);
+      },
     },
     {
       id: 3,
@@ -59,6 +73,7 @@ const AddRoute = () => {
       type: "file",
       placeholder: "Wall image...",
       label: "Wall image:",
+      disabled: wallAlreadyExist,
       required: true,
       onChange: (e) => e.target.files && setWallImage(e.target.files[0]),
     },
@@ -126,8 +141,37 @@ const AddRoute = () => {
     }
   };
 
+  const checkUserLocationNameInput = () => {
+    if (locationsList.length === 0) return;
+
+    const location = locationName.trim().toLowerCase();
+    const match = locationsList.find((item) => item.name === location);
+    if (match) {
+      getWalls(match.id);
+    }
+  };
+
+  // const checkUserWallNameInput = () => {
+  //   if (wallsList.length === 0) return false;
+
+  //   const wall = wallName.trim().toLowerCase();
+  //   const match = wallsList.find((item) => item.name === wall);
+  //   if (match) {
+  //     setWallName(match.name);
+  //     setWallImage(match.image);
+  //     setCanvasImage({
+  //       height: match.image_height,
+  //       width: match.image_width,
+  //       url: match.image,
+  //     });
+  //     return true;
+  //   }
+  //   return false;
+  // };
+
   const handleLocationForm = (e) => {
     e.preventDefault();
+    checkUserLocationNameInput();
     setShowWallForm(true);
     setShowLocationForm(false);
   };
@@ -157,7 +201,9 @@ const AddRoute = () => {
   const handleWallForm = async (e) => {
     e.preventDefault();
     setShowWallForm(false);
-    showRouteImage();
+    if (!checkUserWallNameInput()) {
+      showRouteImage();
+    }
   };
 
   const handleUploadRouteWallAndLocation = async () => {
@@ -265,36 +311,42 @@ const AddRoute = () => {
               <FormInput key={input.id} {...input} />
             ))}
 
-            <ButtonStyled type="submit">Add wall</ButtonStyled>
+            {wallAlreadyExist ? (
+              <p>Wall already exist</p>
+            ) : (
+              <ButtonStyled type="submit">Add wall</ButtonStyled>
+            )}
           </form>
 
           <hr />
 
-          <H2Styled>Add to existing wall:</H2Styled>
           {wallsList.length > 0 && (
-            <ul>
-              {wallsList.map((item) => (
-                <li key={item.id}>
-                  {item.name}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowWallForm(false);
+            <>
+              <H2Styled>Add to existing wall:</H2Styled>
+              <ul>
+                {wallsList.map((item) => (
+                  <li key={item.id}>
+                    {item.name}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowWallForm(false);
 
-                      setWallName(item.name);
-                      setWallImage(item.image);
-                      setCanvasImage({
-                        height: item.image_height,
-                        width: item.image_width,
-                        url: item.image,
-                      });
-                    }}
-                  >
-                    wybierz
-                  </button>
-                </li>
-              ))}
-            </ul>
+                        setWallName(item.name);
+                        setWallImage(item.image);
+                        setCanvasImage({
+                          height: item.image_height,
+                          width: item.image_width,
+                          url: item.image,
+                        });
+                      }}
+                    >
+                      wybierz
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
 
           <hr />

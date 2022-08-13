@@ -124,8 +124,12 @@ def walls(request):
         queryset = Wall.objects.all().order_by("name")
 
         location_id = request.query_params.get("location_id")
-        if location:
+        if location_id:
             queryset = queryset.filter(location__pk=location_id)
+
+        # location_name = request.query_params.get("location_name")
+        # if location_name:
+        #     queryset = queryset.filter(location__name=location_name)
 
         data = WallSerializer(queryset, many=True).data
 
