@@ -12,3 +12,16 @@ export const HomeStyled = styled(PageContainer)`
 export const AddRouteStyled = styled(PageContainer)`
   background-color: var(--clr-pink);
 `;
+
+export const ClimbingRouteStyled = styled(PageContainer)`
+  background-color: var(--clr-pink);
+`;
+
+export const WallStyled = styled(PageContainer)`
+  background-color: var(--clr-pink);
+  width: 50%;
+`;
+
+export const LocationStyled = styled(PageContainer)`
+  background-color: var(--clr-pink);
+`;

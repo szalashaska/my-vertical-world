@@ -6,4 +6,7 @@ export const RouteCardStyled = styled.div`
   margin-top: 1rem;
   padding: 1rem;
   max-width: 52rem;
+  & a {
+    display: block;
+  }
 `;

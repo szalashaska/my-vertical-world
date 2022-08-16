@@ -12,7 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import User, Follow, Location, Wall, Route, Comment
-from .serilizers import RouteSerializer, LocationSerializer, WallSerializer
+from .serilizers import GetRouteSerializer, PostLocationSerializer, PostWallSerializer, GetWallSerializer
 
 import json
 
@@ -113,8 +113,21 @@ def routes(request):
 
     if request.method == "GET":
         routes = Route.objects.all().order_by("-created")
-        data = RouteSerializer(routes, many=True).data
+        data = GetRouteSerializer(routes, many=True).data
      
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+
+@api_view(['GET'])
+def route(request, route_id):
+    if request.method == "GET":
+        try:
+            route = Route.objects.get(pk=route_id)
+        except Route.DoesNotExist:
+            return JsonResponse({"error": "Route not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+        
+        data = GetRouteSerializer(route).data
+
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
     
 
@@ -127,11 +140,20 @@ def walls(request):
         if location_id:
             queryset = queryset.filter(location__pk=location_id)
 
-        # location_name = request.query_params.get("location_name")
-        # if location_name:
-        #     queryset = queryset.filter(location__name=location_name)
+        data = PostWallSerializer(queryset, many=True).data
 
-        data = WallSerializer(queryset, many=True).data
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+
+@api_view(['GET'])
+def wall(request, wall_id):
+    if request.method == "GET":
+        try:
+            wall = Wall.objects.get(pk=wall_id)
+        except Wall.DoesNotExist:
+            return JsonResponse({"error": "Wall not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+        
+        data = GetWallSerializer(wall).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
@@ -140,7 +162,7 @@ def walls(request):
 def locations(request):
     if request.method == "GET":
         locations = Location.objects.all().order_by("name")
-        data = LocationSerializer(locations, many=True).data
+        data = PostLocationSerializer(locations, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
@@ -153,6 +175,6 @@ def location(request, location_id):
         except Location.DoesNotExist:
             return JsonResponse({"error": "Location not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
         
-        data = LocationSerializer(location, many=True).data
+        data = PostLocationSerializer(location).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)

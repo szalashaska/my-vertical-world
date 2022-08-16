@@ -9,6 +9,9 @@ import AddRoute from "./pages/AddRoute";
 
 import PrivateRoute from "./helpers/PrivateRoute";
 import GlobalStyles from "./constans/GlobalStyles";
+import ClimbingRoute from "./pages/ClimbingRoute";
+import Wall from "./pages/Wall";
+import Location from "./pages/Location";
 
 const App = () => {
   return (
@@ -18,6 +21,9 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/route/:routeId" element={<ClimbingRoute />} />
+          <Route path="/wall/:wallId" element={<Wall />} />
+          <Route path="/location/:locationId" element={<Location />} />
           <Route path="/sign-up" element={<SignIn />} />
           <Route
             path="/add-route"

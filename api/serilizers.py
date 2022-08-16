@@ -3,36 +3,39 @@ from rest_framework.serializers import ModelSerializer, ReadOnlyField, PrimaryKe
 from .models import User, Route, Location, Wall
 
 class UserSerializer(ModelSerializer):
-
     class Meta:
         model = User
         fields = ("id", "username")
 
 
-class LocationSerializer(ModelSerializer):
+class PostLocationSerializer(ModelSerializer):
     class Meta:
         model = Location
         fields = ("id", "name", "coordinates")
 
 
-class WallSerializer(ModelSerializer):
-    location = LocationSerializer()
+class PostWallSerializer(ModelSerializer):
     class Meta:
         model = Wall
-        fields = ("id", "name", "image", "image_width", "image_height", "location")
+        fields = ("id", "name", "image", "image_width", "image_height")
 
 
-class RouteSerializer(ModelSerializer):
+class GetRouteSerializer(ModelSerializer):
     author = UserSerializer()
-    location = LocationSerializer()
-    wall = WallSerializer()
+    location = PostLocationSerializer()
+    wall = PostWallSerializer()
     class Meta:
         model = Route
         fields = ("id", "author", "name", "path", "location", 
         "wall", "grade", "description", "created")
 
 
-
+class GetWallSerializer(ModelSerializer):
+    routes = GetRouteSerializer(many=True)
+    location = PostLocationSerializer()
+    class Meta:
+        model = Wall
+        fields = ("id", "name", "image", "image_width", "image_height", "routes", "location")
 
 
 # class UserSerializer(ModelSerializer):

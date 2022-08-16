@@ -10,9 +10,9 @@ const Home = () => {
     try {
       const data = await fetch(endpoint);
       const response = await data.json();
+
       if (data.status === 200) {
         setRoutesData(response);
-        console.log(response);
       }
     } catch (err) {
       console.log("Unexpected error", err);

@@ -113,7 +113,7 @@ const AddRoute = () => {
     },
   ];
 
-  const getLocations = async () => {
+  const handleGetLocationsList = async () => {
     const endpoint = "/api/locations";
     try {
       const data = await fetch(endpoint);
@@ -127,7 +127,7 @@ const AddRoute = () => {
     }
   };
 
-  const getWalls = async (locationId) => {
+  const handleGetWallsList = async (locationId) => {
     const endpoint = `/api/walls?location_id=${locationId}`;
     try {
       const data = await fetch(endpoint);
@@ -147,27 +147,9 @@ const AddRoute = () => {
     const location = locationName.trim().toLowerCase();
     const match = locationsList.find((item) => item.name === location);
     if (match) {
-      getWalls(match.id);
+      handleGetWallsList(match.id);
     }
   };
-
-  // const checkUserWallNameInput = () => {
-  //   if (wallsList.length === 0) return false;
-
-  //   const wall = wallName.trim().toLowerCase();
-  //   const match = wallsList.find((item) => item.name === wall);
-  //   if (match) {
-  //     setWallName(match.name);
-  //     setWallImage(match.image);
-  //     setCanvasImage({
-  //       height: match.image_height,
-  //       width: match.image_width,
-  //       url: match.image,
-  //     });
-  //     return true;
-  //   }
-  //   return false;
-  // };
 
   const handleLocationForm = (e) => {
     e.preventDefault();
@@ -257,7 +239,7 @@ const AddRoute = () => {
   };
 
   useEffect(() => {
-    getLocations();
+    handleGetLocationsList();
   }, []);
 
   return (
@@ -289,7 +271,7 @@ const AddRoute = () => {
                       setLocationName(item.name);
                       setShowLocationForm(false);
                       setShowWallForm(true);
-                      getWalls(item.id);
+                      handleGetWallsList(item.id);
                     }}
                   >
                     wybierz

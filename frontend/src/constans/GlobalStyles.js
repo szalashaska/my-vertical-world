@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 
 const GlobalStyles = createGlobalStyle`
@@ -89,4 +90,8 @@ export const Container = styled.main`
   @media screen and (min-width: 960px) {
     padding: 2rem;
   }
+`;
+
+export const LinkStyled = styled(Link)`
+  text-decoration: none;
 `;
