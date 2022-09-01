@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import LocationMap from "../components/LocationMap";
 import RoutesContainer from "../components/RoutesContainer";
 import { H1Styled } from "../constans/GlobalStyles";
 import { HomeStyled } from "./Pages.styled";
@@ -25,6 +26,7 @@ const Home = () => {
 
   return (
     <HomeStyled>
+      <LocationMap />
       <H1Styled>Newest routes:</H1Styled>
       {routesData && <RoutesContainer routes={routesData} />}
     </HomeStyled>

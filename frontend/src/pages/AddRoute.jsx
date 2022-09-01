@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import CanvasCreate from "../components/CanvasCreate";
 import FormInput from "../components/FormInput";
+import LocationMap2 from "../components/LocationMap2";
 import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
 import AuthContext from "../contexts/AuthContext";
@@ -255,6 +256,8 @@ const AddRoute = () => {
             ))}
             <ButtonStyled type="submit">Add location</ButtonStyled>
           </form>
+
+          <LocationMap2 />
 
           <hr />
 
