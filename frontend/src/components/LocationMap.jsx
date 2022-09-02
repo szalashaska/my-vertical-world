@@ -3,7 +3,6 @@ import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
 import { fromLonLat, get } from "ol/proj";
 import GeoJSON from "ol/format/GeoJSON";
 
-import Layers from "./Layers";
 import TileLayer from "./TileLayer";
 import VectorLayer from "./VectorLayer";
 import Map from "./Map";
@@ -67,29 +66,27 @@ const LocationMap = () => {
   return (
     <div>
       <Map center={fromLonLat(center)} zoom={zoom}>
-        <Layers>
-          <TileLayer source={osm()} zIndex={0} />
-          {showLayer1 && (
-            <VectorLayer
-              source={vector({
-                features: new GeoJSON().readFeatures(geojsonObject, {
-                  featureProjection: get("EPSG:3857"),
-                }),
-              })}
-              style={styles.MultiPolygon}
-            />
-          )}
-          {showLayer2 && (
-            <VectorLayer
-              source={vector({
-                features: new GeoJSON().readFeatures(geojsonObject2, {
-                  featureProjection: get("EPSG:3857"),
-                }),
-              })}
-              style={styles.MultiPolygon}
-            />
-          )}
-        </Layers>
+        <TileLayer source={osm()} zIndex={0} />
+        {showLayer1 && (
+          <VectorLayer
+            source={vector({
+              features: new GeoJSON().readFeatures(geojsonObject, {
+                featureProjection: get("EPSG:3857"),
+              }),
+            })}
+            style={styles.MultiPolygon}
+          />
+        )}
+        {showLayer2 && (
+          <VectorLayer
+            source={vector({
+              features: new GeoJSON().readFeatures(geojsonObject2, {
+                featureProjection: get("EPSG:3857"),
+              }),
+            })}
+            style={styles.MultiPolygon}
+          />
+        )}
         <Controls>
           <FullScreenControls />
         </Controls>

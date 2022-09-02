@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import MapContext from "../contexts/MapContext";
 import OLVectorLayer from "ol/layer/Vector";
 
-const VectorLayer = ({ source, style, zIndex = 0 }) => {
+const VectorLayer = ({ source, style, zIndex = 1 }) => {
   const { map } = useContext(MapContext);
 
   useEffect(() => {

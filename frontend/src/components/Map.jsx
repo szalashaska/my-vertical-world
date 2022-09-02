@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import MapContext from "../contexts/MapContext";
 import * as ol from "ol";
+import OLTileLayer from "ol/layer/Tile";
 import styled from "styled-components";
+import * as olSource from "ol/source";
 
 const MapContainer = styled.div`
   min-width: 600px;
@@ -30,6 +32,19 @@ const Map = ({ children, zoom, center }) => {
       mapObject.setTarget(undefined);
     };
   }, []);
+
+  useEffect(() => {
+    if (!map) return;
+
+    let tileLayer = new OLTileLayer({ source: new olSource.OSM(), zIndex: 0 });
+
+    map.addLayer(tileLayer);
+    tileLayer.setZIndex(0);
+
+    return () => {
+      if (map) map.removeLayer(tileLayer);
+    };
+  }, [map]);
 
   // zoom
   useEffect(() => {
