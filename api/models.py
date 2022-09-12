@@ -26,7 +26,8 @@ class Follow(models.Model):
 class Location(models.Model):
     name =  models.TextField(max_length=50, null=True)
     coordinates = models.JSONField(null=True) 
-    likes = models.ManyToManyField(User, related_name="liked_locations")
+    likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
+    liked_by = models.ManyToManyField(User, related_name="liked_locations")
 
     def __str__(self):
         return f"{self.name}"
@@ -38,7 +39,8 @@ class Wall(models.Model):
     image_height = models.PositiveIntegerField(null=True, blank=True, editable=False, default="0")
     image_width = models.PositiveIntegerField(null=True, blank=True, editable=False, default="0")
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="walls")
-    likes = models.ManyToManyField(User, related_name="liked_walls")
+    likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
+    liked_by = models.ManyToManyField(User, related_name="liked_walls")
 
     def __str__(self):
         return f"{self.name}"
@@ -80,7 +82,8 @@ class Route(models.Model):
     wall = models.ForeignKey(Wall, on_delete=models.SET_NULL, null=True, related_name="routes")
     grade = models.CharField(max_length=5, null=True, choices=GRADES)
     description = models.TextField(max_length=500, null=True, blank=True)
-    likes = models.ManyToManyField(User, related_name="liked_route")
+    likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
+    liked_by = models.ManyToManyField(User, related_name="liked_routes")
     created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):

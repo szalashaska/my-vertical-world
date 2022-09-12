@@ -17,6 +17,7 @@ urlpatterns = [
     # API
     path('routes', views.routes, name="routes"),
     path('routes/<int:route_id>', views.route, name="route"),
+    path('routes/<int:route_id>/likes', views.route_likes, name="route_likes"),
 
     path('walls', views.walls, name="walls"),
     path('walls/<int:wall_id>', views.wall, name="walls"),

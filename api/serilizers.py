@@ -27,7 +27,7 @@ class GetRouteSerializer(ModelSerializer):
     class Meta:
         model = Route
         fields = ("id", "author", "name", "path", "location", 
-        "wall", "grade", "description", "created")
+        "wall", "grade", "description", "created", "likes")
 
 
 class GetWallSerializer(ModelSerializer):

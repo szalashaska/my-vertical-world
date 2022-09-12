@@ -1,6 +1,7 @@
 import React from "react";
 import { H3Styled, LinkStyled } from "../constans/GlobalStyles";
 import CanvasShow from "./CanvasShow";
+import Like from "./Like";
 import { RouteCardStyled } from "./styled/RouteCard.styled";
 
 const RouteCard = ({ route }) => {
@@ -14,6 +15,7 @@ const RouteCard = ({ route }) => {
     name,
     path,
     wall,
+    likes,
   } = route;
   const { image, image_height, image_width } = wall;
 
@@ -30,11 +32,11 @@ const RouteCard = ({ route }) => {
           {author.username}
           <p>{new Date(created).toLocaleDateString()}</p>
 
+          <LinkStyled to={`/wall/${wall.id}`}>{wall.name}</LinkStyled>
+
           <LinkStyled to={`/location/${location.id}`}>
             {location.name}
           </LinkStyled>
-
-          <LinkStyled to={`/wall/${wall.id}`}>{wall.name}</LinkStyled>
 
           <LinkStyled to={`/route/${id}`}>
             <CanvasShow
@@ -44,7 +46,7 @@ const RouteCard = ({ route }) => {
               routePath={path}
             />
           </LinkStyled>
-          <p>like</p>
+          <Like id={id} currentLikes={likes} content={"routes"} />
           <p>comment</p>
           <p>{description}</p>
         </>

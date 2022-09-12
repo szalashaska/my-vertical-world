@@ -17,8 +17,23 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   const [onCanvas, setOnCanvas] = useState(false);
   const [routeArray, setRouteArray] = useState(null);
   const [highlightedRoute, setHighlightedRoute] = useState(null);
-  // const [mouse, setMouse] = useState({ x: 0, y: 0 });
 
+  const routeColors = {
+    normal: "blue",
+    highlight: "red",
+  };
+
+  const routeDots = {
+    border: "white",
+    end: "red",
+  };
+
+  const descriptionColors = {
+    normal: "lightblue",
+    highlight: "gold",
+  };
+
+  // Creates array that maps routes on canvas and allows to trigger hoover effect
   const createRouteArray = () => {
     const arrayLenght = 100;
     const arrayMatrix = new Array(arrayLenght);
@@ -35,18 +50,21 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
           coords.y - 1 >= 0 &&
           coords.y + 1 < 100
         ) {
-          arrayMatrix[coords.x - 1][coords.y - 1] =
-            arrayMatrix[coords.x - 1][coords.y] =
-            arrayMatrix[coords.x - 1][coords.y + 1] =
-            arrayMatrix[coords.x][coords.y - 1] =
-            arrayMatrix[coords.x][coords.y] =
-            arrayMatrix[coords.x][coords.y + 1] =
-            arrayMatrix[coords.x + 1][coords.y - 1] =
-            arrayMatrix[coords.x + 1][coords.y] =
-            arrayMatrix[coords.x + 1][coords.y + 1] =
+          // Assign route to the matrix, values around points for easier triggering
+          const coordX = Math.round(coords.x);
+          const coordY = Math.round(coords.y);
+
+          arrayMatrix[coordX - 1][coordY - 1] =
+            arrayMatrix[coordX - 1][coordY] =
+            arrayMatrix[coordX - 1][coordY + 1] =
+            arrayMatrix[coordX][coordY - 1] =
+            arrayMatrix[coordX][coordY] =
+            arrayMatrix[coordX][coordY + 1] =
+            arrayMatrix[coordX + 1][coordY - 1] =
+            arrayMatrix[coordX + 1][coordY] =
+            arrayMatrix[coordX + 1][coordY + 1] =
               index;
         }
-        // Assign route to the matrix, assign values around points for easier triggering
       });
     });
 
@@ -57,6 +75,33 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
 
   let position = { x: 0, y: 0 };
   let pointer = { x: 0, y: 0 };
+
+  const drawCircle = (x, y, color1, color2) => {
+    const radius = 4;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
+    ctx.fillStyle = color1;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = color2;
+    ctx.stroke();
+
+    position = { x, y };
+  };
+  const drawNumber = (x, y, index, color) => {
+    let offsetY = y + 20;
+    const radius = 8;
+    ctx.beginPath();
+    ctx.arc(x, offsetY, radius, 0, 2 * Math.PI, false);
+
+    ctx.lineWidth = 1.1;
+    ctx.strokeStyle = color;
+    ctx.stroke();
+    ctx.font = `${radius}px arial`;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.strokeText(index, x, offsetY);
+  };
 
   const drawLine = (x, y, color) => {
     const path = new Path2D();
@@ -72,8 +117,32 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
     position = { x, y };
   };
 
-  const drawUsersLine = (path, color) => {
-    path.map((element) => {
+  const drawUsersLine = (index, path, color) => {
+    const dataLength = path.length;
+    path.map((element, i) => {
+      if (i === 0) {
+        drawNumber(
+          (element.x * canvasRef.current.width) / 100,
+          (element.y * canvasRef.current.height) / 100,
+          index,
+          routeDots.border
+        );
+        drawCircle(
+          (element.x * canvasRef.current.width) / 100,
+          (element.y * canvasRef.current.height) / 100,
+          color,
+          routeDots.border
+        );
+      }
+
+      if (i === dataLength - 1) {
+        drawCircle(
+          (element.x * canvasRef.current.width) / 100,
+          (element.y * canvasRef.current.height) / 100,
+          routeDots.end,
+          routeDots.border
+        );
+      }
       drawLine(
         (element.x * canvasRef.current.width) / 100,
         (element.y * canvasRef.current.height) / 100,
@@ -82,12 +151,12 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
     });
   };
 
-  const redrawLine = (path, color) => {
+  const redrawLine = (index, path, color) => {
     position = {
       x: (path[0].x * canvasRef.current.width) / 100,
       y: (path[0].y * canvasRef.current.height) / 100,
     };
-    drawUsersLine(path, color);
+    drawUsersLine(index, path, color);
   };
 
   const iterateAndDraw = (routes) => {
@@ -97,7 +166,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         y: (routesData[index].path[0].y * canvasRef.current.height) / 100,
       };
 
-      return drawUsersLine(route.path, "blue");
+      return drawUsersLine(index, route.path, routeColors.normal);
     });
   };
 
@@ -160,10 +229,15 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         currentMousePosition !== undefined &&
         highlightedRoute === null
       ) {
-        redrawLine(routesData[currentMousePosition].path, "red");
+        redrawLine(
+          currentMousePosition,
+          routesData[currentMousePosition].path,
+          routeColors.highlight
+        );
         setHighlightedRoute(currentMousePosition);
 
-        listRef.current[currentMousePosition].style.backgroundColor = "yellow";
+        listRef.current[currentMousePosition].style.backgroundColor =
+          descriptionColors.highlight;
       }
       // On mouse leave
       else if (
@@ -173,7 +247,8 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
       ) {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         iterateAndDraw(routesData);
-        listRef.current[highlightedRoute].style.backgroundColor = "lightblue";
+        listRef.current[highlightedRoute].style.backgroundColor =
+          descriptionColors.normal;
 
         setHighlightedRoute(null);
       }
@@ -226,10 +301,10 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
             }}
             key={route.id}
             onMouseEnter={() => {
-              redrawLine(route.path, "red");
+              redrawLine(index, route.path, routeColors.highlight);
             }}
             onMouseLeave={() => {
-              redrawLine(route.path, "blue");
+              redrawLine(index, route.path, routeColors.normal);
             }}
             ref={(ref) => (listRef.current[index] = ref)}
           >
@@ -249,7 +324,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
                 return (
                   <span
                     style={{
-                      color: "red",
+                      color: routeColors.highlight,
                     }}
                   >
                     #

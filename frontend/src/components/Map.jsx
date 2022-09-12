@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from "react";
 import MapContext from "../contexts/MapContext";
-import * as ol from "ol";
+import { Map as LayerMap, View } from "ol";
 import OLTileLayer from "ol/layer/Tile";
 import styled from "styled-components";
-import * as olSource from "ol/source";
+import { OSM } from "ol/source";
 
 const MapContainer = styled.div`
   min-width: 600px;
@@ -14,17 +14,17 @@ const MapContainer = styled.div`
 
 const Map = ({ children, zoom, center }) => {
   const [map, setMap] = useState(null);
-
   const mapRef = useRef();
 
+  // Create map object
   useEffect(() => {
     let options = {
-      view: new ol.View({ zoom, center }),
+      view: new View({ zoom, center }),
       layers: [],
-      constrols: [],
+      controls: [],
       overlays: [],
     };
-    let mapObject = new ol.Map(options);
+    let mapObject = new LayerMap(options);
     mapObject.setTarget(mapRef.current);
     setMap(mapObject);
 
@@ -33,11 +33,11 @@ const Map = ({ children, zoom, center }) => {
     };
   }, []);
 
+  // Add default map layer
   useEffect(() => {
     if (!map) return;
 
-    let tileLayer = new OLTileLayer({ source: new olSource.OSM(), zIndex: 0 });
-
+    let tileLayer = new OLTileLayer({ source: new OSM(), zIndex: 0 });
     map.addLayer(tileLayer);
     tileLayer.setZIndex(0);
 
@@ -46,14 +46,14 @@ const Map = ({ children, zoom, center }) => {
     };
   }, [map]);
 
-  // zoom
+  // Handle map zoom
   useEffect(() => {
     if (!map) return;
 
     map.getView().setZoom(zoom);
   }, [zoom]);
 
-  // center
+  // Handle center to coordscenter
   useEffect(() => {
     if (!map) return;
 

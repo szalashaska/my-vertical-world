@@ -11,5 +11,5 @@ export const StyledCanvasShow = styled.canvas`
   margin: 0 auto;
   background: ${({ url }) => (url ? `url(${url})` : "lightblue")};
   background-size: cover;
-  width: 100%;
+  /* width: 100%; */
 `;

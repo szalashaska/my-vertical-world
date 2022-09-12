@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import CanvasShowMany from "../components/CanvasShowMany";
+import Like from "../components/Like";
 import { ClimbingRouteStyled } from "./Pages.styled";
 
 const ClimbingRoute = () => {
@@ -12,7 +14,6 @@ const ClimbingRoute = () => {
       const data = await response.json();
 
       if (response.status === 200) {
-        console.log(data);
         setRouteData(data);
       }
     } catch (err) {
@@ -39,14 +40,22 @@ const ClimbingRoute = () => {
     location,
     name,
     path,
+    likes,
     wall,
   } = routeData;
   const { image, image_height, image_width } = wall;
 
   return (
     <ClimbingRouteStyled>
-      {id}
-      {name}
+      {routeData && (
+        <CanvasShowMany
+          height={image_height}
+          width={image_width}
+          url={image}
+          routesData={[routeData]}
+        />
+      )}
+      <Like id={id} currentLikes={likes} content={"routes"} />
     </ClimbingRouteStyled>
   );
 };

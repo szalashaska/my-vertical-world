@@ -15,6 +15,7 @@ export const AddRouteStyled = styled(PageContainer)`
 
 export const ClimbingRouteStyled = styled(PageContainer)`
   background-color: var(--clr-pink);
+  width: 50%;
 `;
 
 export const WallStyled = styled(PageContainer)`

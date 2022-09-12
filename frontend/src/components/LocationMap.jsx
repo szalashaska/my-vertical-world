@@ -1,113 +1,59 @@
-import React, { useState } from "react";
-import { Circle as CircleStyle, Fill, Stroke, Style } from "ol/style";
-import { fromLonLat, get } from "ol/proj";
+import React, { useState, useEffect, useContext } from "react";
 import GeoJSON from "ol/format/GeoJSON";
-
-import TileLayer from "./TileLayer";
-import VectorLayer from "./VectorLayer";
-import Map from "./Map";
-import mapConfig from "../config.json";
-import * as olSource from "ol/source";
 import { Vector as VectorSource } from "ol/source";
-import Controls from "./Controls";
-import FullScreenControls from "./FullScreenControls";
+import Map from "./Map";
+import VectorLayer from "./VectorLayer";
+import LocationsOverlay from "./LocationsOverlay";
+import SingleLocatiosnOverlay from "./SingleLocatiosnOverlay";
 
-function osm() {
-  return new olSource.OSM();
-}
-
-function vector({ features }) {
-  return new VectorSource({
-    features,
-  });
-}
-
-const geojsonObject = mapConfig.geojsonObject;
-const geojsonObject2 = mapConfig.geojsonObject2;
-const markersLonLat = [mapConfig.kansasCityLonLat, mapConfig.blueSpringsLonLat];
-
-let styles = {
-  Point: new Style({
-    image: new CircleStyle({
-      radius: 10,
-      fill: null,
-      stroke: new Stroke({
-        color: "magenta",
-      }),
-    }),
-  }),
-  Polygon: new Style({
-    stroke: new Stroke({
-      color: "blue",
-      lineDash: [4],
-      width: 3,
-    }),
-    fill: new Fill({
-      color: "rgba(0, 0, 255, 0.1)",
-    }),
-  }),
-  MultiPolygon: new Style({
-    stroke: new Stroke({
-      color: "blue",
-      width: 1,
-    }),
-    fill: new Fill({
-      color: "rgba(0, 0, 255, 0.1)",
-    }),
-  }),
+let geojsonObject = {
+  type: "FeatureCollection",
+  crs: {
+    type: "name",
+    properties: {
+      name: "EPSG:3857",
+    },
+  },
+  features: [],
 };
 
-const LocationMap = () => {
-  const [center, setCenter] = useState([-94.9065, 38.9884]);
-  const [zoom, setZoom] = useState(9);
-  const [showLayer1, setShowLayer1] = useState(true);
-  const [showLayer2, setShowLayer2] = useState(true);
+const LocationMap = ({ center, zoom, data, single }) => {
+  const [vectorData, setVectorData] = useState(null);
+
+  const prepareVectorData = (data) => {
+    // Populate geojson object
+    data.forEach((location) =>
+      geojsonObject.features.push({
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [location.coordinates.lon, location.coordinates.lat],
+        },
+        properties: {
+          name: location.name,
+          id: location.id,
+          coordinates: location.coordinates,
+        },
+      })
+    );
+
+    // Convert to vector source
+    const vectorSource = new VectorSource({
+      features: new GeoJSON().readFeatures(geojsonObject),
+    });
+
+    setVectorData(vectorSource);
+  };
+
+  useEffect(() => {
+    if (data) prepareVectorData(data);
+  }, []);
 
   return (
-    <div>
-      <Map center={fromLonLat(center)} zoom={zoom}>
-        <TileLayer source={osm()} zIndex={0} />
-        {showLayer1 && (
-          <VectorLayer
-            source={vector({
-              features: new GeoJSON().readFeatures(geojsonObject, {
-                featureProjection: get("EPSG:3857"),
-              }),
-            })}
-            style={styles.MultiPolygon}
-          />
-        )}
-        {showLayer2 && (
-          <VectorLayer
-            source={vector({
-              features: new GeoJSON().readFeatures(geojsonObject2, {
-                featureProjection: get("EPSG:3857"),
-              }),
-            })}
-            style={styles.MultiPolygon}
-          />
-        )}
-        <Controls>
-          <FullScreenControls />
-        </Controls>
-      </Map>
-      <div>
-        <input
-          type="checkbox"
-          checked={showLayer1}
-          onChange={(event) => setShowLayer1(event.target.checked)}
-        />
-        Johnson County
-      </div>
-      <div>
-        <input
-          type="checkbox"
-          checked={showLayer2}
-          onChange={(event) => setShowLayer2(event.target.checked)}
-        />
-        Wyandotte County
-      </div>
-    </div>
+    <Map center={center} zoom={zoom}>
+      {vectorData && <VectorLayer source={vectorData} />}
+      {single ? <SingleLocatiosnOverlay /> : <LocationsOverlay />}
+    </Map>
   );
 };
 

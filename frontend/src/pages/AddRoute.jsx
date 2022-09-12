@@ -1,15 +1,20 @@
 import React, { useContext, useEffect, useState } from "react";
 import CanvasCreate from "../components/CanvasCreate";
 import FormInput from "../components/FormInput";
-import LocationMap2 from "../components/LocationMap2";
+import LocationMap from "../components/LocationMap";
 import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
 import AuthContext from "../contexts/AuthContext";
+import LocationContext from "../contexts/LocationContext";
 import { AddRouteStyled } from "./Pages.styled";
 
 const AddRoute = () => {
-  const [locationsList, setLocationsList] = useState([]);
-  const [wallsList, setWallsList] = useState([]);
+  const [addLocationTab, setAddaddLocationTab] = useState(true);
+  const [mapZoom, setMapZoom] = useState(3);
+  const [mapCenter, setMapCenter] = useState([2078486, 6686398]);
+
+  const [locationsList, setLocationsList] = useState(undefined);
+  const [wallsList, setWallsList] = useState(undefined);
 
   const [routeName, setRouteName] = useState("");
   const [routeDescription, setRouteDescription] = useState("");
@@ -18,6 +23,7 @@ const AddRoute = () => {
   const [wallName, setWallName] = useState("");
   const [wallImage, setWallImage] = useState(null);
   const [locationName, setLocationName] = useState("");
+  const [locationCoords, setLocationCoords] = useState(null);
 
   const [canvasImage, setCanvasImage] = useState(null);
 
@@ -31,7 +37,7 @@ const AddRoute = () => {
   const { authTokens } = useContext(AuthContext);
 
   const checkUserWallNameInput = (userInput) => {
-    if (wallsList.length === 0) return;
+    if (!wallsList || wallsList.length === 0) return;
 
     const wall = userInput.trim().toLowerCase();
     const match = wallsList.find((item) => item.name === wall);
@@ -39,6 +45,31 @@ const AddRoute = () => {
       setWallAlreadyExist(true);
     } else setWallAlreadyExist(false);
   };
+
+  const temporaryData = [
+    {
+      id: 1,
+      name: "Tatry",
+      location_coordinates: [-5123741.681892477, 117609.5756750945],
+    },
+    {
+      id: 2,
+      name: "Sokoły",
+      location_coordinates: [-9168741.688912477, 2204679.5756750945],
+    },
+
+    {
+      id: 8,
+      name: "Jura",
+      location_coordinates: [-1657841.681892477, 3633079.5756750945],
+    },
+
+    {
+      id: 4,
+      name: "Chamonix",
+      location_coordinates: [-1186741.681892477, -4436079.5756750945],
+    },
+  ];
 
   const locationInputs = [
     {
@@ -143,7 +174,7 @@ const AddRoute = () => {
   };
 
   const checkUserLocationNameInput = () => {
-    if (locationsList.length === 0) return;
+    if (!locationsList || locationsList.length === 0) return;
 
     const location = locationName.trim().toLowerCase();
     const match = locationsList.find((item) => item.name === location);
@@ -157,6 +188,14 @@ const AddRoute = () => {
     checkUserLocationNameInput();
     setShowWallForm(true);
     setShowLocationForm(false);
+  };
+
+  const handleExistingLocationChoice = (id, name, coordinates) => {
+    handleGetWallsList(id);
+    setLocationName(name);
+    setLocationCoords(coordinates);
+    setShowLocationForm(false);
+    setShowWallForm(true);
   };
 
   const showRouteImage = async () => {
@@ -192,6 +231,7 @@ const AddRoute = () => {
   const handleUploadRouteWallAndLocation = async () => {
     if (
       !locationName ||
+      !locationCoords ||
       !wallName ||
       !wallImage ||
       !routeName ||
@@ -204,6 +244,7 @@ const AddRoute = () => {
 
     let body = new FormData();
     body.append("location_name", locationName);
+    body.append("location_coordinates", JSON.stringify(locationCoords));
     body.append("wall_name", wallName);
     body.append("wall_image", wallImage);
     body.append("route_name", routeName);
@@ -249,42 +290,91 @@ const AddRoute = () => {
       {success && <p>{success}</p>}
       {showLocationForm && (
         <>
-          <H2Styled>Add new location:</H2Styled>
-          <form onSubmit={handleLocationForm}>
-            {locationInputs.map((input) => (
-              <FormInput key={input.id} {...input} />
-            ))}
-            <ButtonStyled type="submit">Add location</ButtonStyled>
-          </form>
+          <button
+            type="button"
+            onClick={() => setAddaddLocationTab(!addLocationTab)}
+          >
+            {addLocationTab ? "Existing" : "New"}
+          </button>
 
-          <LocationMap2 />
-
-          <hr />
-
-          <H2Styled>Add to existing location:</H2Styled>
-
-          {locationsList.length > 0 && (
-            <ul>
-              {locationsList.map((item) => (
-                <li key={item.id}>
-                  {item.name}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLocationName(item.name);
-                      setShowLocationForm(false);
-                      setShowWallForm(true);
-                      handleGetWallsList(item.id);
-                    }}
+          <LocationContext.Provider
+            value={{
+              addLocationTab,
+              setLocationCoords,
+              handleExistingLocationChoice,
+            }}
+          >
+            <H2Styled>
+              {addLocationTab
+                ? "Add new location:"
+                : "Add to existing location:"}
+            </H2Styled>
+            {addLocationTab ? (
+              <>
+                <form onSubmit={handleLocationForm}>
+                  {locationInputs.map((input) => (
+                    <FormInput key={input.id} {...input} />
+                  ))}
+                  <ButtonStyled
+                    type="submit"
+                    disabled={locationName && locationCoords ? false : true}
                   >
-                    wybierz
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+                    Add location
+                  </ButtonStyled>
+                </form>
 
-          <hr />
+                <button
+                  onClick={() => {
+                    console.log(locationName, locationCoords);
+                  }}
+                >
+                  log data
+                </button>
+
+                <hr />
+              </>
+            ) : (
+              <ul>
+                {locationsList &&
+                  locationsList.length > 0 &&
+                  locationsList.map((item) => (
+                    <li
+                      key={item.id}
+                      onMouseEnter={() => {
+                        setMapCenter([
+                          item.coordinates.lon,
+                          item.coordinates.lat,
+                        ]);
+                        setMapZoom(6);
+                      }}
+                    >
+                      {item.name}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          handleExistingLocationChoice(
+                            item.id,
+                            item.name,
+                            item.coordinates
+                          );
+                        }}
+                      >
+                        Choose
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            )}
+
+            <hr />
+            {locationsList && (
+              <LocationMap
+                zoom={mapZoom}
+                center={mapCenter}
+                data={locationsList}
+              />
+            )}
+          </LocationContext.Provider>
         </>
       )}
 
@@ -305,7 +395,7 @@ const AddRoute = () => {
 
           <hr />
 
-          {wallsList.length > 0 && (
+          {wallsList && wallsList.length > 0 && (
             <>
               <H2Styled>Add to existing wall:</H2Styled>
               <ul>
