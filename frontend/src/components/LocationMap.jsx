@@ -4,7 +4,7 @@ import { Vector as VectorSource } from "ol/source";
 import Map from "./Map";
 import VectorLayer from "./VectorLayer";
 import LocationsOverlay from "./LocationsOverlay";
-import SingleLocatiosnOverlay from "./SingleLocatiosnOverlay";
+import SingleLocationOverlay from "./SingleLocationOverlay";
 
 let geojsonObject = {
   type: "FeatureCollection",
@@ -52,7 +52,7 @@ const LocationMap = ({ center, zoom, data, single }) => {
   return (
     <Map center={center} zoom={zoom}>
       {vectorData && <VectorLayer source={vectorData} />}
-      {single ? <SingleLocatiosnOverlay /> : <LocationsOverlay />}
+      {single ? <SingleLocationOverlay /> : <LocationsOverlay />}
     </Map>
   );
 };

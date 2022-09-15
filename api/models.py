@@ -17,30 +17,32 @@ class User(AbstractUser):
 
 class Follow(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    followed_users = models.ManyToManyField(User, related_name="followed_users", blank=True)
+    followed_users = models.ManyToManyField(User, related_name="followed_by", blank=True)
 
     def __str__(self):
         return f"{self.user}"
 
 
 class Location(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="location_author")
     name =  models.TextField(max_length=50, null=True)
     coordinates = models.JSONField(null=True) 
     likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
-    liked_by = models.ManyToManyField(User, related_name="liked_locations")
+    liked_by = models.ManyToManyField(User, blank=True, related_name="liked_locations")
 
     def __str__(self):
         return f"{self.name}"
 
 
 class Wall(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name="wall_author")
     name = models.TextField(max_length=50, null=True)
     image = models.ImageField(blank=True, null=True, upload_to=rename_image, height_field="image_height", width_field="image_width")
     image_height = models.PositiveIntegerField(null=True, blank=True, editable=False, default="0")
     image_width = models.PositiveIntegerField(null=True, blank=True, editable=False, default="0")
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="walls")
     likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
-    liked_by = models.ManyToManyField(User, related_name="liked_walls")
+    liked_by = models.ManyToManyField(User, blank=True, related_name="liked_walls")
 
     def __str__(self):
         return f"{self.name}"
@@ -91,7 +93,7 @@ class Route(models.Model):
 
 
 class Comment(models.Model):
-    author =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    author =  models.ForeignKey(User, on_delete=models.SET_NULL, null=True,)
     route = models.ForeignKey(Route, on_delete=models.CASCADE, null=True, related_name="comments")
     wall = models.ForeignKey(Wall, on_delete=models.CASCADE, null=True, related_name="comments")
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, related_name="comments")

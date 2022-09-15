@@ -7,10 +7,10 @@ import { PopupContainer } from "./styled/LocationOverlay.styled";
 
 const LocationsOverlay = () => {
   const { map } = useContext(MapContext);
-  const { addLocationTab, handleExistingLocationChoice } =
+  const { activeTab, handleExistingLocationChoice, tabs } =
     useContext(LocationContext);
 
-  const { setLocationCoords } = useContext(LocationContext);
+  const { setCoords } = useContext(LocationContext);
   const [popupOverlay, setPopupOverlay] = useState(null);
 
   const [selectedId, setSelectedId] = useState(null);
@@ -21,23 +21,27 @@ const LocationsOverlay = () => {
   const popupCloseButton = useRef();
   const popupContent = useRef();
 
+  // When close button on popup is clicked
   const handleClosePopup = () => {
     if (!popupOverlay || !popupCloseButton.current) return;
     popupOverlay.setPosition(undefined);
     popupCloseButton.current.blur();
   };
 
+  // Click outside icon - adding location tab
   const handleClickOutsideFeatureWhileAdding = (e) => {
     popupOverlay.setPosition(e.coordinate);
     popupContent.current.innerHTML = "New Location";
-    setLocationCoords({ lon: e.coordinate[0], lat: e.coordinate[1] });
+    setCoords({ lon: e.coordinate[0], lat: e.coordinate[1] });
   };
 
+  // Click inside icon - adding location tab
   const handleClickOnFeatureWhileAdding = (e, feature) => {
     popupOverlay.setPosition(e.coordinate);
     popupContent.current.innerHTML = feature.get("name");
   };
 
+  // Click inside icon - appending location tab
   const handleClickOnFeatureWhileAppending = (e, feature) => {
     popupOverlay.setPosition(e.coordinate);
     popupContent.current.innerHTML = feature.get("name");
@@ -47,11 +51,12 @@ const LocationsOverlay = () => {
     setSelectedCoords(feature.get("coordinates"));
   };
 
+  // Handle click on map event
   const handleClickOnMap = (e) => {
     const feature = map.forEachFeatureAtPixel(e.pixel, (feature) => feature);
 
     // When we are adding route to new location
-    if (addLocationTab) {
+    if (activeTab === tabs[0]) {
       if (!feature) handleClickOutsideFeatureWhileAdding(e);
       else handleClickOnFeatureWhileAdding(e, feature);
     }
@@ -62,6 +67,7 @@ const LocationsOverlay = () => {
     }
   };
 
+  // Create overlay
   useEffect(() => {
     const overlay = new Overlay({
       element: popupContainer.current,
@@ -76,6 +82,7 @@ const LocationsOverlay = () => {
     setPopupOverlay(overlay);
   }, []);
 
+  // Add overlay to map, create event listeners
   useEffect(() => {
     if (!map || !popupOverlay) return;
 
@@ -91,7 +98,7 @@ const LocationsOverlay = () => {
         map.removeEventListener("movestart", handleClosePopup);
       }
     };
-  }, [map, popupOverlay, addLocationTab]);
+  }, [map, popupOverlay, activeTab]);
 
   return (
     <PopupContainer ref={popupContainer}>
@@ -99,7 +106,8 @@ const LocationsOverlay = () => {
         X
       </button>
       <div ref={popupContent} />
-      {!addLocationTab && (
+      {/* Choose existing location button - only while appending */}
+      {activeTab !== tabs[0] && (
         <ButtonStyled
           onClick={() => {
             handleExistingLocationChoice(

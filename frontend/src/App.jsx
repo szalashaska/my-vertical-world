@@ -12,6 +12,7 @@ import GlobalStyles from "./constans/GlobalStyles";
 import ClimbingRoute from "./pages/ClimbingRoute";
 import Wall from "./pages/Wall";
 import Location from "./pages/Location";
+import User from "./pages/User";
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
           <Route path="/route/:routeId" element={<ClimbingRoute />} />
           <Route path="/wall/:wallId" element={<Wall />} />
           <Route path="/location/:locationId" element={<Location />} />
+          <Route path="/user/:userId" element={<User />} />
           <Route path="/sign-up" element={<SignIn />} />
           <Route
             path="/add-route"

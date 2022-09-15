@@ -1,6 +1,6 @@
 from dataclasses import fields
-from rest_framework.serializers import ModelSerializer, ReadOnlyField, PrimaryKeyRelatedField
-from .models import User, Route, Location, Wall
+from rest_framework.serializers import ModelSerializer
+from .models import User, Route, Location, Wall, Comment, Follow
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -8,46 +8,84 @@ class UserSerializer(ModelSerializer):
         fields = ("id", "username")
 
 
-class PostLocationSerializer(ModelSerializer):
+class CommentSerializer(ModelSerializer):
+    author = UserSerializer()
+    class Meta:
+        model = Comment
+        fields = ("id", "author", "body", "created")
+
+
+class LocationSerializer(ModelSerializer):
     class Meta:
         model = Location
         fields = ("id", "name", "coordinates")
 
 
-class PostWallSerializer(ModelSerializer):
+class WallSerializer(ModelSerializer):
     class Meta:
         model = Wall
         fields = ("id", "name", "image", "image_width", "image_height")
 
 
-class GetRouteSerializer(ModelSerializer):
+class RouteSerializer(ModelSerializer):
     author = UserSerializer()
-    location = PostLocationSerializer()
-    wall = PostWallSerializer()
+    location = LocationSerializer()
+    wall = WallSerializer()
     class Meta:
         model = Route
-        fields = ("id", "author", "name", "path", "location", 
+        fields = ("id", "author", "name", "location", 
         "wall", "grade", "description", "created", "likes")
 
 
-class GetWallSerializer(ModelSerializer):
-    routes = GetRouteSerializer(many=True)
-    location = PostLocationSerializer()
+class FollowSerializer(ModelSerializer):
+    user = UserSerializer()
+    followed_users = UserSerializer(many=True)
+    class Meta:
+        model = Follow
+        fields = ("id", "user", "followed_users")
+
+
+class RouteExtendedSerializer(ModelSerializer):
+    author = UserSerializer()
+    location = LocationSerializer()
+    wall = WallSerializer()
+    comments = CommentSerializer(many=True)
+
+    class Meta:
+        model = Route
+        fields = ("id", "author", "name", "path", "location", 
+        "wall", "grade", "description", "created", "likes", "comments")
+
+
+class WallExtendedSerializer(ModelSerializer):
+    author = UserSerializer()
+    routes = RouteExtendedSerializer(many=True)
+    location = LocationSerializer()
+    comments = CommentSerializer(many=True)
     class Meta:
         model = Wall
-        fields = ("id", "name", "image", "image_width", "image_height", "routes", "location")
+        fields = ("id", "author", "name", "likes", "image", "image_width", "image_height", "routes", "location", "comments")
 
 
-# class UserSerializer(ModelSerializer):
-#     route_author = PrimaryKeyRelatedField(queryset =  Route.objects.all(), many=True)
-#     class Meta:
-#         model = User
-#         fields = ("id", "username", "route_author")
+class LocationExtendedSerializer(ModelSerializer):
+    author = UserSerializer()
+    walls = WallSerializer(many=True)
+    routes = RouteSerializer(many=True)
+    comments = CommentSerializer(many=True)
+    class Meta:
+        model = Location
+        fields = ("id", "author", "name", "coordinates", "likes", "walls", "routes", "comments")
 
-# class RouteSerializer(ModelSerializer):
-#     author = ReadOnlyField(source='author.username')
-#     class Meta:
-#         model = Route
-#         fields = ("id", "author", "name", "path", "location", 
-#         "wall", "grade", "description", "created")
+
+class UserExtendedSerializer(ModelSerializer):
+    route_author = RouteSerializer(many=True)
+    wall_creator = WallSerializer(many=True)
+    location_creator = LocationSerializer(many=True)
+    liked_routes = RouteSerializer(many=True)
+    liked_walls = WallSerializer(many=True)
+    liked_locations = LocationSerializer(many=True)
+    class Meta:
+        model = User
+        fields = ("id", "username", "route_author", "wall_creator", "location_creator", "liked_routes", "liked_walls", "liked_locations")
+
 

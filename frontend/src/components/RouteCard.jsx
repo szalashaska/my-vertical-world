@@ -16,6 +16,7 @@ const RouteCard = ({ route }) => {
     path,
     wall,
     likes,
+    comments,
   } = route;
   const { image, image_height, image_width } = wall;
 
@@ -28,8 +29,8 @@ const RouteCard = ({ route }) => {
               {name}, {grade}
             </H3Styled>
           </LinkStyled>
+          <LinkStyled to={`/user/${author.id}`}> {author.username}</LinkStyled>
 
-          {author.username}
           <p>{new Date(created).toLocaleDateString()}</p>
 
           <LinkStyled to={`/wall/${wall.id}`}>{wall.name}</LinkStyled>
@@ -47,7 +48,7 @@ const RouteCard = ({ route }) => {
             />
           </LinkStyled>
           <Like id={id} currentLikes={likes} content={"routes"} />
-          <p>comment</p>
+          <p>comments: {comments.length}</p>
           <p>{description}</p>
         </>
       )}

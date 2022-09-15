@@ -1,11 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
+import PrivateContent from "../helpers/PrivateContent";
 
 const Like = ({ id, currentLikes, content }) => {
   const [likes, setLikes] = useState(currentLikes);
   const [isLiked, setIsLiked] = useState(false);
 
   const { authTokens } = useContext(AuthContext);
+
+  // Check if props are correct
+  const allowedContent = ["routes", "walls", "locations"];
+  if (!allowedContent.includes(content)) return null;
 
   const checkIfContentIsLiked = async () => {
     const requestOptions = {
@@ -27,6 +32,7 @@ const Like = ({ id, currentLikes, content }) => {
       console.log("Unexpected error", err);
     }
   };
+
   const handleLikeButtonClick = async (action) => {
     const requestOptions = {
       method: "PUT",
@@ -52,21 +58,23 @@ const Like = ({ id, currentLikes, content }) => {
   };
 
   useEffect(() => {
-    checkIfContentIsLiked();
+    if (authTokens) checkIfContentIsLiked();
   }, []);
 
   return (
     <div>
       {likes}
-      {isLiked ? (
-        <button onClick={() => handleLikeButtonClick("unlike")} type="button">
-          Unlike
-        </button>
-      ) : (
-        <button onClick={() => handleLikeButtonClick("like")} type="button">
-          Like
-        </button>
-      )}
+      <PrivateContent>
+        {isLiked ? (
+          <button onClick={() => handleLikeButtonClick("unlike")} type="button">
+            Liked
+          </button>
+        ) : (
+          <button onClick={() => handleLikeButtonClick("like")} type="button">
+            Like
+          </button>
+        )}
+      </PrivateContent>
     </div>
   );
 };

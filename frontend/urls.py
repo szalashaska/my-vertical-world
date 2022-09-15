@@ -9,4 +9,5 @@ urlpatterns = [
     path('route/<int:routeId>', views.index),
     path('location/<int:locationId>', views.index),
     path('wall/<int:wallId>', views.index),
+    path('user/<int:userId>', views.index),
 ]

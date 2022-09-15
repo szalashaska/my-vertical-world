@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyledCanvas } from "./styled/Canvas.styled";
 
-const CanvasCreate = ({ height, width, url, setRoutePath }) => {
+const CanvasCreate = ({ height, width, url, setPath }) => {
   const [ctx, setCtx] = useState(null);
   const [canvasRect, setCanvasRect] = useState({
     deltaX: 0,
@@ -40,7 +40,15 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
     }
   };
 
+  const clearCanvas = () => {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    setUserPath([]);
+  };
+
   const handleMouseDown = (e) => {
+    // Clear canvas and reset user path
+    clearCanvas();
+    setUserPath([]);
     setIsMouseDown(true);
 
     setPosition({
@@ -54,7 +62,12 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
     recordLine(e.pageX - canvasRect.deltaX, e.pageY - canvasRect.deltaY);
   };
 
-  const handleMouseUpAndLeave = () => {
+  const handleMouseUp = () => {
+    setIsMouseDown(false);
+    if (userPath.length > 0) setPath(userPath);
+  };
+
+  const handleMouseLeave = () => {
     setIsMouseDown(false);
   };
 
@@ -85,11 +98,6 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
     });
   };
 
-  const clearCanvas = () => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    setUserPath([]);
-  };
-
   useEffect(() => {
     if (canvasRef.current) {
       setCtx(canvasRef.current.getContext("2d"));
@@ -99,7 +107,7 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
     // Adds event listner, removes it after component unmounts.
     window.addEventListener("resize", updateCanvasCoordinates);
     return () => window.removeEventListener("resize", updateCanvasCoordinates);
-  }, []);
+  }, [url]);
 
   return (
     <>
@@ -107,27 +115,30 @@ const CanvasCreate = ({ height, width, url, setRoutePath }) => {
         ref={canvasRef}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUpAndLeave}
-        onMouseLeave={handleMouseUpAndLeave}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
         height={height}
         width={width}
         url={url}
       />
-      <button className="btn" type="button" onClick={clearCanvas}>
-        Clear
-      </button>
-
-      <button
-        type="button"
-        disabled={userPath.length === 0 ? true : false}
-        onClick={() => {
-          setRoutePath(userPath);
-        }}
-      >
-        Save path
-      </button>
     </>
   );
 };
 
 export default CanvasCreate;
+
+{
+  /* <button className="btn" type="button" onClick={clearCanvas}>
+  Clear
+</button>
+
+<button
+  type="button"
+  disabled={userPath.length === 0 ? true : false}
+  onClick={() => {
+    setPath(userPath);
+  }}
+>
+  Save path
+</button> */
+}

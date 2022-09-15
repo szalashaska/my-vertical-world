@@ -1,19 +1,15 @@
-from importlib.resources import path
-from pickle import FALSE
-from pydoc import describe
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.db import IntegrityError
 # from django.contrib.auth import authenticate, login, logout
 
 # from rest_framework.views import APIView
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import User, Follow, Location, Wall, Route, Comment
-from .serilizers import GetRouteSerializer, PostLocationSerializer, PostWallSerializer, GetWallSerializer
+from .serilizers import CommentSerializer, FollowSerializer, RouteExtendedSerializer, LocationSerializer, LocationExtendedSerializer, UserExtendedSerializer, WallSerializer, WallExtendedSerializer
 
 import json
 
@@ -27,7 +23,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         
         # Add custom claims
-        token['username'] = user.username
+        token["username"] = user.username
         
         return token
 
@@ -35,8 +31,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-
-@api_view(['POST'])
+@api_view(["POST"])
 def register(request):
     username = request.data.get("username")
     password = request.data.get("password")
@@ -54,10 +49,10 @@ def register(request):
         return Response({"error": "Username already taken."}, status=status.HTTP_409_CONFLICT)   
 
 
-    return Response({'success': 'Successfully registered user.'}, status=status.HTTP_201_CREATED)
+    return Response({"success": "Successfully registered user."}, status=status.HTTP_201_CREATED)
       
 
-@api_view(['POST', 'GET'])
+@api_view(["POST", "GET"])
 # @permission_classes([IsAuthenticated])
 def routes(request):
     if request.method == "POST":
@@ -91,13 +86,13 @@ def routes(request):
         try:
             location = Location.objects.get(name=location_name)
         except Location.DoesNotExist:
-            location = Location.objects.create(name=location_name, coordinates=json.loads(location_coordinates))
+            location = Location.objects.create(name=location_name, author=author, coordinates=json.loads(location_coordinates))
 
         # Create wall or take existing one
         try:
             wall = Wall.objects.get(name=wall_name)
         except Wall.DoesNotExist:
-            wall = Wall.objects.create(name=wall_name) 
+            wall = Wall.objects.create(name=wall_name, author=author) 
             wall.image = wall_image
             wall.save()
 
@@ -114,30 +109,89 @@ def routes(request):
 
     if request.method == "GET":
         routes = Route.objects.all().order_by("-created")
-        data = GetRouteSerializer(routes, many=True).data
+        data = RouteExtendedSerializer(routes, many=True).data
      
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
 
-@api_view(['GET'])
-def route(request, route_id):
+@api_view(["GET"])
+def walls(request):
     if request.method == "GET":
-        try:
-            route = Route.objects.get(pk=route_id)
-        except Route.DoesNotExist:
-            return JsonResponse({"error": "Route not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
-        
-        data = GetRouteSerializer(route).data
+        queryset = Wall.objects.all().order_by("name")
+
+        location_id = request.query_params.get("location_id")
+        if location_id:
+            queryset = queryset.filter(location__pk=location_id)
+
+        data = WallSerializer(queryset, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
 
-def content_likes(model, request, id):
+@api_view(["GET"])
+def locations(request):
+    if request.method == "GET":
+        locations = Location.objects.all().order_by("name")
+        data = LocationSerializer(locations, many=True).data
+
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+
+def handle_content_by_id(model, serializer, request, id):
+    try:
+        content = model.objects.get(pk=id)
+    except model.DoesNotExist:
+        return JsonResponse({"error": f"{model.__name__} not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+
+    if request.method == "GET":
+        data = serializer(content).data
+        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+    if request.method == "DELETE":
+        # Check if user is an author of content
+        if content.author.id != request.user.id:
+            return JsonResponse({"error": "You are not allowed to delete other users content."}, status=status.HTTP_403_FORBIDDEN, safe=False)
+       
+        # Check if models has children
+        if model.__name__ == "Wall" and content.routes.all():
+            return JsonResponse({"error": "Can't delete wall when routes are assigned to it."}, status=status.HTTP_403_FORBIDDEN, safe=False)            
+
+        if model.__name__ == "Location" and content.walls.all():
+            return JsonResponse({"error": "Can't delete location when walls are assigned to it."}, status=status.HTTP_403_FORBIDDEN, safe=False)
+
+        # Delete content
+        content.delete() 
+
+        return JsonResponse({"success": f"Successfully deleted {model.__name__}."}, status=status.HTTP_200_OK, safe=False)
+
+
+@api_view(["GET", "DELETE"])
+def route(request, route_id):
+    return handle_content_by_id(Route, RouteExtendedSerializer, request, route_id)
+
+
+@api_view(["GET", "DELETE"])
+def wall(request, wall_id):
+    return handle_content_by_id(Wall, WallExtendedSerializer, request, wall_id)
+
+
+@api_view(["GET", "DELETE"])
+def location(request, location_id):
+    return handle_content_by_id(Location, LocationExtendedSerializer, request, location_id)
+
+
+@api_view(["GET"])
+def user(request, user_id):
+    return handle_content_by_id(User, UserExtendedSerializer, request, user_id)
+
+
+def handle_like_content(model, request, id):
     queryset = model.objects.filter(pk=id, liked_by__pk=request.user.id).first()
     if request.method == "GET":
         # Check if user likes content
         if queryset:
             return JsonResponse({"is_liked": True}, status=status.HTTP_200_OK, safe=False)
+            
 
         return JsonResponse({"is_liked": False}, status=status.HTTP_200_OK, safe=False)
 
@@ -154,9 +208,9 @@ def content_likes(model, request, id):
                 content.likes += 1
                 content.save()
             except model.DoesNotExist:
-                return JsonResponse({"error": "Content ceased to exist while adding like."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+                return JsonResponse({"error": f"{model.__name__} ceased to exist while adding like."}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-            return JsonResponse({"success": "Liked content.", "likes": content.likes, "is_liked": True}, status=status.HTTP_200_OK, safe=False)
+            return JsonResponse({"success": f"Liked {model.__name__}.", "likes": content.likes, "is_liked": True}, status=status.HTTP_200_OK, safe=False)
 
         # Unlike post
         if action == "unlike" and queryset:
@@ -164,97 +218,148 @@ def content_likes(model, request, id):
             queryset.likes -= 1
             queryset.save()     
 
-            return JsonResponse({"success": "Unliked content.", "likes": queryset.likes, "is_liked": False}, status=status.HTTP_200_OK, safe=False)
+            return JsonResponse({"success": f"Unliked {model.__name__}.", "likes": queryset.likes, "is_liked": False}, status=status.HTTP_200_OK, safe=False)
 
 
-@api_view(['GET', "PUT"])
+@api_view(["GET", "PUT"])
 @permission_classes([IsAuthenticated])
 def route_likes(request, route_id):
-    return content_likes(Route, request, route_id)
+    return handle_like_content(Route, request, route_id)
 
 
+@api_view(["GET", "PUT"])
+@permission_classes([IsAuthenticated])
+def wall_likes(request, wall_id):
+    return handle_like_content(Wall, request, wall_id)
 
-# @api_view(['GET', "PUT"])
-# def route_likes(request, route_id):
-#     queryset = Route.objects.filter(pk=route_id, liked_by__pk=request.user.id).first()
-#     if request.method == "GET":
-#         # Check if user likes content
-#         if queryset:
-#             return JsonResponse({"is_liked": True}, status=status.HTTP_200_OK, safe=False)
 
-#         return JsonResponse({"is_liked": False}, status=status.HTTP_200_OK, safe=False)
+@api_view(["GET", "PUT"])
+@permission_classes([IsAuthenticated])
+def location_likes(request, location_id):
+    return handle_like_content(Location, request, location_id)    
 
-#     if request.method == "PUT":
-#         action = request.data.get("action")
-#         if action == None:
-#             return JsonResponse({"error": "Missing 'action' param."}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+def handle_comment_content(model, request, id):
+    if request.method == "POST":
+        body = request.data.get("body")
+        if body == None:
+            return JsonResponse({"error": "Missing body of comment."}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+        # Create comment
+        comment = Comment.objects.create(author=request.user, body=body)
+
+        # Save comment
+        try:
+            content = model.objects.get(pk=id)
+            content.comments.add(comment)
+            content.save()
+        except model.DoesNotExist:
+            return JsonResponse({"error": f"{model.__name__} ceased to exist while adding comment."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+
+        # Return updated list of comments
+        comments = CommentSerializer(content.comments.order_by("created"), many=True).data
+ 
+        return JsonResponse(comments, status=status.HTTP_200_OK, safe=False)
+    if request.method == "DELETE":
+        comment_id = request.data.get("comment_id")
+        try:
+            comment = Comment.objects.get(pk=comment_id)
+        except Comment.DoesNotExist:
+            return JsonResponse({"error": "Comment not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+
+        if comment.author.id != request.user.id:
+            return JsonResponse({"error": "You are not allowed to delete other users comments."}, status=status.HTTP_403_FORBIDDEN, safe=False)
         
-#         # Like post
-#         if action == "like" and queryset == None:
-#             try:
-#                 route = Route.objects.get(pk=route_id)
-#                 route.liked_by.add(request.user)
-#                 route.likes += 1
-#                 route.save()
-#             except Route.DoesNotExist:
-#                 return Response({"error": "Route ceased to exist while adding like."}, status=status.HTTP_404_NOT_FOUND)
+        # Delete comment
+        comment.delete()
 
-#             return JsonResponse({"success": "Liked route.", "likes": route.likes, "is_liked": True}, status=status.HTTP_200_OK, safe=False)
+        # Return updated list of comments
+        try:
+            content = model.objects.get(pk=id)
+        except model.DoesNotExist:
+            return JsonResponse({"error": f"{model.__name__} ceased to exist while deleting comment."}, status=status.HTTP_404_NOT_FOUND, safe=False)
 
-#         # Unlike post
-#         if action == "unlike" and queryset:
-#             queryset.liked_by.remove(request.user)
-#             queryset.likes -= 1
-#             queryset.save()     
+        # Return updated list of comments
+        comments = CommentSerializer(content.comments.order_by("created"), many=True).data
 
-#             return JsonResponse({"success": "Unliked route.", "likes": queryset.likes, "is_liked": False}, status=status.HTTP_200_OK, safe=False)
-  
+        return JsonResponse(comments, status=status.HTTP_200_OK, safe=False)
+
+
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
+def route_comments(request, route_id):
+    return handle_comment_content(Route, request, route_id)
+
+
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
+def wall_comments(request, wall_id):
+    return handle_comment_content(Wall, request, wall_id)
+
+
+@api_view(["POST", "DELETE"])
+@permission_classes([IsAuthenticated])
+def location_comments(request, location_id):
+    return handle_comment_content(Location, request, location_id) 
+
+
+@api_view(["GET", "PUT"])
+@permission_classes([IsAuthenticated])
+def user_follows(request, user_id):
+    if user_id == request.user.id:
+        return JsonResponse({"error": "You can only follow other users."}, status=status.HTTP_403_FORBIDDEN, safe=False)
+    queryset = None
+
+    # Get Follow object
+    follower = Follow.objects.filter(user=request.user).first()
+
+    # Query for relationship
+    if follower:
+        queryset = User.objects.filter(pk=user_id, followed_by=follower).first()
+
+    if request.method == "GET":
+        if queryset:
+            return JsonResponse({"is_followed": True}, status=status.HTTP_200_OK, safe=False)
+        return JsonResponse({"is_followed": False}, status=status.HTTP_200_OK, safe=False)
+
+    if request.method == "PUT":
+        action = request.data.get("action")
+        if action == None:
+            return JsonResponse({"error": "Missing 'action' param."}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+
+        # Follow user
+        if action == "follow" and queryset == None:
+
+            # Get Follow object or create it
+            if not follower:
+                follower = Follow.objects.create(user=request.user)
+
+            try:
+                followed = User.objects.get(pk=user_id)
+                followed.followed_by.add(follower)
+                followed.save()
+            except User.DoesNotExist:
+                return JsonResponse({"error": "User ceased to exist while adding like."}, status=status.HTTP_404_NOT_FOUND, safe=False)
+
+            return JsonResponse({"success": "Liked user", "is_followed": True}, status=status.HTTP_200_OK, safe=False)
+
+        # Unfollow user
+        if action == "unfollow" and queryset:
+            queryset.followed_by.remove(follower)
+            queryset.save()     
+
+            return JsonResponse({"success": "Unliked user.", "is_followed": False}, status=status.HTTP_200_OK, safe=False)
+
+
+@api_view(["GET", "PUT"])
+@permission_classes([IsAuthenticated])
+def get_followers(request, user_id):
+    if user_id != request.user.id:
+        return JsonResponse({"error": "You can only see your own follows"}, status=status.HTTP_403_FORBIDDEN, safe=False)
     
-
-@api_view(['GET'])
-def walls(request):
     if request.method == "GET":
-        queryset = Wall.objects.all().order_by("name")
+        content = Follow.objects.filter(user=request.user).first()
 
-        location_id = request.query_params.get("location_id")
-        if location_id:
-            queryset = queryset.filter(location__pk=location_id)
-
-        data = PostWallSerializer(queryset, many=True).data
-
-        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
-
-
-@api_view(['GET'])
-def wall(request, wall_id):
-    if request.method == "GET":
-        try:
-            wall = Wall.objects.get(pk=wall_id)
-        except Wall.DoesNotExist:
-            return JsonResponse({"error": "Wall not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
-        
-        data = GetWallSerializer(wall).data
-
-        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
-
-
-@api_view(['GET'])
-def locations(request):
-    if request.method == "GET":
-        locations = Location.objects.all().order_by("name")
-        data = PostLocationSerializer(locations, many=True).data
-
-        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
-
-
-@api_view(['GET'])
-def location(request, location_id):
-    if request.method == "GET":
-        try:
-            location = Location.objects.get(pk=location_id)
-        except Location.DoesNotExist:
-            return JsonResponse({"error": "Location not found."}, status=status.HTTP_404_NOT_FOUND, safe=False)
-        
-        data = PostLocationSerializer(location).data
+        if not content:
+            return JsonResponse({"followed_users": []}, status=status.HTTP_200_OK, safe=False)       
+        data = FollowSerializer(content).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)

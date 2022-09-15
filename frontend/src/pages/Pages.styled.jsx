@@ -26,3 +26,7 @@ export const WallStyled = styled(PageContainer)`
 export const LocationStyled = styled(PageContainer)`
   background-color: var(--clr-pink);
 `;
+
+export const UserStyled = styled(PageContainer)`
+  background-color: var(--clr-pink);
+`;
