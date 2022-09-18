@@ -17,7 +17,7 @@ const SingleLocationOverlay = () => {
     popupCloseButton.current.blur();
   };
 
-  const handleClickOnFeatureWhileAppending = (e, feature) => {
+  const handleClickOnFeature = (e, feature) => {
     popupOverlay.setPosition(e.coordinate);
     popupContent.current.innerHTML = feature.get("name");
   };
@@ -26,7 +26,7 @@ const SingleLocationOverlay = () => {
     const feature = map.forEachFeatureAtPixel(e.pixel, (feature) => feature);
 
     if (!feature) return;
-    else handleClickOnFeatureWhileAppending(e, feature);
+    else handleClickOnFeature(e, feature);
   };
 
   useEffect(() => {

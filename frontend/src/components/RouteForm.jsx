@@ -1,24 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FormInput from "../components/FormInput";
 import CanvasCreate from "../components/CanvasCreate";
+import CanvasShow from "./CanvasShow";
 import { ButtonStyled } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
+import MessageContext from "../contexts/MessageContext";
 
 const RouteForm = ({
+  routeName,
+  routeDescription,
+  routeGrade,
+  routePath,
   setRouteName,
   setRouteGrade,
   setRouteDescription,
   setRoutePath,
   wallImage,
-  existingWallDimensions,
+  existingWallData,
+  edit,
 }) => {
+  const [routesList, setRoutesList] = useState(undefined);
   const [canvasHeight, setCanvasHeight] = useState(null);
   const [canvasWidth, setCanvasWidth] = useState(null);
   const [canvasUrl, setCanvasUrl] = useState(null);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [grade, setGrade] = useState("6a");
-  const [path, setPath] = useState(null);
+  const [name, setName] = useState(routeName || "");
+  const [description, setDescription] = useState(routeDescription || "");
+  const [grade, setGrade] = useState(routeGrade || "6a");
+  const [path, setPath] = useState(routePath || null);
+  const [editRoute, setEditRoute] = useState(edit);
+
+  const { setError } = useContext(MessageContext);
 
   const routeInputs = [
     {
@@ -55,16 +66,22 @@ const RouteForm = ({
     },
   ];
 
-  const showRouteImage = async () => {
-    if (!wallImage) {
-      //   setError("There is no image to show.");
-      return;
-    }
+  const handleGetRouteList = async (id) => {
+    const endpoint = `/api/walls/${id}`;
+    try {
+      const response = await fetch(endpoint);
+      const data = await response.json();
 
-    if (wallImage.size > 2048000) {
-      //   setError("Image should be less than 2 mb.");
-      return;
+      if (response.status === 200) {
+        setRoutesList(data.routes);
+      }
+    } catch (err) {
+      console.log("Unexpected error", err);
     }
+  };
+
+  const showRouteImage = async () => {
+    if (!wallImage) return;
 
     let image = new Image();
     image.src = window.URL.createObjectURL(wallImage);
@@ -75,25 +92,60 @@ const RouteForm = ({
     };
   };
 
+  const checkUserRouteNameInput = () => {
+    if (!routesList || routesList.length === 0) return true;
+
+    const route = name.trim().toLowerCase();
+    const match = routesList.find((item) => item.name === route);
+    if (!match) return true;
+
+    // While editing, allow the orginal edited name
+    if (edit && match.name === routeName) return true;
+
+    setError("Route name already exist.");
+    return false;
+  };
+
   const handleRouteForm = (e) => {
     e.preventDefault();
-    setRouteName(name);
-    setRouteGrade(grade);
-    setRouteDescription(description);
-    setRoutePath(path);
+    if (checkUserRouteNameInput()) {
+      setRouteName(name);
+      setRouteGrade(grade);
+      setRouteDescription(description);
+      setRoutePath(path);
+    }
   };
 
   useEffect(() => {
-    if (existingWallDimensions) {
-      setCanvasHeight(existingWallDimensions.height);
-      setCanvasWidth(existingWallDimensions.width);
+    if (existingWallData) {
+      handleGetRouteList(existingWallData.id);
+      setCanvasHeight(existingWallData.height);
+      setCanvasWidth(existingWallData.width);
       setCanvasUrl(wallImage);
     } else showRouteImage();
   }, [wallImage]);
 
   return (
     <>
-      {wallImage && (
+      {editRoute && canvasUrl ? (
+        <>
+          <CanvasShow
+            height={canvasHeight}
+            width={canvasWidth}
+            url={canvasUrl}
+            routePath={path}
+          />
+          <ButtonStyled
+            type="button"
+            onClick={() => {
+              setEditRoute(false);
+              setPath("");
+            }}
+          >
+            Edit route path
+          </ButtonStyled>
+        </>
+      ) : (
         <CanvasCreate
           height={canvasHeight}
           width={canvasWidth}
@@ -108,7 +160,7 @@ const RouteForm = ({
         ))}
 
         <ButtonStyled type="submit" disabled={!name || !description || !path}>
-          Add route
+          {edit ? "Edit route" : "Add route"}
         </ButtonStyled>
       </form>
     </>

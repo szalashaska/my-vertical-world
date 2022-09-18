@@ -1,24 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import FormInput from "../components/FormInput";
 import LocationMap from "../components/LocationMap";
 import LocationContext from "../contexts/LocationContext";
-import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
+import { ButtonStyled } from "../constans/GlobalStyles";
 import ActiveTabBar from "./ActiveTabBar";
+import MessageContext from "../contexts/MessageContext";
 
 const LocationForm = ({
+  locationName,
+  locationCoords,
   setLocationName,
   setLocationCoords,
   setExistingLocationId,
+  editedLocation,
 }) => {
-  const tabs = ["add", "append"];
+  const tabs = ["Add new location", "Append to existing location"];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [mapZoom, setMapZoom] = useState(3);
   const [mapCenter, setMapCenter] = useState([2078486, 6686398]);
-
   const [locationsList, setLocationsList] = useState(undefined);
-
-  const [name, setName] = useState("");
-  const [coords, setCoords] = useState(null);
+  const [name, setName] = useState(locationName || "");
+  const [coords, setCoords] = useState(locationCoords || null);
+  const { setError } = useContext(MessageContext);
 
   const locationInputs = [
     {
@@ -52,12 +55,13 @@ const LocationForm = ({
 
     const location = name.trim().toLowerCase();
     const match = locationsList.find((item) => item.name === location);
-    if (match) {
-      setName("");
-      console.log("name already exist");
-      return false;
-    }
-    return true;
+    if (!match) return true;
+
+    // While editing, allow the orginal edited name
+    if (editedLocation && match.name === locationName) return true;
+
+    setError("Location name already exist.");
+    return false;
   };
 
   const handleLocationForm = (e) => {
@@ -82,51 +86,12 @@ const LocationForm = ({
 
   return (
     <>
-      <ActiveTabBar tabs={tabs} setActiveTab={setActiveTab} />
-
-      {activeTab === tabs[0] ? (
-        <>
-          <H2Styled>Add new location:</H2Styled>
-          <form onSubmit={handleLocationForm}>
-            {locationInputs.map((input) => (
-              <FormInput key={input.id} {...input} />
-            ))}
-            <ButtonStyled type="submit" disabled={!name || !coords}>
-              Add location
-            </ButtonStyled>
-          </form>
-        </>
-      ) : (
-        <>
-          <H2Styled>Append to existing location:</H2Styled>
-          <ul>
-            {locationsList &&
-              locationsList.length > 0 &&
-              locationsList.map((item) => (
-                <li
-                  key={item.id}
-                  onMouseEnter={() => {
-                    setMapCenter([item.coordinates.lon, item.coordinates.lat]);
-                    setMapZoom(6);
-                  }}
-                >
-                  {item.name}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExistingLocationChoice(
-                        item.id,
-                        item.name,
-                        item.coordinates
-                      );
-                    }}
-                  >
-                    Choose
-                  </button>
-                </li>
-              ))}
-          </ul>
-        </>
+      {!editedLocation && locationsList.length > 0 && (
+        <ActiveTabBar
+          tabs={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
       )}
 
       <LocationContext.Provider
@@ -135,12 +100,56 @@ const LocationForm = ({
           tabs,
           setCoords,
           handleExistingLocationChoice,
+          editedLocation,
         }}
       >
         {locationsList && (
-          <LocationMap zoom={mapZoom} center={mapCenter} data={locationsList} />
+          <LocationMap
+            zoom={mapZoom}
+            center={mapCenter}
+            data={editedLocation ? [editedLocation] : locationsList}
+          />
         )}
       </LocationContext.Provider>
+
+      {activeTab === tabs[0] ? (
+        <form onSubmit={handleLocationForm}>
+          {locationInputs.map((input) => (
+            <FormInput key={input.id} {...input} />
+          ))}
+          <ButtonStyled type="submit" disabled={!name || !coords}>
+            {editedLocation ? "Edit location" : "Add location"}
+          </ButtonStyled>
+        </form>
+      ) : (
+        <ul>
+          {locationsList &&
+            locationsList.length > 0 &&
+            locationsList.map((item) => (
+              <li
+                key={item.id}
+                onMouseEnter={() => {
+                  setMapCenter([item.coordinates.lon, item.coordinates.lat]);
+                  setMapZoom(6);
+                }}
+              >
+                {item.name}
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleExistingLocationChoice(
+                      item.id,
+                      item.name,
+                      item.coordinates
+                    );
+                  }}
+                >
+                  Choose
+                </button>
+              </li>
+            ))}
+        </ul>
+      )}
     </>
   );
 };

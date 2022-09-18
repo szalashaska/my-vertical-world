@@ -24,7 +24,7 @@ const RouteCard = ({ route }) => {
     <RouteCardStyled>
       {route && (
         <>
-          <LinkStyled to={`/route/${id}`}>
+          <LinkStyled to={`/routes/${id}`}>
             <H3Styled>
               {name}, {grade}
             </H3Styled>
@@ -33,13 +33,13 @@ const RouteCard = ({ route }) => {
 
           <p>{new Date(created).toLocaleDateString()}</p>
 
-          <LinkStyled to={`/wall/${wall.id}`}>{wall.name}</LinkStyled>
+          <LinkStyled to={`/walls/${wall.id}`}>{wall.name}</LinkStyled>
 
-          <LinkStyled to={`/location/${location.id}`}>
+          <LinkStyled to={`/locations/${location.id}`}>
             {location.name}
           </LinkStyled>
 
-          <LinkStyled to={`/route/${id}`}>
+          <LinkStyled to={`/routes/${id}`}>
             <CanvasShow
               height={image_height}
               width={image_width}

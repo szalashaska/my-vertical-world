@@ -13,6 +13,10 @@ import ClimbingRoute from "./pages/ClimbingRoute";
 import Wall from "./pages/Wall";
 import Location from "./pages/Location";
 import User from "./pages/User";
+import { MessageProvider } from "./contexts/MessageContext";
+import EditRoute from "./pages/EditRoute";
+import EditWall from "./pages/EditWall";
+import EditLocation from "./pages/EditLocation";
 
 const App = () => {
   return (
@@ -20,22 +24,56 @@ const App = () => {
       <GlobalStyles />
       <AuthProvider>
         <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/route/:routeId" element={<ClimbingRoute />} />
-          <Route path="/wall/:wallId" element={<Wall />} />
-          <Route path="/location/:locationId" element={<Location />} />
-          <Route path="/user/:userId" element={<User />} />
-          <Route path="/sign-up" element={<SignIn />} />
-          <Route
-            path="/add-route"
-            element={
-              <PrivateRoute>
-                <AddRoute />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
+        <MessageProvider>
+          <Routes>
+            <Route path="/" element={<Home />} />
+
+            {/* ----Route paths---- */}
+            <Route path="/routes/:routeId" element={<ClimbingRoute />} />
+            <Route
+              path="/routes/:routeId/edit"
+              element={
+                <PrivateRoute>
+                  <EditRoute />
+                </PrivateRoute>
+              }
+            />
+
+            {/* ----Wall paths---- */}
+            <Route path="/walls/:wallId" element={<Wall />} />
+            <Route
+              path="/walls/:wallId/edit"
+              element={
+                <PrivateRoute>
+                  <EditWall />
+                </PrivateRoute>
+              }
+            />
+
+            {/* ----Location paths---- */}
+            <Route path="/locations/:locationId/" element={<Location />} />
+            <Route
+              path="/locations/:locationId/edit"
+              element={
+                <PrivateRoute>
+                  <EditLocation />
+                </PrivateRoute>
+              }
+            />
+
+            {/* ----User paths---- */}
+            <Route path="/user/:userId" element={<User />} />
+            <Route path="/sign-up" element={<SignIn />} />
+            <Route
+              path="/add-route"
+              element={
+                <PrivateRoute>
+                  <AddRoute />
+                </PrivateRoute>
+              }
+            />
+          </Routes>
+        </MessageProvider>
       </AuthProvider>
     </Router>
   );

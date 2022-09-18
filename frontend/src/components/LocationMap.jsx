@@ -6,19 +6,19 @@ import VectorLayer from "./VectorLayer";
 import LocationsOverlay from "./LocationsOverlay";
 import SingleLocationOverlay from "./SingleLocationOverlay";
 
-let geojsonObject = {
-  type: "FeatureCollection",
-  crs: {
-    type: "name",
-    properties: {
-      name: "EPSG:3857",
-    },
-  },
-  features: [],
-};
-
 const LocationMap = ({ center, zoom, data, single }) => {
   const [vectorData, setVectorData] = useState(null);
+
+  let geojsonObject = {
+    type: "FeatureCollection",
+    crs: {
+      type: "name",
+      properties: {
+        name: "EPSG:3857",
+      },
+    },
+    features: [],
+  };
 
   const prepareVectorData = (data) => {
     // Populate geojson object

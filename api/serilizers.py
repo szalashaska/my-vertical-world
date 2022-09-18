@@ -79,13 +79,13 @@ class LocationExtendedSerializer(ModelSerializer):
 
 class UserExtendedSerializer(ModelSerializer):
     route_author = RouteSerializer(many=True)
-    wall_creator = WallSerializer(many=True)
-    location_creator = LocationSerializer(many=True)
+    wall_author = WallSerializer(many=True)
+    location_author = LocationSerializer(many=True)
     liked_routes = RouteSerializer(many=True)
     liked_walls = WallSerializer(many=True)
     liked_locations = LocationSerializer(many=True)
     class Meta:
         model = User
-        fields = ("id", "username", "route_author", "wall_creator", "location_creator", "liked_routes", "liked_walls", "liked_locations")
+        fields = ("id", "username", "route_author", "wall_author", "location_author", "liked_routes", "liked_walls", "liked_locations")
 
 

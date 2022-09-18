@@ -1,6 +1,21 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyledCanvasShow } from "./styled/Canvas.styled";
 
+const ROUTE_COLORS = {
+  normal: "blue",
+  highlight: "red",
+};
+
+const ROUTE_DOTS = {
+  border: "white",
+  end: "red",
+};
+
+const DESCRIPTION_COLOR = {
+  normal: "lightblue",
+  highlight: "gold",
+};
+
 const CanvasShowMany = ({ height, width, url, routesData }) => {
   const canvasRef = useRef(null);
   const listRef = useRef([]);
@@ -17,21 +32,6 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   const [onCanvas, setOnCanvas] = useState(false);
   const [routeArray, setRouteArray] = useState(null);
   const [highlightedRoute, setHighlightedRoute] = useState(null);
-
-  const routeColors = {
-    normal: "blue",
-    highlight: "red",
-  };
-
-  const routeDots = {
-    border: "white",
-    end: "red",
-  };
-
-  const descriptionColors = {
-    normal: "lightblue",
-    highlight: "gold",
-  };
 
   // Creates array that maps routes on canvas and allows to trigger hoover effect
   const createRouteArray = () => {
@@ -118,20 +118,22 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   };
 
   const drawUsersLine = (index, path, color) => {
+    if (!ctx) return;
     const dataLength = path.length;
+
     path.map((element, i) => {
       if (i === 0) {
         drawNumber(
           (element.x * canvasRef.current.width) / 100,
           (element.y * canvasRef.current.height) / 100,
           index,
-          routeDots.border
+          ROUTE_DOTS.border
         );
         drawCircle(
           (element.x * canvasRef.current.width) / 100,
           (element.y * canvasRef.current.height) / 100,
           color,
-          routeDots.border
+          ROUTE_DOTS.border
         );
       }
 
@@ -139,8 +141,8 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         drawCircle(
           (element.x * canvasRef.current.width) / 100,
           (element.y * canvasRef.current.height) / 100,
-          routeDots.end,
-          routeDots.border
+          ROUTE_DOTS.end,
+          ROUTE_DOTS.border
         );
       }
       drawLine(
@@ -166,7 +168,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         y: (routesData[index].path[0].y * canvasRef.current.height) / 100,
       };
 
-      return drawUsersLine(index, route.path, routeColors.normal);
+      return drawUsersLine(index, route.path, ROUTE_COLORS.normal);
     });
   };
 
@@ -232,12 +234,12 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         redrawLine(
           currentMousePosition,
           routesData[currentMousePosition].path,
-          routeColors.highlight
+          ROUTE_COLORS.highlight
         );
         setHighlightedRoute(currentMousePosition);
 
         listRef.current[currentMousePosition].style.backgroundColor =
-          descriptionColors.highlight;
+          DESCRIPTION_COLOR.highlight;
       }
       // On mouse leave
       else if (
@@ -248,7 +250,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         iterateAndDraw(routesData);
         listRef.current[highlightedRoute].style.backgroundColor =
-          descriptionColors.normal;
+          DESCRIPTION_COLOR.normal;
 
         setHighlightedRoute(null);
       }
@@ -301,10 +303,10 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
             }}
             key={route.id}
             onMouseEnter={() => {
-              redrawLine(index, route.path, routeColors.highlight);
+              redrawLine(index, route.path, ROUTE_COLORS.highlight);
             }}
             onMouseLeave={() => {
-              redrawLine(index, route.path, routeColors.normal);
+              redrawLine(index, route.path, ROUTE_COLORS.normal);
             }}
             ref={(ref) => (listRef.current[index] = ref)}
           >
@@ -324,7 +326,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
                 return (
                   <span
                     style={{
-                      color: routeColors.highlight,
+                      color: ROUTE_COLORS.highlight,
                     }}
                   >
                     #

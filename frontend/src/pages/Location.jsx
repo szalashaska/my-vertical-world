@@ -1,6 +1,6 @@
 import { toLonLat } from "ol/proj";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Comment from "../components/Comment";
 import Delete from "../components/Delete";
 import Like from "../components/Like";
@@ -62,6 +62,9 @@ const Location = () => {
           content={"locations"}
           children={walls.length}
         />
+        <Link to={"edit"} state={{ locationData }}>
+          Edit
+        </Link>
       </AuthorContent>
       {locationCoordinates && (
         <H2Styled>

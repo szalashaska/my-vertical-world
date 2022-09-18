@@ -1,24 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ActiveTabBar from "./ActiveTabBar";
 import FormInput from "../components/FormInput";
 
-import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
+import { ButtonStyled } from "../constans/GlobalStyles";
+import MessageContext from "../contexts/MessageContext";
 
 const WallForm = ({
   existingLocationId,
+  wallName,
   setWallImage,
   setWallName,
-  setExistingWallDimensions,
+  setExistingWallData,
+  edit,
 }) => {
-  const addTabName = "add";
-  const addAndAppendTabsName = [addTabName, "append"];
+  const addingTabName = "Add new wall";
+  const addAndAppendTabsName = [addingTabName, "Append to existing wall"];
 
   const [tabs, setTabs] = useState(null);
-  const [activeTab, setActiveTab] = useState(addTabName);
+  const [activeTab, setActiveTab] = useState(addingTabName);
 
   const [wallsList, setWallsList] = useState(undefined);
-  const [name, setName] = useState("");
-  const [image, setImage] = useState(null);
+  const [name, setName] = useState(wallName || "");
+  const [image, setImage] = useState(edit || null);
+
+  const { setError } = useContext(MessageContext);
+
+  const handleImageUpload = (e) => {
+    // Check if image was uploaded
+    if (!e.target.files) return;
+    // Check image size
+    if (e.target.files[0].size > 2048000) {
+      return setError("Image size should be less than 2 megabytes.");
+    }
+    setImage(e.target.files[0]);
+  };
 
   const wallInputs = [
     {
@@ -38,22 +53,23 @@ const WallForm = ({
       id: 2,
       accept: "image/jpeg, image/png, image/jpg",
       name: "wall_image",
-      type: "file",
+      type: edit ? "hidden" : "file",
       placeholder: "Wall image...",
-      label: "Wall image:",
+      label: edit ? "" : "Wall image:",
       required: true,
-      onChange: (e) => e.target.files && setImage(e.target.files[0]),
+      onChange: handleImageUpload,
     },
   ];
 
   const handleGetWallsList = async (locationId) => {
-    const endpoint = `/api/walls?location_id=${locationId}`;
+    // const endpoint = `/api/walls?location_id=${locationId}`;
+    const endpoint = `/api/locations/${locationId}`;
     try {
       const response = await fetch(endpoint);
       const data = await response.json();
 
       if (response.status === 200) {
-        setWallsList(data);
+        setWallsList(data.walls);
       }
     } catch (err) {
       console.log("Unexpected error", err);
@@ -65,18 +81,19 @@ const WallForm = ({
 
     const wall = name.trim().toLowerCase();
     const match = wallsList.find((item) => item.name === wall);
-    if (match) {
-      setName("");
-      console.log("name already exist");
-      return false;
-    }
-    return true;
+    if (!match) return true;
+
+    // While editing, allow the orginal edited name
+    if (edit && match.name === wallName) return true;
+
+    setError("Wall name already exist.");
+    return false;
   };
 
-  const handleExistingWallChoice = (name, image, height, width) => {
+  const handleExistingWallChoice = (id, name, image, height, width) => {
     setWallName(name);
     setWallImage(image);
-    setExistingWallDimensions({ height, width });
+    setExistingWallData({ id, height, width });
   };
 
   const handleWallForm = (e) => {
@@ -90,26 +107,33 @@ const WallForm = ({
 
   useEffect(() => {
     if (existingLocationId) {
-      // If we appending to existing location, we activate switching tabs and load wall list.
-      setTabs(addAndAppendTabsName);
+      // Activete switching tabs, if we are not editig
+      if (!edit) setTabs(addAndAppendTabsName);
+
+      // Get wall list to check users input
       handleGetWallsList(existingLocationId);
     }
   }, [existingLocationId]);
 
   return (
     <>
-      {tabs && <ActiveTabBar tabs={tabs} setActiveTab={setActiveTab} />}
+      {tabs && (
+        <ActiveTabBar
+          tabs={tabs}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+      )}
 
-      {activeTab === addTabName && (
+      {activeTab === addingTabName && (
         <>
-          <H2Styled>Add new wall:</H2Styled>
           <form onSubmit={handleWallForm}>
             {wallInputs.map((input) => (
               <FormInput key={input.id} {...input} />
             ))}
 
             <ButtonStyled type="submit" disabled={!name || !image}>
-              Add wall
+              {edit ? "Edit wall" : "Add wall"}
             </ButtonStyled>
           </form>
         </>
@@ -117,7 +141,6 @@ const WallForm = ({
 
       {activeTab === addAndAppendTabsName[1] && (
         <>
-          <H2Styled>Add to existing wall:</H2Styled>
           {wallsList && wallsList.length > 0 && (
             <ul>
               {wallsList.map((item) => (
@@ -127,6 +150,7 @@ const WallForm = ({
                     type="button"
                     onClick={() => {
                       handleExistingWallChoice(
+                        item.id,
                         item.name,
                         item.image,
                         item.image_height,

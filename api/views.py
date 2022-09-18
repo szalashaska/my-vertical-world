@@ -1,15 +1,16 @@
 from django.http import JsonResponse
 from django.db import IntegrityError
-# from django.contrib.auth import authenticate, login, logout
 
-# from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import User, Follow, Location, Wall, Route, Comment
-from .serilizers import CommentSerializer, FollowSerializer, RouteExtendedSerializer, LocationSerializer, LocationExtendedSerializer, UserExtendedSerializer, WallSerializer, WallExtendedSerializer
+from .serilizers import (CommentSerializer, FollowSerializer, RouteSerializer, RouteExtendedSerializer, 
+LocationSerializer, LocationExtendedSerializer, UserExtendedSerializer, WallSerializer, 
+WallExtendedSerializer)
 
 import json
 
@@ -118,11 +119,6 @@ def routes(request):
 def walls(request):
     if request.method == "GET":
         queryset = Wall.objects.all().order_by("name")
-
-        location_id = request.query_params.get("location_id")
-        if location_id:
-            queryset = queryset.filter(location__pk=location_id)
-
         data = WallSerializer(queryset, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
@@ -147,6 +143,18 @@ def handle_content_by_id(model, serializer, request, id):
         data = serializer(content).data
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
 
+    # https://www.django-rest-framework.org/tutorial/1-serialization/
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        if data["name"]:
+            data["name"] = data["name"].lower().strip()
+        serialized_content = serializer(content, data=data, partial=True)
+        if serialized_content.is_valid():
+            serialized_content.save()
+            return JsonResponse({"success": f"Successfully edited {model.__name__}"}, status=status.HTTP_200_OK, safe=False)
+        
+        return JsonResponse(serialized_content.errors, status=status.HTTP_400_BAD_REQUEST, safe=False)
+
     if request.method == "DELETE":
         # Check if user is an author of content
         if content.author.id != request.user.id:
@@ -165,17 +173,17 @@ def handle_content_by_id(model, serializer, request, id):
         return JsonResponse({"success": f"Successfully deleted {model.__name__}."}, status=status.HTTP_200_OK, safe=False)
 
 
-@api_view(["GET", "DELETE"])
+@api_view(["GET", "DELETE", "PUT"])
 def route(request, route_id):
     return handle_content_by_id(Route, RouteExtendedSerializer, request, route_id)
 
 
-@api_view(["GET", "DELETE"])
+@api_view(["GET", "DELETE", "PUT"])
 def wall(request, wall_id):
     return handle_content_by_id(Wall, WallExtendedSerializer, request, wall_id)
 
 
-@api_view(["GET", "DELETE"])
+@api_view(["GET", "DELETE", "PUT"])
 def location(request, location_id):
     return handle_content_by_id(Location, LocationExtendedSerializer, request, location_id)
 

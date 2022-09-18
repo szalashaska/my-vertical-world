@@ -7,7 +7,7 @@ import { PopupContainer } from "./styled/LocationOverlay.styled";
 
 const LocationsOverlay = () => {
   const { map } = useContext(MapContext);
-  const { activeTab, handleExistingLocationChoice, tabs } =
+  const { activeTab, handleExistingLocationChoice, editedLocation, tabs } =
     useContext(LocationContext);
 
   const { setCoords } = useContext(LocationContext);
@@ -25,6 +25,7 @@ const LocationsOverlay = () => {
   const handleClosePopup = () => {
     if (!popupOverlay || !popupCloseButton.current) return;
     popupOverlay.setPosition(undefined);
+    setCoords(null);
     popupCloseButton.current.blur();
   };
 
@@ -39,6 +40,7 @@ const LocationsOverlay = () => {
   const handleClickOnFeatureWhileAdding = (e, feature) => {
     popupOverlay.setPosition(e.coordinate);
     popupContent.current.innerHTML = feature.get("name");
+    if (editedLocation) setCoords(editedLocation.coordinates);
   };
 
   // Click inside icon - appending location tab

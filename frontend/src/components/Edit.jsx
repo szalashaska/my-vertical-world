@@ -1,26 +1,21 @@
-import React, { useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ButtonStyled } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import MessageContext from "../contexts/MessageContext";
 
-const Delete = ({ id, content, children }) => {
+const Edit = ({ id, state, data, content }) => {
+  const { setError, setSuccess } = useContext(MessageContext);
   const { authTokens } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const { setSuccess } = useContext(MessageContext);
-
-  // Check if props are correct
-  const allowedContent = ["routes", "walls", "locations"];
-  if (!allowedContent.includes(content)) return null;
-
-  const handleDeleteContent = async () => {
+  const handleEditContent = async () => {
     const requestOptions = {
-      method: "DELETE",
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${String(authTokens.access)}`,
       },
+      body: JSON.stringify(data),
     };
     const endpoint = `/api/${content}/${id}`;
 
@@ -30,22 +25,19 @@ const Delete = ({ id, content, children }) => {
 
       if (response.status === 200) {
         setSuccess(data.success);
-        navigate("/");
-      }
+        navigate(`/${content}/${id}`);
+      } else setError("Could not edit content.");
     } catch (err) {
       console.log("Unexpected error", err);
     }
   };
 
-  return (
-    <ButtonStyled
-      onClick={() => handleDeleteContent()}
-      type="button"
-      disabled={children != 0}
-    >
-      Delete
-    </ButtonStyled>
-  );
+  useEffect(() => {
+    if (state) {
+      handleEditContent();
+    }
+  }, [state]);
+  return <div>Edit {content}</div>;
 };
 
-export default Delete;
+export default Edit;

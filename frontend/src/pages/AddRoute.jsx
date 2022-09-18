@@ -3,14 +3,17 @@ import { useNavigate } from "react-router-dom";
 import LocationForm from "../components/LocationForm";
 import RouteForm from "../components/RouteForm";
 import WallForm from "../components/WallForm";
-import { ButtonStyled } from "../constans/GlobalStyles";
+import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
+import MessageContext from "../contexts/MessageContext";
 import { AddRouteStyled } from "./Pages.styled";
 
+const FORM_NAMES = ["location", "wall", "route"];
+const FORM_NAMES_LENGTH = FORM_NAMES.length;
+
 const AddRoute = () => {
-  const formNames = ["location", "wall", "route"];
   const [activeFormIndex, setActiveFormIndex] = useState(0);
-  const [activeForm, setActiveForm] = useState(formNames[0]);
+  const [activeForm, setActiveForm] = useState(FORM_NAMES[0]);
   const [routeName, setRouteName] = useState("");
   const [routeDescription, setRouteDescription] = useState("");
   const [routeGrade, setRouteGrade] = useState("6a");
@@ -20,9 +23,9 @@ const AddRoute = () => {
   const [locationName, setLocationName] = useState("");
   const [locationCoords, setLocationCoords] = useState(null);
   const [existingLocationId, setExistingLocationId] = useState(null);
-  const [existingWallDimensions, setExistingWallDimensions] = useState(null);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [existingWallData, setExistingWallData] = useState(null);
+
+  const { setError, setSuccess } = useContext(MessageContext);
 
   const { authTokens } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -77,19 +80,19 @@ const AddRoute = () => {
   const handleGoBackClick = () => {
     if (activeFormIndex - 1 < 0) return;
     // Wall form
-    if (activeForm === formNames[1]) {
+    if (activeForm === FORM_NAMES[1]) {
       setWallName("");
       setWallImage(null);
-      setExistingWallDimensions(null);
+      setExistingWallData(null);
       setLocationName("");
       setLocationCoords("");
       setExistingLocationId(null);
     }
     // Route form
-    if (activeForm === formNames[2]) {
+    if (activeForm === FORM_NAMES[2]) {
       setWallName("");
       setWallImage(null);
-      setExistingWallDimensions(null);
+      setExistingWallData(null);
       setRouteName("");
       setRouteDescription("");
       setRoutePath(null);
@@ -98,11 +101,13 @@ const AddRoute = () => {
   };
 
   useEffect(() => {
-    if (locationName) setActiveFormIndex(activeFormIndex + 1);
+    if (locationName && activeFormIndex + 1 < FORM_NAMES_LENGTH)
+      setActiveFormIndex(activeFormIndex + 1);
   }, [locationName]);
 
   useEffect(() => {
-    if (wallName) setActiveFormIndex(activeFormIndex + 1);
+    if (wallName && activeFormIndex + 1 < FORM_NAMES_LENGTH)
+      setActiveFormIndex(activeFormIndex + 1);
   }, [wallName]);
 
   useEffect(() => {
@@ -110,15 +115,12 @@ const AddRoute = () => {
   }, [routeName]);
 
   useEffect(() => {
-    setActiveForm(formNames[activeFormIndex]);
+    setActiveForm(FORM_NAMES[activeFormIndex]);
   }, [activeFormIndex]);
 
   return (
     <AddRouteStyled>
-      {error && <p>{error}</p>}
-      {success && <p>{success}</p>}
-
-      {activeForm !== formNames[0] && (
+      {activeForm !== FORM_NAMES[0] && (
         <ButtonStyled
           type="button"
           onClick={() => {
@@ -129,32 +131,41 @@ const AddRoute = () => {
         </ButtonStyled>
       )}
 
-      {activeForm === formNames[0] && (
-        <LocationForm
-          setLocationName={setLocationName}
-          setLocationCoords={setLocationCoords}
-          setExistingLocationId={setExistingLocationId}
-        />
+      {activeForm === FORM_NAMES[0] && (
+        <>
+          <H2Styled>Location:</H2Styled>
+          <LocationForm
+            setLocationName={setLocationName}
+            setLocationCoords={setLocationCoords}
+            setExistingLocationId={setExistingLocationId}
+          />
+        </>
       )}
 
-      {activeForm === formNames[1] && (
-        <WallForm
-          existingLocationId={existingLocationId}
-          setWallName={setWallName}
-          setWallImage={setWallImage}
-          setExistingWallDimensions={setExistingWallDimensions}
-        />
+      {activeForm === FORM_NAMES[1] && (
+        <>
+          <H2Styled>Wall:</H2Styled>
+          <WallForm
+            existingLocationId={existingLocationId}
+            setWallName={setWallName}
+            setWallImage={setWallImage}
+            setExistingWallData={setExistingWallData}
+          />
+        </>
       )}
 
-      {activeForm === formNames[2] && (
-        <RouteForm
-          setRouteName={setRouteName}
-          setRouteGrade={setRouteGrade}
-          setRouteDescription={setRouteDescription}
-          setRoutePath={setRoutePath}
-          wallImage={wallImage}
-          existingWallDimensions={existingWallDimensions}
-        />
+      {activeForm === FORM_NAMES[2] && (
+        <>
+          <H2Styled>Route:</H2Styled>
+          <RouteForm
+            setRouteName={setRouteName}
+            setRouteGrade={setRouteGrade}
+            setRouteDescription={setRouteDescription}
+            setRoutePath={setRoutePath}
+            wallImage={wallImage}
+            existingWallData={existingWallData}
+          />
+        </>
       )}
     </AddRouteStyled>
   );

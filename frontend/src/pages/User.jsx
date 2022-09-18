@@ -38,8 +38,8 @@ const User = () => {
     liked_locations,
     liked_routes,
     liked_walls,
-    location_creator,
-    wall_creator,
+    location_author,
+    wall_author,
     route_author,
     username,
   } = userData;

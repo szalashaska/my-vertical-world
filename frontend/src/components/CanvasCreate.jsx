@@ -35,7 +35,10 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
     if (isMouseDown) {
       setUserPath([
         ...userPath,
-        { x: ((x * 100) / width).toFixed(4), y: (y * 100) / height.toFixed(4) },
+        {
+          x: ((x * 100) / width).toFixed(4),
+          y: ((y * 100) / height).toFixed(4),
+        },
       ]);
     }
   };

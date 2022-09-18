@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import CanvasShowMany from "../components/CanvasShowMany";
 import Comment from "../components/Comment";
 import Delete from "../components/Delete";
@@ -58,9 +58,14 @@ const ClimbingRoute = () => {
   return (
     <ClimbingRouteStyled>
       <H2Styled>{name}</H2Styled>
+
       <AuthorContent authorId={author.id}>
         <Delete id={id} content={"routes"} children={0} />
+        <Link to={"edit"} state={{ routeData }}>
+          Edit
+        </Link>
       </AuthorContent>
+
       <H3Styled>
         {wall.name}, {location.name}
       </H3Styled>
