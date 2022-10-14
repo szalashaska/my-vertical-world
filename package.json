@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "ol": "^7.1.0"
+  },
+  "devDependencies": {
+    "file-loader": "^6.2.0"
   }
 }

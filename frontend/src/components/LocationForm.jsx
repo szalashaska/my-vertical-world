@@ -5,6 +5,7 @@ import LocationContext from "../contexts/LocationContext";
 import { ButtonStyled } from "../constans/GlobalStyles";
 import ActiveTabBar from "./ActiveTabBar";
 import MessageContext from "../contexts/MessageContext";
+import { getContent } from "../helpers/Utils.helpers";
 
 const LocationForm = ({
   locationName,
@@ -37,17 +38,22 @@ const LocationForm = ({
   ];
 
   const handleGetLocationsList = async () => {
-    const endpoint = "/api/locations";
-    try {
-      const response = await fetch(endpoint);
-      const data = await response.json();
-
-      if (response.status === 200) {
-        setLocationsList(data);
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
+    const locations = await getContent("locations");
+    if (locations) {
+      setLocationsList(locations);
     }
+
+    // const endpoint = "/api/locations";
+    // try {
+    //   const response = await fetch(endpoint);
+    //   const data = await response.json();
+
+    //   if (response.status === 200) {
+    //     setLocationsList(data);
+    //   }
+    // } catch (err) {
+    //   console.log("Unexpected error", err);
+    // }
   };
 
   const checkUserLocationNameInput = () => {

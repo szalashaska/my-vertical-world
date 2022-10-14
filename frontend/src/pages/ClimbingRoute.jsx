@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CanvasShowMany from "../components/CanvasShowMany";
 import Comment from "../components/Comment";
@@ -6,31 +6,25 @@ import Delete from "../components/Delete";
 import Like from "../components/Like";
 import { H2Styled, H3Styled, PStyled } from "../constans/GlobalStyles";
 import AuthorContent from "../helpers/AuthorContent";
+import { getContent } from "../helpers/Utils.helpers";
 import { ClimbingRouteStyled } from "./Pages.styled";
 
 const ClimbingRoute = () => {
   const [routeData, setRouteData] = useState(null);
   const { routeId } = useParams();
 
-  const handleGetRoute = async (id) => {
-    try {
-      const response = await fetch(`/api/routes/${id}`);
-      const data = await response.json();
-
-      if (response.status === 200) {
-        setRouteData(data);
-        // console.log(data);
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
+  const handleGetRoute = useCallback(async (id) => {
+    const routes = await getContent("routes", id);
+    if (routes) {
+      setRouteData(routes);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (routeId) {
       handleGetRoute(+routeId);
     }
-  }, []);
+  }, [handleGetRoute]);
 
   if (!routeData) {
     return <ClimbingRouteStyled>Route does not exist.</ClimbingRouteStyled>;
@@ -50,10 +44,6 @@ const ClimbingRoute = () => {
     comments,
   } = routeData;
   const { image, image_height, image_width } = wall;
-
-  if (!routeData) {
-    return <ClimbingRouteStyled>No route</ClimbingRouteStyled>;
-  }
 
   return (
     <ClimbingRouteStyled>

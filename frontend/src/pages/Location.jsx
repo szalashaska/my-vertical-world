@@ -1,5 +1,5 @@
+import React, { useCallback, useEffect, useState } from "react";
 import { toLonLat } from "ol/proj";
-import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import Comment from "../components/Comment";
 import Delete from "../components/Delete";
@@ -7,6 +7,7 @@ import Like from "../components/Like";
 import LocationMap from "../components/LocationMap";
 import { H2Styled, PStyled } from "../constans/GlobalStyles";
 import AuthorContent from "../helpers/AuthorContent";
+import { getContent } from "../helpers/Utils.helpers";
 import { LocationStyled } from "./Pages.styled";
 
 const Location = () => {
@@ -14,24 +15,18 @@ const Location = () => {
   const [locationCoordinates, setLocationCoordinates] = useState(null);
   const { locationId } = useParams();
 
-  const handleGetLocationData = async (id) => {
-    try {
-      const response = await fetch(`/api/locations/${id}`);
-      const data = await response.json();
-
-      if (response.status === 200) {
-        setLocationData(data);
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
+  const handleGetLocationData = useCallback(async (id) => {
+    const location = await getContent("locations", id);
+    if (location) {
+      setLocationData(location);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (locationId) {
       handleGetLocationData(+locationId);
     }
-  }, []);
+  }, [handleGetLocationData]);
 
   useEffect(() => {
     if (locationData) {
@@ -55,6 +50,7 @@ const Location = () => {
   return (
     <LocationStyled>
       <H2Styled>{name}</H2Styled>
+
       <AuthorContent authorId={author.id}>
         <Delete
           id={id}
@@ -66,6 +62,7 @@ const Location = () => {
           Edit
         </Link>
       </AuthorContent>
+
       {locationCoordinates && (
         <H2Styled>
           Coordinates:
@@ -73,18 +70,21 @@ const Location = () => {
           <PStyled> {locationCoordinates.x} </PStyled>
         </H2Styled>
       )}
+
       <H2Styled>Location walls:</H2Styled>
       <ul>
         {walls.map((wall) => (
           <li key={wall.id}>{wall.name}</li>
         ))}
       </ul>
+
       <H2Styled>Location routes:</H2Styled>
       <ul>
         {routes.map((route) => (
           <li key={route.id}>{route.name}</li>
         ))}
       </ul>
+
       <Like id={id} currentLikes={likes} content={"locations"} />
       <Comment id={id} currentComments={comments} content={"locations"} />
 

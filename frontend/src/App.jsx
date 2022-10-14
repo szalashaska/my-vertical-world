@@ -17,6 +17,10 @@ import { MessageProvider } from "./contexts/MessageContext";
 import EditRoute from "./pages/EditRoute";
 import EditWall from "./pages/EditWall";
 import EditLocation from "./pages/EditLocation";
+import News from "./pages/News";
+import ClimbingRoutes from "./pages/ClimbingRoutes";
+import Locations from "./pages/Locations";
+import Walls from "./pages/Walls";
 
 const App = () => {
   return (
@@ -27,8 +31,10 @@ const App = () => {
         <MessageProvider>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/news" element={<News />} />
 
             {/* ----Route paths---- */}
+            <Route path="/routes" element={<ClimbingRoutes />} />
             <Route path="/routes/:routeId" element={<ClimbingRoute />} />
             <Route
               path="/routes/:routeId/edit"
@@ -40,6 +46,7 @@ const App = () => {
             />
 
             {/* ----Wall paths---- */}
+            <Route path="/walls" element={<Walls />} />
             <Route path="/walls/:wallId" element={<Wall />} />
             <Route
               path="/walls/:wallId/edit"
@@ -51,6 +58,7 @@ const App = () => {
             />
 
             {/* ----Location paths---- */}
+            <Route path="/locations" element={<Locations />} />
             <Route path="/locations/:locationId/" element={<Location />} />
             <Route
               path="/locations/:locationId/edit"

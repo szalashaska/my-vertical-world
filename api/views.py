@@ -1,18 +1,21 @@
 from django.http import JsonResponse
 from django.db import IntegrityError
+import json
+
+import time
+
 
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import pagination
 
 from .models import User, Follow, Location, Wall, Route, Comment
 from .serilizers import (CommentSerializer, FollowSerializer, RouteSerializer, RouteExtendedSerializer, 
 LocationSerializer, LocationExtendedSerializer, UserExtendedSerializer, WallSerializer, 
 WallExtendedSerializer)
-
-import json
 
 # Customizing Token
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -28,8 +31,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         return token
 
+
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+# Pagination class
+class StandardPagination(pagination.PageNumberPagination):
+    page_size = 3
+    page_query_param = "page"
+    page_size_query_param  = "size"
+    max_page_size = 100
 
 
 @api_view(["POST"])
@@ -51,7 +63,23 @@ def register(request):
 
 
     return Response({"success": "Successfully registered user."}, status=status.HTTP_201_CREATED)
-      
+
+
+def get_paginated_content(request, model, serializer, order_by=None):
+    if order_by:
+        content = model.objects.all().order_by(order_by)
+    else:
+        content = model.objects.all().order_by("-created")
+    
+    if not content:
+        return JsonResponse({"error": "Cant retrive content"}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+
+    paginator = StandardPagination()
+    paginated_content = paginator.paginate_queryset(content, request)
+    serialized_content = serializer(paginated_content, many=True).data
+
+    return paginator.get_paginated_response(serialized_content)
+
 
 @api_view(["POST", "GET"])
 # @permission_classes([IsAuthenticated])
@@ -109,19 +137,21 @@ def routes(request):
         return Response({"success": "Successfully created new route"}, status=status.HTTP_201_CREATED)
 
     if request.method == "GET":
-        routes = Route.objects.all().order_by("-created")
-        data = RouteExtendedSerializer(routes, many=True).data
-     
-        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+         return get_paginated_content(request, Route, RouteSerializer, "name")
+
+
+@api_view(["POST", "GET"])
+# @permission_classes([IsAuthenticated])
+def routes_news(request):
+    if request.method == "GET":
+        return get_paginated_content(request, Route, RouteExtendedSerializer)
+
 
 
 @api_view(["GET"])
 def walls(request):
     if request.method == "GET":
-        queryset = Wall.objects.all().order_by("name")
-        data = WallSerializer(queryset, many=True).data
-
-        return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+        return get_paginated_content(request, Wall, WallSerializer, "name")
 
 
 @api_view(["GET"])
@@ -131,6 +161,27 @@ def locations(request):
         data = LocationSerializer(locations, many=True).data
 
         return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+
+def search_by_query(model, serializer, query):
+    content = model.objects.filter(name__icontains=query).all()
+    data = serializer(content, many=True).data
+
+    return JsonResponse(data, status=status.HTTP_200_OK, safe=False)
+
+
+
+@api_view(["GET"])
+def search(request):
+    if request.method == "GET":
+        content = request.query_params["content"]
+        query = request.query_params["query"]
+
+        return search_by_query(Route, RouteSerializer, query)
+
+        # time.sleep(2)
+        # return JsonResponse({"ok": query}, status=status.HTTP_200_OK, safe=False)
+
 
 
 def handle_content_by_id(model, serializer, request, id):

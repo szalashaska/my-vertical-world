@@ -9,6 +9,10 @@ export const HomeStyled = styled(PageContainer)`
   background-color: var(--clr-pink);
 `;
 
+export const NewsStyled = styled(PageContainer)`
+  background-color: var(--clr-pink);
+`;
+
 export const AddRouteStyled = styled(PageContainer)`
   background-color: var(--clr-pink);
 `;

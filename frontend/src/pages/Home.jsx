@@ -1,32 +1,13 @@
-import React, { useEffect, useState } from "react";
-import RoutesContainer from "../components/RoutesContainer";
-import { H1Styled } from "../constans/GlobalStyles";
+import React from "react";
 import { HomeStyled } from "./Pages.styled";
+import Video from "../components/Video";
+import Search from "../components/Search";
 
 const Home = () => {
-  const [routesData, setRoutesData] = useState(null);
-  const getRoutesData = async () => {
-    const endpoint = "/api/routes";
-    try {
-      const data = await fetch(endpoint);
-      const response = await data.json();
-
-      if (data.status === 200) {
-        setRoutesData(response);
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
-    }
-  };
-
-  useEffect(() => {
-    getRoutesData();
-  }, []);
-
   return (
     <HomeStyled>
-      <H1Styled>Newest routes:</H1Styled>
-      {routesData && <RoutesContainer routes={routesData} />}
+      <Video />
+      <Search />
     </HomeStyled>
   );
 };

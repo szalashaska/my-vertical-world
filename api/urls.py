@@ -15,6 +15,7 @@ urlpatterns = [
 
     # API
     path('routes', views.routes, name="routes"),
+    path('routes-news', views.routes_news, name="routes_news"),
     path('routes/<int:route_id>', views.route, name="route"),
     path('routes/<int:route_id>/likes', views.route_likes, name="route_likes"),
     path('routes/<int:route_id>/comments', views.route_comments, name="route_comments"),
@@ -28,6 +29,8 @@ urlpatterns = [
     path('locations/<int:location_id>', views.location, name="location"),
     path('locations/<int:location_id>/likes', views.location_likes, name="location_likes"),
     path('locations/<int:location_id>/comments', views.location_comments, name="location_comments"),
+    
+    path('search', views.search, name="search"),
 
     path('user/<int:user_id>', views.user, name="user"),
     path('user/<int:user_id>/follows', views.user_follows, name="user_follows"),

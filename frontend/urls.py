@@ -3,16 +3,20 @@ from . import views
 
 urlpatterns = [
     path('', views.index),
+    path('news', views.index),
     path('sign-up', views.index),
     path('register', views.index),
     path('add-route', views.index),
 
+    path('routes', views.index),
     path('routes/<int:routeId>', views.index),
     path('routes/<int:routeId>/edit', views.index),
 
+    path('locations', views.index),
     path('locations/<int:locationId>', views.index),
     path('locations/<int:locationId>/edit', views.index),
 
+    path('walls', views.index),
     path('walls/<int:wallId>', views.index),
     path('walls/<int:wallId>/edit', views.index),
     

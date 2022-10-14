@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CanvasShowMany from "../components/CanvasShowMany";
 import Comment from "../components/Comment";
@@ -6,30 +6,25 @@ import Delete from "../components/Delete";
 import Like from "../components/Like";
 import { H2Styled, H3Styled } from "../constans/GlobalStyles";
 import AuthorContent from "../helpers/AuthorContent";
+import { getContent } from "../helpers/Utils.helpers";
 import { WallStyled } from "./Pages.styled";
 
 const Wall = () => {
   const [wallData, setWallData] = useState(null);
   const { wallId } = useParams();
 
-  const handleGetWallData = async (id) => {
-    try {
-      const response = await fetch(`/api/walls/${id}`);
-      const data = await response.json();
-
-      if (response.status === 200) {
-        setWallData(data);
-      }
-    } catch (err) {
-      console.log("Unexpected error", err);
+  const handleGetWallData = useCallback(async (id) => {
+    const wall = await getContent("walls", id);
+    if (wall) {
+      setWallData(wall);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (wallId) {
       handleGetWallData(+wallId);
     }
-  }, []);
+  }, [handleGetWallData]);
 
   if (!wallData) {
     return <WallStyled> No wall </WallStyled>;

@@ -2,14 +2,18 @@ import React, { useContext, useRef, useEffect, useState } from "react";
 import MapContext from "../contexts/MapContext";
 import Overlay from "ol/Overlay";
 import { PopupContainer } from "./styled/LocationOverlay.styled";
+import { useParams } from "react-router-dom";
 
 const SingleLocationOverlay = () => {
   const { map } = useContext(MapContext);
   const [popupOverlay, setPopupOverlay] = useState(null);
 
+  const { locationId } = useParams();
+
   const popupContainer = useRef();
   const popupCloseButton = useRef();
   const popupContent = useRef();
+  const popupLink = useRef();
 
   const handleClosePopup = () => {
     if (!popupOverlay || !popupCloseButton.current) return;
@@ -20,6 +24,11 @@ const SingleLocationOverlay = () => {
   const handleClickOnFeature = (e, feature) => {
     popupOverlay.setPosition(e.coordinate);
     popupContent.current.innerHTML = feature.get("name");
+
+    if (!locationId) {
+      popupLink.current.href = `/locations/${feature.get("id")}`;
+      popupLink.current.innerHTML = "Go to location";
+    }
   };
 
   const handleClickOnMap = (e) => {
@@ -66,6 +75,7 @@ const SingleLocationOverlay = () => {
         X
       </button>
       <div ref={popupContent} />
+      <a href="/" ref={popupLink} />
     </PopupContainer>
   );
 };

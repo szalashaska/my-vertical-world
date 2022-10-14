@@ -34,6 +34,10 @@ module.exports = {
         test: /\.png/,
         type: "asset/resource",
       },
+      {
+        test: /\.mp4$/,
+        use: "file-loader?name=videos/[name].[ext]",
+      },
     ],
   },
   optimization: {

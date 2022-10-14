@@ -23,20 +23,13 @@ export const NavbarList = styled.ul`
   display: flex;
   list-style: none;
 `;
-export const NavbarListItem = styled.li``;
+
+export const NavbarDropdown = styled.ul`
+  display: ${({ dropdown }) => (dropdown ? "block" : "none")};
+`;
+export const NavbarItem = styled.li``;
+export const NavbarSubitem = styled.li``;
 export const NavbarLogOut = styled.div`
   padding: 1rem 2rem;
+  cursor: pointer;
 `;
-
-//   .navbar__menu {
-//
-//   }
-
-//   nav a {
-//     padding: 1em;
-//     color: black;
-//   }
-
-//   nav p {
-//     padding: 1em;
-//   }
