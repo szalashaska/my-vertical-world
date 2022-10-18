@@ -177,11 +177,20 @@ def search(request):
         content = request.query_params["content"]
         query = request.query_params["query"]
 
-        return search_by_query(Route, RouteSerializer, query)
+        # Wait 1 secound to avoid multiple queries
+        time.sleep(1)
 
-        # time.sleep(2)
-        # return JsonResponse({"ok": query}, status=status.HTTP_200_OK, safe=False)
+        if content == "routes":
+            return search_by_query(Route, RouteSerializer, query)
 
+        elif content == "walls":
+            return search_by_query(Wall, WallSerializer, query)
+
+        elif content == "locations":
+            return search_by_query(Location, LocationSerializer, query)
+
+        else:
+         return JsonResponse({"error": "Wrong content to search provided"}, status=status.HTTP_400_BAD_REQUEST, safe=False)
 
 
 def handle_content_by_id(model, serializer, request, id):

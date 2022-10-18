@@ -1,101 +1,114 @@
 import React, { useContext, useState } from "react";
-import { Link } from "react-router-dom";
 import navbarList from "../constans/NavbarList";
 import AuthContext from "../contexts/AuthContext";
+import Logo from "../assets/logo.png";
 import {
   NavbarStyled,
-  NavbarDropdown,
+  NavbarMaxWidthWrapper,
+  NavbarLogo,
+  NavbarListWrapper,
+  NavbarDropdownList,
   NavbarList,
   NavbarItem,
+  NavbarLink,
+  NavbarSubLink,
   NavbarSubitem,
-  NavbarLogOut,
+  NavbarButton,
+  NavbarHamburger,
+  NavbarItemWithDropdown,
+  NavbarDropdownArrow,
+  NavbarSidebarButton,
+  NavbarCross,
 } from "./styled/Navbar.styled";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [dropdown, setDropdown] = useState(false);
+  const [sidebar, setSidebar] = useState(false);
   const { user, logoutUser } = useContext(AuthContext);
 
   return (
     <NavbarStyled>
-      <Link to="/">My Vertical World </Link>
+      <NavbarMaxWidthWrapper>
+        <Link to="/">
+          <NavbarLogo src={Logo} />
+        </Link>
 
-      <NavbarList>
-        {navbarList.map((item) => {
-          // Do not show navigation item that are private (for logged user only)
-          if (!user && item.private) return;
+        <NavbarSidebarButton
+          onClick={() => {
+            setSidebar(!sidebar);
+          }}
+          type="button"
+        >
+          {sidebar ? <NavbarCross /> : <NavbarHamburger />}
+        </NavbarSidebarButton>
 
-          // Dropdown manu items
-          if (item.dropdown) {
-            return (
-              <NavbarItem
-                key={item.id}
-                onMouseEnter={() => setDropdown(true)}
-                onMouseLeave={() => setDropdown(false)}
-              >
-                <Link to={item.path}>{item.title}</Link>
-                <NavbarDropdown
-                  onClick={() => setDropdown(false)}
-                  dropdown={dropdown}
-                >
-                  {item.dropdown.map((subitem) => (
-                    <NavbarSubitem key={subitem.id}>
-                      <Link to={subitem.path}>{subitem.title}</Link>
-                    </NavbarSubitem>
-                  ))}
-                </NavbarDropdown>
+        <NavbarListWrapper sidebar={sidebar}>
+          <NavbarList>
+            {navbarList.map((item) => {
+              // Do not show navigation item that are private (for logged user only)
+              if (!user && item.private) return;
+
+              // Dropdown manu items
+              if (item.dropdown) {
+                return (
+                  <NavbarItem
+                    key={item.id}
+                    onMouseEnter={() => setDropdown(true)}
+                    onMouseLeave={() => setDropdown(false)}
+                    dropdown
+                  >
+                    <NavbarItemWithDropdown>
+                      {item.title} <NavbarDropdownArrow />
+                    </NavbarItemWithDropdown>
+                    <NavbarDropdownList
+                      onClick={() => setDropdown(false)}
+                      dropdown={dropdown}
+                    >
+                      {item.dropdown.map((subitem) => (
+                        <NavbarSubitem key={subitem.id}>
+                          <NavbarSubLink to={subitem.path}>
+                            {subitem.title}
+                          </NavbarSubLink>
+                        </NavbarSubitem>
+                      ))}
+                    </NavbarDropdownList>
+                  </NavbarItem>
+                );
+              }
+              // Normal item
+              return (
+                <NavbarItem key={item.id}>
+                  <NavbarLink to={item.path}>{item.title}</NavbarLink>
+                </NavbarItem>
+              );
+            })}
+          </NavbarList>
+
+          <NavbarList>
+            {user && (
+              <NavbarItem>
+                <NavbarLink to={`/user/${user.user_id}`}>
+                  {user.username}
+                </NavbarLink>
               </NavbarItem>
-            );
-          }
-          // Normal item
-          return (
-            <NavbarItem key={item.id}>
-              <Link to={item.path}>{item.title}</Link>
+            )}
+            <NavbarItem>
+              {user ? (
+                <NavbarButton onClick={logoutUser} type="button">
+                  Log out
+                </NavbarButton>
+              ) : (
+                <NavbarButton as="a" href={"/sign-up"}>
+                  Sign in
+                </NavbarButton>
+              )}
             </NavbarItem>
-          );
-        })}
-        <NavbarItem>
-          {user ? (
-            <NavbarLogOut onClick={logoutUser}>Log out</NavbarLogOut>
-          ) : (
-            <Link to="/sign-up">Sign in</Link>
-          )}
-        </NavbarItem>
-      </NavbarList>
+          </NavbarList>
+        </NavbarListWrapper>
+      </NavbarMaxWidthWrapper>
     </NavbarStyled>
   );
 };
 
 export default Navbar;
-
-{
-  /* <NavbarList>
-<NavbarItem>
-  <Link to="/">Home</Link>
-</NavbarItem>
-
-{user ? (
-  <>
-    <NavbarItem>
-      <Link to="/add-route">Add route</Link>
-    </NavbarItem>
-    <NavbarItem>
-      <Link to="/news">News</Link>
-    </NavbarItem>
-
-    <NavbarItem onClick={logoutUser}>
-      <NavbarLogOut>Log out</NavbarLogOut>
-    </NavbarItem>
-
-    <NavbarItem>
-      <Link to="/">
-        Hello <NavbarUsername>{user.username}</NavbarUsername>
-      </Link>
-    </NavbarItem>
-  </>
-) : (
-  <NavbarItem>
-    <Link to="/sign-up">Sign in</Link>
-  </NavbarItem>
-)}
-</NavbarList> */
-}

@@ -20,7 +20,6 @@ const navbarList = [
   {
     id: 4,
     title: "Content",
-    path: "/news",
     private: false,
     dropdown: [
       {

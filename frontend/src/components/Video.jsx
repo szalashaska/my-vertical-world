@@ -2,29 +2,22 @@ import React from "react";
 import homeVideo from "../assets/climb.mp4";
 import styled from "styled-components";
 
-const VideoShowcase = styled.div`
-  width: 100%;
-  height: 30rem;
-  background-color: yellow;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 const VideoStyled = styled.video`
-  width: 100%;
-  /* @media only screen and (min-width: 700px) {
+  background-color: black;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  height: 110%;
+  opacity: 0.9;
+  @media screen and (min-width: 575px) {
+    height: auto;
     width: 100%;
-  } */
+  }
 `;
 
 const Video = () => {
-  return (
-    <VideoShowcase>
-      <VideoStyled src={homeVideo} muted loop autoPlay />
-    </VideoShowcase>
-  );
+  return <VideoStyled src={homeVideo} muted loop autoPlay />;
 };
 
 export default Video;

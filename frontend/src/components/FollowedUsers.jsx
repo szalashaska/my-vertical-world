@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { PStyled } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 
 const FollowedUsers = ({ id }) => {
@@ -36,9 +37,13 @@ const FollowedUsers = ({ id }) => {
 
   return (
     <div>
+      <PStyled>Followed users:</PStyled>
       <ul>
-        {followed_users.length > 0 &&
-          followed_users.map((user) => <li key={user.id}>{user.username}</li>)}
+        {followed_users.length > 0 ? (
+          followed_users.map((user) => <li key={user.id}>{user.username}</li>)
+        ) : (
+          <p>Currently no one is followed</p>
+        )}
       </ul>
     </div>
   );

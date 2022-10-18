@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 let controller, signal;
 const Search = () => {
@@ -38,14 +39,18 @@ const Search = () => {
   };
 
   useEffect(() => {
-    if (query) {
-      getData();
+    if (query.length > 1) getData();
+
+    // If user clears search box
+    if (query === "") {
+      // Abort fetch
+      if (controller) controller.abort();
+      setResults([]);
     }
   }, [query]);
 
   return (
     <div>
-      <div>{selectedContent}</div>
       <input
         type="text"
         value={query}
@@ -85,8 +90,18 @@ const Search = () => {
       </div>
 
       <div>
-        {results.length &&
-          results.map((result) => <div key={result.id}>{result.name}</div>)}
+        {results.length > 0 && (
+          <>
+            {results.map((result) => (
+              <div key={result.id}>
+                <Link to={`/${selectedContent}/${result.id}`}>
+                  {result.name}
+                </Link>
+              </div>
+            ))}
+            {loading && <p>Loading...</p>}
+          </>
+        )}
       </div>
     </div>
   );

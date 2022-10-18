@@ -7,6 +7,8 @@ import ActiveTabBar from "./ActiveTabBar";
 import MessageContext from "../contexts/MessageContext";
 import { getContent } from "../helpers/Utils.helpers";
 
+const tabs = ["Add new location", "Append to existing location"];
+
 const LocationForm = ({
   locationName,
   locationCoords,
@@ -15,7 +17,6 @@ const LocationForm = ({
   setExistingLocationId,
   editedLocation,
 }) => {
-  const tabs = ["Add new location", "Append to existing location"];
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [mapZoom, setMapZoom] = useState(3);
   const [mapCenter, setMapCenter] = useState([2078486, 6686398]);
