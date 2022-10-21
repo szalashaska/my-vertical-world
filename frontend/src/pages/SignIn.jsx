@@ -3,9 +3,13 @@ import React, { useState, useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
 import { SignUpStyled } from "./Pages.styled";
 import FormInput from "../components/FormInput";
-import { ButtonStyled, H1Styled } from "../constans/GlobalStyles";
+import { ButtonStyled, Container, Wrapper } from "../constans/GlobalStyles";
+import ActiveTabBar from "../components/ActiveTabBar";
+
+const TABS = ["Log in", "Sign up"];
 
 const SignIn = () => {
+  const [activeTab, setActiveTab] = useState(TABS[0]);
   const [loginName, setLoginName] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
 
@@ -18,9 +22,10 @@ const SignIn = () => {
   const loginInputs = [
     {
       id: 1,
+      autoFocus: true,
       name: "username",
       type: "text",
-      placeholder: "Username",
+      placeholder: "Username...",
       label: "Username:",
       required: true,
       value: loginName,
@@ -41,12 +46,13 @@ const SignIn = () => {
   const RegisterInputs = [
     {
       id: 3,
+      autoFocus: true,
       name: "username",
       type: "text",
       placeholder: "Username...",
-      wrongInputMsg: "Name of of the user should be between 3-16 characters",
-      pattern: "^.{3,16}$",
       label: "Username:",
+      hint: "Name should be between 3-16 characters.",
+      pattern: "^.{3,16}$",
       required: true,
       value: registerName,
       onChange: (e) => setRegisterName(e.target.value),
@@ -55,8 +61,10 @@ const SignIn = () => {
       id: 4,
       name: "password",
       type: "password",
-      placeholder: "Password...",
       label: "Password:",
+      placeholder: "Password...",
+      hint: "Password should be at least 5 characters long.",
+      pattern: "^.{5,50}$",
       required: true,
       value: registerPasword,
       onChange: (e) => setRegisterPassword(e.target.value),
@@ -66,7 +74,7 @@ const SignIn = () => {
       name: "confirmPassword",
       type: "password",
       placeholder: "Confirm Password...",
-      wrongInputMsg: "Passwords does not match.",
+      hint: "Passwords must match.",
       label: "Confirm Password:",
       pattern: registerPasword,
       required: true,
@@ -77,33 +85,42 @@ const SignIn = () => {
 
   return (
     <SignUpStyled>
-      <H1Styled>Login</H1Styled>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          loginUser(loginName, loginPassword);
-        }}
-      >
-        {loginInputs.map((input) => (
-          <FormInput key={input.id} {...input} />
-        ))}
-        <ButtonStyled type="submit">Login</ButtonStyled>
-      </form>
+      <Container>
+        <ActiveTabBar
+          tabs={TABS}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+        />
+        <Wrapper maxWidth="40rem">
+          {activeTab === TABS[0] ? (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                loginUser(loginName, loginPassword);
+              }}
+            >
+              {loginInputs.map((input) => (
+                <FormInput key={input.id} {...input} />
+              ))}
+              <ButtonStyled type="submit">Log in</ButtonStyled>
+            </form>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                registerUser(registerName, registerPasword, confirmPasword);
+              }}
+            >
+              {RegisterInputs.map((input) => (
+                <FormInput key={input.id} {...input} />
+              ))}
+              <ButtonStyled type="submit">Sign up</ButtonStyled>
+            </form>
+          )}
+        </Wrapper>
 
-      <H1Styled>Register</H1Styled>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          registerUser(registerName, registerPasword, confirmPasword);
-        }}
-      >
-        {RegisterInputs.map((input) => (
-          <FormInput key={input.id} {...input} />
-        ))}
-        <ButtonStyled type="submit">Register</ButtonStyled>
-      </form>
-
-      {error && <div>{error}</div>}
+        {error && <div>{error}</div>}
+      </Container>
     </SignUpStyled>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Edit from "../components/Edit";
 import WallForm from "../components/WallForm";
+import { Container, PStyled } from "../constans/GlobalStyles";
 
 const EditWall = () => {
   const locationHook = useLocation();
@@ -15,7 +16,7 @@ const EditWall = () => {
   const { id, name, location } = wallData;
 
   return (
-    <div>
+    <Container>
       <Edit
         id={id}
         state={wallName}
@@ -24,6 +25,9 @@ const EditWall = () => {
         }}
         content={"walls"}
       />
+      <PStyled align="center" mb="1.5rem">
+        Edit wall name.
+      </PStyled>
       <WallForm
         wallName={name}
         existingLocationId={location.id}
@@ -32,7 +36,7 @@ const EditWall = () => {
         setExistingWallDimensions={() => {}}
         edit
       />
-    </div>
+    </Container>
   );
 };
 

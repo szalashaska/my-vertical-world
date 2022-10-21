@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { H1Styled } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import MessageContext from "../contexts/MessageContext";
 
@@ -37,7 +38,7 @@ const Edit = ({ id, state, data, content }) => {
       handleEditContent();
     }
   }, [state]);
-  return <div>Edit {content}</div>;
+  return <H1Styled align="center">Edit {content}</H1Styled>;
 };
 
 export default Edit;

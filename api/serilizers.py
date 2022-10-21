@@ -22,9 +22,10 @@ class LocationSerializer(ModelSerializer):
 
 
 class WallSerializer(ModelSerializer):
+    location = LocationSerializer()
     class Meta:
         model = Wall
-        fields = ("id", "name", "image", "image_width", "image_height")
+        fields = ("id", "name", "image", "image_width", "image_height", "location")
 
 
 class RouteSerializer(ModelSerializer):
@@ -64,7 +65,7 @@ class WallExtendedSerializer(ModelSerializer):
     comments = CommentSerializer(many=True)
     class Meta:
         model = Wall
-        fields = ("id", "author", "name", "likes", "image", "image_width", "image_height", "routes", "location", "comments")
+        fields = ("id", "author", "name", "likes", "image", "image_width", "image_height", "routes", "location", "comments", "created")
 
 
 class LocationExtendedSerializer(ModelSerializer):
@@ -74,7 +75,7 @@ class LocationExtendedSerializer(ModelSerializer):
     comments = CommentSerializer(many=True)
     class Meta:
         model = Location
-        fields = ("id", "author", "name", "coordinates", "likes", "walls", "routes", "comments")
+        fields = ("id", "author", "name", "coordinates", "likes", "walls", "routes", "comments", "created")
 
 
 class UserExtendedSerializer(ModelSerializer):

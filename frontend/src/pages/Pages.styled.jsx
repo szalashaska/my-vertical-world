@@ -1,36 +1,20 @@
 import styled from "styled-components";
 import { PageContainer } from "../constans/GlobalStyles";
 
-export const SignUpStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-`;
+export const HomeStyled = styled(PageContainer)``;
 
-export const HomeStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-`;
+export const SignUpStyled = styled(PageContainer)``;
 
 export const NewsStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
+  background: linear-gradient(to right, #f8f0e7, white);
 `;
 
-export const AddRouteStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-`;
+export const AddRouteStyled = styled(PageContainer)``;
 
-export const ClimbingRouteStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-  width: 50%;
-`;
+export const ClimbingRouteStyled = styled(PageContainer)``;
 
-export const WallStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-  width: 50%;
-`;
+export const WallStyled = styled(PageContainer)``;
 
-export const LocationStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-`;
+export const LocationStyled = styled(PageContainer)``;
 
-export const UserStyled = styled(PageContainer)`
-  background-color: var(--clr-pink);
-`;
+export const UserStyled = styled(PageContainer)``;

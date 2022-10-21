@@ -1,10 +1,19 @@
 import React, { useState, useContext } from "react";
-import { ButtonStyled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  FlexContainer,
+  PStyled,
+  UpperFirstLetter,
+  Wrapper,
+} from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import AuthorContent from "../helpers/AuthorContent";
 import PrivateContent from "../helpers/PrivateContent";
+import ExpendedOptions from "./ExpendedOptions";
 import FormInput from "./FormInput";
+import { CommentContainer, CommentBox } from "./styled/Comments.styled";
 
+const ALLOWED_CONTENT = ["routes", "walls", "locations"];
 const Comment = ({ id, content, currentComments }) => {
   const [commentBody, setCommentBody] = useState("");
   const [comments, setComments] = useState(currentComments);
@@ -12,16 +21,15 @@ const Comment = ({ id, content, currentComments }) => {
   const { authTokens, user } = useContext(AuthContext);
 
   // Check if props are correct
-  const allowedContent = ["routes", "walls", "locations"];
-  if (!allowedContent.includes(content)) return null;
+  if (!ALLOWED_CONTENT.includes(content)) return null;
 
   const commentInput = [
     {
       id: 1,
       name: "comment_body",
       type: "textarea",
-      placeholder: "Your comment...",
-      label: `${user?.username} says:`,
+      placeholder: "Add a comment...",
+      // label: `${user?.username} says:`,
       required: true,
       value: commentBody,
       maxlength: 500,
@@ -82,25 +90,48 @@ const Comment = ({ id, content, currentComments }) => {
   };
 
   return (
-    <div>
-      {comments.length > 0 && (
-        <ul>
+    <Wrapper margin="1.5rem 0 0 0">
+      {comments.length > 0 ? (
+        <CommentContainer>
           {comments.map((comment) => (
-            <li key={comment.id}>
-              <AuthorContent authorId={comment.author.id}>
-                <ButtonStyled
-                  onClick={() => handleDeleteComment(comment.id)}
-                  type="button"
-                >
-                  X
-                </ButtonStyled>
-              </AuthorContent>
-              <p>{comment.author.username}</p>
-              <p>{new Date(comment.created).toLocaleDateString()}</p>
-              <p>{comment.body}</p>
-            </li>
+            <CommentBox key={comment.id}>
+              <FlexContainer justify="space-between">
+                <PStyled bold>
+                  <UpperFirstLetter>{comment.author.username}</UpperFirstLetter>
+                </PStyled>
+
+                <PStyled>
+                  {new Date(comment.created).toLocaleDateString()}
+                </PStyled>
+              </FlexContainer>
+
+              <FlexContainer
+                justify="space-between"
+                align="flex-start"
+                padding="0.5rem 0"
+              >
+                <Wrapper width="90%">
+                  <PStyled>{comment.body}</PStyled>
+                </Wrapper>
+
+                <Wrapper width="5%">
+                  <AuthorContent authorId={comment.author.id}>
+                    <ExpendedOptions>
+                      <ButtonStyled
+                        onClick={() => handleDeleteComment(comment.id)}
+                        type="button"
+                      >
+                        Delete
+                      </ButtonStyled>
+                    </ExpendedOptions>
+                  </AuthorContent>
+                </Wrapper>
+              </FlexContainer>
+            </CommentBox>
           ))}
-        </ul>
+        </CommentContainer>
+      ) : (
+        <PStyled align="center">No comments yet.</PStyled>
       )}
 
       <PrivateContent>
@@ -114,7 +145,7 @@ const Comment = ({ id, content, currentComments }) => {
           </ButtonStyled>
         </form>
       </PrivateContent>
-    </div>
+    </Wrapper>
   );
 };
 

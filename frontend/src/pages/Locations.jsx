@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import LocationMap from "../components/LocationMap";
+import Search from "../components/Search";
+import { Container } from "../constans/GlobalStyles";
 
 import { getContent } from "../helpers/Utils.helpers";
 import { LocationStyled } from "./Pages.styled";
@@ -19,7 +21,7 @@ const Locations = () => {
   }, [handleGetLocations]);
 
   if (!locationsData) {
-    return <div>No location to show...</div>;
+    return <div>No locations to show...</div>;
   }
 
   return (
@@ -30,6 +32,9 @@ const Locations = () => {
         data={locationsData}
         single
       />
+      <Container>
+        <Search content="locations" />
+      </Container>
     </LocationStyled>
   );
 };

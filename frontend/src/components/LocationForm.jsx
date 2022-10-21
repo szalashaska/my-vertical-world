@@ -2,7 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import FormInput from "../components/FormInput";
 import LocationMap from "../components/LocationMap";
 import LocationContext from "../contexts/LocationContext";
-import { ButtonStyled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  Container,
+  FlexContainer,
+  H2Styled,
+  UpperFirstLetter,
+} from "../constans/GlobalStyles";
 import ActiveTabBar from "./ActiveTabBar";
 import MessageContext from "../contexts/MessageContext";
 import { getContent } from "../helpers/Utils.helpers";
@@ -43,18 +49,6 @@ const LocationForm = ({
     if (locations) {
       setLocationsList(locations);
     }
-
-    // const endpoint = "/api/locations";
-    // try {
-    //   const response = await fetch(endpoint);
-    //   const data = await response.json();
-
-    //   if (response.status === 200) {
-    //     setLocationsList(data);
-    //   }
-    // } catch (err) {
-    //   console.log("Unexpected error", err);
-    // }
   };
 
   const checkUserLocationNameInput = () => {
@@ -94,11 +88,13 @@ const LocationForm = ({
   return (
     <>
       {!editedLocation && locationsList.length > 0 && (
-        <ActiveTabBar
-          tabs={tabs}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-        />
+        <Container>
+          <ActiveTabBar
+            tabs={tabs}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+        </Container>
       )}
 
       <LocationContext.Provider
@@ -119,44 +115,49 @@ const LocationForm = ({
         )}
       </LocationContext.Provider>
 
-      {activeTab === tabs[0] ? (
-        <form onSubmit={handleLocationForm}>
-          {locationInputs.map((input) => (
-            <FormInput key={input.id} {...input} />
-          ))}
-          <ButtonStyled type="submit" disabled={!name || !coords}>
-            {editedLocation ? "Edit location" : "Add location"}
-          </ButtonStyled>
-        </form>
-      ) : (
-        <ul>
-          {locationsList &&
-            locationsList.length > 0 &&
-            locationsList.map((item) => (
-              <li
-                key={item.id}
-                onMouseEnter={() => {
-                  setMapCenter([item.coordinates.lon, item.coordinates.lat]);
-                  setMapZoom(6);
-                }}
-              >
-                {item.name}
-                <button
-                  type="button"
-                  onClick={() => {
-                    handleExistingLocationChoice(
-                      item.id,
-                      item.name,
-                      item.coordinates
-                    );
-                  }}
-                >
-                  Choose
-                </button>
-              </li>
+      <Container>
+        {activeTab === tabs[0] ? (
+          <form onSubmit={handleLocationForm}>
+            {locationInputs.map((input) => (
+              <FormInput key={input.id} {...input} />
             ))}
-        </ul>
-      )}
+            <ButtonStyled type="submit" disabled={!name || !coords}>
+              {editedLocation ? "Edit location" : "Add location"}
+            </ButtonStyled>
+          </form>
+        ) : (
+          <>
+            <H2Styled align="center">Existing locations:</H2Styled>
+            <FlexContainer justify="flex-start">
+              {locationsList &&
+                locationsList.length > 0 &&
+                locationsList.map((item) => (
+                  <ButtonStyled
+                    primary
+                    type="button"
+                    onClick={() => {
+                      handleExistingLocationChoice(
+                        item.id,
+                        item.name,
+                        item.coordinates
+                      );
+                    }}
+                    key={item.id}
+                    onMouseEnter={() => {
+                      setMapCenter([
+                        item.coordinates.lon,
+                        item.coordinates.lat,
+                      ]);
+                      setMapZoom(6);
+                    }}
+                  >
+                    <UpperFirstLetter>{item.name}</UpperFirstLetter>
+                  </ButtonStyled>
+                ))}
+            </FlexContainer>
+          </>
+        )}
+      </Container>
     </>
   );
 };

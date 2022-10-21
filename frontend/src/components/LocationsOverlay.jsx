@@ -3,7 +3,12 @@ import MapContext from "../contexts/MapContext";
 import Overlay from "ol/Overlay";
 import LocationContext from "../contexts/LocationContext";
 import { ButtonStyled } from "../constans/GlobalStyles";
-import { PopupContainer } from "./styled/LocationOverlay.styled";
+import {
+  CrossIcon,
+  PopupButton,
+  PopupContainer,
+  PopupContent,
+} from "./styled/LocationOverlay.styled";
 
 const LocationsOverlay = () => {
   const { map } = useContext(MapContext);
@@ -104,10 +109,14 @@ const LocationsOverlay = () => {
 
   return (
     <PopupContainer ref={popupContainer}>
-      <button type="button" ref={popupCloseButton} onClick={handleClosePopup}>
-        X
-      </button>
-      <div ref={popupContent} />
+      <PopupButton
+        type="button"
+        ref={popupCloseButton}
+        onClick={handleClosePopup}
+      >
+        <CrossIcon />
+      </PopupButton>
+      <PopupContent ref={popupContent} />
       {/* Choose existing location button - only while appending */}
       {activeTab !== tabs[0] && (
         <ButtonStyled

@@ -22,7 +22,7 @@ const HeroText = styled.div`
   max-width: 50ch;
   & h1,
   & h2 {
-    text-shadow: 0 0 5px rgba(80, 80, 15, 0.45);
+    text-shadow: 0 0 5px rgba(80, 80, 15, 0.5);
   }
   @media screen and (min-width: 1500px) {
     padding: calc(3rem + 4vw) 1rem;
@@ -59,10 +59,10 @@ const HeroHome = () => {
             All your favourite climbing routes in one place
           </H1Styled>
           <H2Styled light>
-            Browse My Vertical World and have a wonderful climbing experience.
+            Use My Vertical World and have a wonderful climbing experience.
           </H2Styled>
-          <HeroButton as="a" href="/news">
-            See what's new!
+          <HeroButton as="a" href="/sign-up">
+            Sign up now!
           </HeroButton>
         </HeroText>
       </MaxWidthWrapper>

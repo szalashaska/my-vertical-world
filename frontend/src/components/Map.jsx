@@ -6,7 +6,6 @@ import styled from "styled-components";
 import { OSM } from "ol/source";
 
 const MapContainer = styled.div`
-  min-width: 600px;
   min-height: 500px;
   height: 500px;
   width: 100%;

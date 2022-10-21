@@ -1,6 +1,9 @@
 import React, { useEffect, useState, useCallback } from "react";
 import Pagination from "../components/Pagination";
+import Search from "../components/Search";
+import { Container } from "../constans/GlobalStyles";
 import { getPaginatedContent } from "../helpers/Utils.helpers";
+import { ClimbingRouteStyled } from "./Pages.styled";
 
 const baseURL = "api/routes";
 const ClimbingRoutes = () => {
@@ -28,19 +31,22 @@ const ClimbingRoutes = () => {
   }
 
   return (
-    <div>
-      {routesData.map((route) => (
-        <div key={route.id}> {route.name}</div>
-      ))}
+    <ClimbingRouteStyled>
+      <Container>
+        <Search content="routes" />
+        {routesData.map((route) => (
+          <div key={route.id}> {route.name}</div>
+        ))}
 
-      <Pagination
-        nextPage={nextPage}
-        previousPage={previousPage}
-        baseURL={baseURL}
-        getData={handleGetRoutes}
-        count={contentCount}
-      />
-    </div>
+        <Pagination
+          nextPage={nextPage}
+          previousPage={previousPage}
+          baseURL={baseURL}
+          getData={handleGetRoutes}
+          count={contentCount}
+        />
+      </Container>
+    </ClimbingRouteStyled>
   );
 };
 

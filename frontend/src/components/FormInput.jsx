@@ -3,7 +3,7 @@ import {
   FormInputContainer,
   FormInputStyled,
   FormLabelStyled,
-  FormErrorMessage,
+  FormHint,
   FormTextAreaStyled,
   FormSelect,
   FormOption,
@@ -11,7 +11,7 @@ import {
 
 const FormInput = (props) => {
   const randomId = useId();
-  const { id, label, wrongInputMsg, type, ...otherProps } = props;
+  const { id, label, hint, type, ...otherProps } = props;
 
   if (type === "textarea") {
     return (
@@ -20,7 +20,6 @@ const FormInput = (props) => {
           {label}
           <FormTextAreaStyled id={randomId} {...otherProps} />
         </FormLabelStyled>
-        {wrongInputMsg && <FormErrorMessage>{wrongInputMsg}</FormErrorMessage>}
       </FormInputContainer>
     );
   }
@@ -39,7 +38,6 @@ const FormInput = (props) => {
             ))}
           </FormSelect>
         </FormLabelStyled>
-        {wrongInputMsg && <FormErrorMessage>{wrongInputMsg}</FormErrorMessage>}
       </FormInputContainer>
     );
   }
@@ -48,29 +46,16 @@ const FormInput = (props) => {
     <FormInputContainer>
       <FormLabelStyled htmlFor={randomId}>
         {label}
-        <FormInputStyled id={randomId} type={type} {...otherProps} />
+        <FormInputStyled
+          id={randomId}
+          type={type}
+          {...otherProps}
+          title={hint || ""}
+        />
+        {hint && <FormHint>{hint}</FormHint>}
       </FormLabelStyled>
-      {wrongInputMsg && <FormErrorMessage>{wrongInputMsg}</FormErrorMessage>}
     </FormInputContainer>
   );
 };
 
 export default FormInput;
-
-{
-  /* <label htmlFor={`grade-${id}`}>
-Grade:
-<select
-  id={`grade-${id}`}
-  value={routeGrade}
-  onChange={(e) => setRouteGrade(e.target.value)}
-  required
->
-  {routeGrades.map((grade) => (
-    <option key={grade} value={grade}>
-      {grade}
-    </option>
-  ))}
-</select>
-</label> */
-}

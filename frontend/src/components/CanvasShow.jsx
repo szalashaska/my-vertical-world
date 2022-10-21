@@ -1,22 +1,21 @@
 import React, { useRef, useState, useEffect } from "react";
 import { StyledCanvasShow } from "./styled/Canvas.styled";
 
+const routeColor = "yellow";
+const routeDots = {
+  border: "white",
+  start: routeColor,
+  end: "red",
+};
+
 const CanvasShow = ({ height, width, url, routePath }) => {
   const canvasRef = useRef(null);
-  const [ctx, setCtx] = useState(null);
-
-  const routeColor = "yellow";
-  const routeDots = {
-    border: "white",
-    start: routeColor,
-    end: "red",
-  };
 
   const ratio = height / width;
 
   let position = {};
 
-  const drawCircle = (x, y, color1, color2) => {
+  const drawCircle = (ctx, x, y, color1, color2) => {
     const radius = 4;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
@@ -30,7 +29,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
   };
 
   // Draw single stroke
-  const drawLine = (x, y, color) => {
+  const drawLine = (ctx, x, y, color) => {
     const path = new Path2D();
     ctx.strokeStyle = color || "blue";
     ctx.lineWidth = 2;
@@ -45,11 +44,12 @@ const CanvasShow = ({ height, width, url, routePath }) => {
   };
 
   // Draw users route
-  const drawUsersLine = (path, color) => {
+  const drawUsersLine = (ctx, path, color) => {
     const dataLength = path.length;
     path.map((element, index) => {
       if (index === 0) {
         drawCircle(
+          ctx,
           (element.x * canvasRef.current.width) / 100,
           (element.y * canvasRef.current.height) / 100,
           routeDots.start,
@@ -59,6 +59,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
 
       if (index === dataLength - 1) {
         drawCircle(
+          ctx,
           (element.x * canvasRef.current.width) / 100,
           (element.y * canvasRef.current.height) / 100,
           routeDots.end,
@@ -66,6 +67,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
         );
       }
       drawLine(
+        ctx,
         (element.x * canvasRef.current.width) / 100,
         (element.y * canvasRef.current.height) / 100,
         color
@@ -73,28 +75,38 @@ const CanvasShow = ({ height, width, url, routePath }) => {
     });
   };
 
-  const setCanvasHeight = () => {
-    const canvasWidth = canvasRef.current.width;
-    canvasRef.current.height = canvasWidth * ratio;
+  const updateCanvasHeight = (width) => {
+    canvasRef.current.width = width;
+    canvasRef.current.height = width * ratio;
   };
 
-  useEffect(() => {
+  const handleDynamicDrawingOnCanvas = () => {
     if (canvasRef.current) {
-      setCtx(canvasRef.current.getContext("2d"));
-      setCanvasHeight();
+      // Set canvas context
+      const ctx = canvasRef.current.getContext("2d");
 
+      // Set canvas width depending on parent element
+      updateCanvasHeight(canvasRef.current.parentNode.clientWidth);
+
+      // Reset drawing position according to canvas dimensions
       position = {
         x: (routePath[0].x * canvasRef.current.width) / 100,
         y: (routePath[0].y * canvasRef.current.height) / 100,
       };
+
+      // Draw users input
+      drawUsersLine(ctx, routePath, routeColor);
     }
-  }, []);
+  };
+
+  // useEffect(() => {}, []);
 
   useEffect(() => {
-    if (ctx) {
-      drawUsersLine(routePath, routeColor);
-    }
-  }, [ctx]);
+    handleDynamicDrawingOnCanvas();
+    window.addEventListener("resize", handleDynamicDrawingOnCanvas);
+    return () =>
+      window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
+  }, []);
 
   return <StyledCanvasShow ref={canvasRef} url={url} />;
 };

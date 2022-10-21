@@ -3,8 +3,25 @@ import { Link, useParams } from "react-router-dom";
 import CanvasShowMany from "../components/CanvasShowMany";
 import Comment from "../components/Comment";
 import Delete from "../components/Delete";
+import ExpendedOptions from "../components/ExpendedOptions";
 import Like from "../components/Like";
-import { H2Styled, H3Styled, PStyled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  Container,
+  FlexContainer,
+  H1Styled,
+  PStyled,
+  UpperFirstLetter,
+  Wrapper,
+} from "../constans/GlobalStyles";
+import {
+  DateIcon,
+  LocationIcon,
+  RouteCardLink,
+  RouteIcon,
+  UserIcon,
+  WallIcon,
+} from "../components/styled/RouteCard.styled";
 import AuthorContent from "../helpers/AuthorContent";
 import { getContent } from "../helpers/Utils.helpers";
 import { ClimbingRouteStyled } from "./Pages.styled";
@@ -38,7 +55,6 @@ const ClimbingRoute = () => {
     grade,
     location,
     name,
-    path,
     likes,
     wall,
     comments,
@@ -47,29 +63,58 @@ const ClimbingRoute = () => {
 
   return (
     <ClimbingRouteStyled>
-      <H2Styled>{name}</H2Styled>
+      <Container>
+        <FlexContainer justify="space-between">
+          <H1Styled bold>
+            <RouteIcon />
+            <UpperFirstLetter>{name}</UpperFirstLetter>, {grade}
+          </H1Styled>
 
-      <AuthorContent authorId={author.id}>
-        <Delete id={id} content={"routes"} children={0} />
-        <Link to={"edit"} state={{ routeData }}>
-          Edit
-        </Link>
-      </AuthorContent>
+          <AuthorContent authorId={author.id}>
+            <ExpendedOptions>
+              <Delete id={id} content={"routes"} children={0} />
+              <ButtonStyled as={Link} to={"edit"} state={{ routeData }}>
+                Edit
+              </ButtonStyled>
+            </ExpendedOptions>
+          </AuthorContent>
+        </FlexContainer>
 
-      <H3Styled>
-        {wall.name}, {location.name}
-      </H3Styled>
-      <PStyled>by {author.username}</PStyled>
-      <CanvasShowMany
-        height={image_height}
-        width={image_width}
-        url={image}
-        routesData={[routeData]}
-      />
+        <Wrapper maxWidth="50%">
+          <RouteCardLink to={`/walls/${wall.id}`}>
+            <WallIcon />
+            <>{wall.name}</>
+          </RouteCardLink>
+          <RouteCardLink to={`/locations/${location.id}`}>
+            <LocationIcon />
+            <>{location.name}</>
+          </RouteCardLink>
 
-      <PStyled>{description}</PStyled>
-      <Like id={id} currentLikes={likes} content={"routes"} />
-      <Comment id={id} currentComments={comments} content={"routes"} />
+          <RouteCardLink to={`/user/${author.id}`}>
+            <UserIcon />
+            <>{author.username}</>
+          </RouteCardLink>
+          <RouteCardLink as="div">
+            <DateIcon />
+            <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+          </RouteCardLink>
+        </Wrapper>
+
+        <Wrapper>
+          <CanvasShowMany
+            height={image_height}
+            width={image_width}
+            url={image}
+            routesData={[routeData]}
+          />
+        </Wrapper>
+
+        <Like id={id} currentLikes={likes} content={"routes"} />
+        <Wrapper margin="1rem 0">
+          <PStyled>{description}</PStyled>
+        </Wrapper>
+        <Comment id={id} currentComments={comments} content={"routes"} />
+      </Container>
     </ClimbingRouteStyled>
   );
 };

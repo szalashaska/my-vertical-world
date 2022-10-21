@@ -1,15 +1,29 @@
-import React from "react";
-import { H3Styled, LinkStyled } from "../constans/GlobalStyles";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FlexContainer,
+  H2Styled,
+  LinkStyled,
+  PStyled,
+} from "../constans/GlobalStyles";
 import CanvasShow from "./CanvasShow";
 import Like from "./Like";
-import { RouteCardStyled } from "./styled/RouteCard.styled";
+import {
+  CommentIcon,
+  DateIcon,
+  LocationIcon,
+  RouteCardCanvasLink,
+  RouteCardLink,
+  RouteCardStyled,
+  UserIcon,
+  WallIcon,
+} from "./styled/RouteCard.styled";
 
 const RouteCard = ({ route }) => {
+  if (!route) return null;
   const {
     id,
     author,
     created,
-    description,
     grade,
     location,
     name,
@@ -22,36 +36,50 @@ const RouteCard = ({ route }) => {
 
   return (
     <RouteCardStyled>
-      {route && (
+      <RouteCardLink to={`/routes/${id}`}>
+        <H2Styled bold>
+          {name}, {grade}
+        </H2Styled>
+      </RouteCardLink>
+
+      <FlexContainer justify="space-between" align="center">
+        <RouteCardLink to={`/walls/${wall.id}`}>
+          <WallIcon />
+          <>{wall.name}</>
+        </RouteCardLink>
+        <RouteCardLink to={`/locations/${location.id}`}>
+          <LocationIcon />
+          <>{location.name}</>
+        </RouteCardLink>
+      </FlexContainer>
+
+      <FlexContainer justify="space-between" align="center" margin=" 0.5rem 0">
+        <RouteCardLink to={`/user/${author.id}`}>
+          <UserIcon />
+          <>{author.username}</>
+        </RouteCardLink>
+        <RouteCardLink as="div">
+          <DateIcon />
+          <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+        </RouteCardLink>
+      </FlexContainer>
+
+      <RouteCardCanvasLink to={`/routes/${id}`}>
+        <CanvasShow
+          height={image_height}
+          width={image_width}
+          url={image}
+          routePath={path}
+        />
+      </RouteCardCanvasLink>
+      <FlexContainer justify="flex-start" gap="0.5rem" padding="0.75rem 0">
         <>
-          <LinkStyled to={`/routes/${id}`}>
-            <H3Styled>
-              {name}, {grade}
-            </H3Styled>
-          </LinkStyled>
-          <LinkStyled to={`/user/${author.id}`}> {author.username}</LinkStyled>
-
-          <p>{new Date(created).toLocaleDateString()}</p>
-
-          <LinkStyled to={`/walls/${wall.id}`}>{wall.name}</LinkStyled>
-
-          <LinkStyled to={`/locations/${location.id}`}>
-            {location.name}
-          </LinkStyled>
-
-          <LinkStyled to={`/routes/${id}`}>
-            <CanvasShow
-              height={image_height}
-              width={image_width}
-              url={image}
-              routePath={path}
-            />
-          </LinkStyled>
-          <Like id={id} currentLikes={likes} content={"routes"} />
-          <p>comments: {comments.length}</p>
-          <p>{description}</p>
+          <CommentIcon /> {comments.length}
         </>
-      )}
+        <>
+          <Like id={id} currentLikes={likes} content={"routes"} />
+        </>
+      </FlexContainer>
     </RouteCardStyled>
   );
 };

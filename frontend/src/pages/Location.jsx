@@ -5,10 +5,28 @@ import Comment from "../components/Comment";
 import Delete from "../components/Delete";
 import Like from "../components/Like";
 import LocationMap from "../components/LocationMap";
-import { H2Styled, PStyled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  Container,
+  FlexContainer,
+  H1Styled,
+  H2Styled,
+  PStyled,
+  UpperFirstLetter,
+  Wrapper,
+} from "../constans/GlobalStyles";
+import {
+  DateIcon,
+  LocationIcon,
+  RouteCardLink,
+  RouteIcon,
+  UserIcon,
+  WallIcon,
+} from "../components/styled/RouteCard.styled";
 import AuthorContent from "../helpers/AuthorContent";
 import { getContent } from "../helpers/Utils.helpers";
 import { LocationStyled } from "./Pages.styled";
+import ExpendedOptions from "../components/ExpendedOptions";
 
 const Location = () => {
   const [locationData, setLocationData] = useState(null);
@@ -45,55 +63,99 @@ const Location = () => {
     return <LocationStyled> No location </LocationStyled>;
   }
 
-  const { id, author, name, likes, routes, walls, comments } = locationData;
+  const { id, author, name, likes, routes, walls, comments, created } =
+    locationData;
 
   return (
     <LocationStyled>
-      <H2Styled>{name}</H2Styled>
-
-      <AuthorContent authorId={author.id}>
-        <Delete
-          id={id}
-          currentLikes={likes}
-          content={"locations"}
-          children={walls.length}
-        />
-        <Link to={"edit"} state={{ locationData }}>
-          Edit
-        </Link>
-      </AuthorContent>
-
-      {locationCoordinates && (
-        <H2Styled>
-          Coordinates:
-          <PStyled> {locationCoordinates.y} </PStyled>
-          <PStyled> {locationCoordinates.x} </PStyled>
-        </H2Styled>
-      )}
-
-      <H2Styled>Location walls:</H2Styled>
-      <ul>
-        {walls.map((wall) => (
-          <li key={wall.id}>{wall.name}</li>
-        ))}
-      </ul>
-
-      <H2Styled>Location routes:</H2Styled>
-      <ul>
-        {routes.map((route) => (
-          <li key={route.id}>{route.name}</li>
-        ))}
-      </ul>
-
-      <Like id={id} currentLikes={likes} content={"locations"} />
-      <Comment id={id} currentComments={comments} content={"locations"} />
-
       <LocationMap
         zoom={9}
         center={[locationData.coordinates.lon, locationData.coordinates.lat]}
         data={[locationData]}
         single
       />
+
+      <Container>
+        <FlexContainer justify="space-between">
+          <H1Styled bold>
+            <LocationIcon />
+            <UpperFirstLetter>{name}</UpperFirstLetter>
+          </H1Styled>
+
+          <AuthorContent authorId={author.id}>
+            <ExpendedOptions>
+              <Delete
+                id={id}
+                currentLikes={likes}
+                content={"locations"}
+                children={walls.length}
+              />
+              <ButtonStyled as={Link} to={"edit"} state={{ locationData }}>
+                Edit
+              </ButtonStyled>
+            </ExpendedOptions>
+          </AuthorContent>
+        </FlexContainer>
+
+        <RouteCardLink to={`/user/${author.id}`}>
+          <UserIcon />
+          <>{author.username}</>
+        </RouteCardLink>
+        <RouteCardLink as="div">
+          <DateIcon />
+          <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+        </RouteCardLink>
+
+        <Wrapper padding="1.5rem 0">
+          {locationCoordinates && (
+            <H2Styled>
+              Coordinates:
+              <PStyled> {locationCoordinates.y} </PStyled>
+              <PStyled> {locationCoordinates.x} </PStyled>
+            </H2Styled>
+          )}
+        </Wrapper>
+
+        <Wrapper padding="0 0 1.5rem 0">
+          <H2Styled>
+            <WallIcon /> Location walls:
+          </H2Styled>
+          <FlexContainer justify="flex-start">
+            {walls.map((wall) => (
+              <ButtonStyled
+                as="a"
+                href={`/walls/${wall.id}`}
+                key={wall.id}
+                primary
+              >
+                <UpperFirstLetter>{wall.name}</UpperFirstLetter>
+              </ButtonStyled>
+            ))}
+          </FlexContainer>
+        </Wrapper>
+
+        <Wrapper padding="0 0 1.5rem 0">
+          <H2Styled>
+            <RouteIcon />
+            Location routes:
+          </H2Styled>
+          <FlexContainer justify="flex-start">
+            {routes.map((route) => (
+              <ButtonStyled
+                as="a"
+                href={`/routes/${route.id}`}
+                key={route.id}
+                primary
+              >
+                <UpperFirstLetter>{route.name}</UpperFirstLetter>, {route.grade}
+              </ButtonStyled>
+            ))}
+          </FlexContainer>
+        </Wrapper>
+
+        <Like id={id} currentLikes={likes} content={"locations"} />
+        <Comment id={id} currentComments={comments} content={"locations"} />
+      </Container>
     </LocationStyled>
   );
 };

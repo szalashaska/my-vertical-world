@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Pagination from "../components/Pagination";
+import Search from "../components/Search";
+import { Container } from "../constans/GlobalStyles";
 
 import { getPaginatedContent } from "../helpers/Utils.helpers";
 import { WallStyled } from "./Pages.styled";
@@ -29,29 +31,32 @@ const Walls = () => {
 
   return (
     <WallStyled>
-      {wallsData.map((wall) => (
-        <div key={wall.id}>
-          <img
-            src={wall.image}
-            alt=""
-            style={{
-              width: "100px",
-              height: "100px",
-              objectFit: "cover",
-              display: "inline",
-            }}
-          />
-          {wall.name}
-        </div>
-      ))}
+      <Container>
+        <Search content="walls" />
+        {wallsData.map((wall) => (
+          <div key={wall.id}>
+            <img
+              src={wall.image}
+              alt=""
+              style={{
+                width: "100px",
+                height: "100px",
+                objectFit: "cover",
+                display: "inline",
+              }}
+            />
+            {wall.name}
+          </div>
+        ))}
 
-      <Pagination
-        nextPage={nextPage}
-        previousPage={previousPage}
-        getData={handleGetWalls}
-        baseURL={baseURL}
-        count={contentCount}
-      />
+        <Pagination
+          nextPage={nextPage}
+          previousPage={previousPage}
+          getData={handleGetWalls}
+          baseURL={baseURL}
+          count={contentCount}
+        />
+      </Container>
     </WallStyled>
   );
 };

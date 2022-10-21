@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { FlexContainer } from "../constans/GlobalStyles";
 import RouteCard from "./RouteCard";
-import { RoutesContainerStyled } from "./styled/RoutesContainer.styled";
 
 const RoutesContainer = ({ routes, loading, nextPage, getData }) => {
   const observer = useRef(null);
@@ -33,12 +33,12 @@ const RoutesContainer = ({ routes, loading, nextPage, getData }) => {
   }, [routes]);
 
   return (
-    <RoutesContainerStyled ref={containerRef}>
+    <FlexContainer column ref={containerRef}>
       {routes.map((route) => (
         <RouteCard key={route.id} route={route} />
       ))}
       {loading && <div>Loading...</div>}
-    </RoutesContainerStyled>
+    </FlexContainer>
   );
 };
 

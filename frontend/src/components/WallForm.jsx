@@ -2,7 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import ActiveTabBar from "./ActiveTabBar";
 import FormInput from "../components/FormInput";
 
-import { ButtonStyled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  FlexContainer,
+  H2Styled,
+  UpperFirstLetter,
+} from "../constans/GlobalStyles";
 import MessageContext from "../contexts/MessageContext";
 
 const WallForm = ({
@@ -52,6 +57,7 @@ const WallForm = ({
     {
       id: 2,
       accept: "image/jpeg, image/png, image/jpg",
+      hint: edit ? "" : "Image should be less than 2 megabytes.",
       name: "wall_image",
       type: edit ? "hidden" : "file",
       placeholder: "Wall image...",
@@ -142,11 +148,12 @@ const WallForm = ({
       {activeTab === addAndAppendTabsName[1] && (
         <>
           {wallsList && wallsList.length > 0 && (
-            <ul>
-              {wallsList.map((item) => (
-                <li key={item.id}>
-                  {item.name}
-                  <button
+            <>
+              <H2Styled align="center">Existing walls: </H2Styled>
+              <FlexContainer justify="flex-start">
+                {wallsList.map((item) => (
+                  <ButtonStyled
+                    key={item.id}
                     type="button"
                     onClick={() => {
                       handleExistingWallChoice(
@@ -158,11 +165,11 @@ const WallForm = ({
                       );
                     }}
                   >
-                    wybierz
-                  </button>
-                </li>
-              ))}
-            </ul>
+                    <UpperFirstLetter>{item.name}</UpperFirstLetter>
+                  </ButtonStyled>
+                ))}
+              </FlexContainer>
+            </>
           )}
         </>
       )}

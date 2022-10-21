@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import RouteList from "./RouteList";
 import { StyledCanvasShow } from "./styled/Canvas.styled";
 
 const ROUTE_COLORS = {
@@ -11,20 +12,16 @@ const ROUTE_DOTS = {
   end: "red",
 };
 
-const DESCRIPTION_COLOR = {
-  normal: "lightblue",
-  highlight: "gold",
-};
-
 const CanvasShowMany = ({ height, width, url, routesData }) => {
   const canvasRef = useRef(null);
   const listRef = useRef([]);
+  // const [ctx, setCtx] = useState(null);
+  const contextRef = useRef(null);
 
   const [canvasDimensions, setCanvasDimensions] = useState({
     height: 0,
     width: 0,
   });
-  const [ctx, setCtx] = useState(null);
   const [canvasRect, setCanvasRect] = useState({
     deltaX: 0,
     deltaY: 0,
@@ -78,50 +75,52 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
 
   const drawCircle = (x, y, color1, color2) => {
     const radius = 4;
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
-    ctx.fillStyle = color1;
-    ctx.fill();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = color2;
-    ctx.stroke();
+    contextRef.current.beginPath();
+    contextRef.current.arc(x, y, radius, 0, 2 * Math.PI, false);
+    contextRef.current.fillStyle = color1;
+    contextRef.current.fill();
+    contextRef.current.lineWidth = 1;
+    contextRef.current.strokeStyle = color2;
+    contextRef.current.stroke();
 
     position = { x, y };
   };
+
   const drawNumber = (x, y, index, color) => {
     let offsetY = y + 20;
     const radius = 8;
-    ctx.beginPath();
-    ctx.arc(x, offsetY, radius, 0, 2 * Math.PI, false);
+    contextRef.current.beginPath();
+    contextRef.current.arc(x, offsetY, radius, 0, 2 * Math.PI, false);
 
-    ctx.lineWidth = 1.1;
-    ctx.strokeStyle = color;
-    ctx.stroke();
-    ctx.font = `${radius}px arial`;
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    ctx.strokeText(index, x, offsetY);
+    contextRef.current.lineWidth = 1.1;
+    contextRef.current.strokeStyle = color;
+    contextRef.current.stroke();
+    contextRef.current.font = `${radius}px arial`;
+    contextRef.current.textBaseline = "middle";
+    contextRef.current.textAlign = "center";
+    contextRef.current.strokeText(index + 1, x, offsetY);
   };
 
   const drawLine = (x, y, color) => {
     const path = new Path2D();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = 2;
-    ctx.lineJoin = "round";
+    contextRef.current.strokeStyle = color;
+    contextRef.current.lineWidth = 2;
+    contextRef.current.lineJoin = "round";
 
     path.moveTo(position.x, position.y);
     path.lineTo(x, y);
-    ctx.closePath();
+    contextRef.current.closePath();
 
-    ctx.stroke(path);
+    contextRef.current.stroke(path);
     position = { x, y };
   };
 
   const drawUsersLine = (index, path, color) => {
-    if (!ctx) return;
+    if (!contextRef.current) return;
     const dataLength = path.length;
 
     path.map((element, i) => {
+      // Route start, circle with number
       if (i === 0) {
         drawNumber(
           (element.x * canvasRef.current.width) / 100,
@@ -137,6 +136,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         );
       }
 
+      // Route end, only circle
       if (i === dataLength - 1) {
         drawCircle(
           (element.x * canvasRef.current.width) / 100,
@@ -145,6 +145,8 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
           ROUTE_DOTS.border
         );
       }
+
+      // Route line, between start and end circle
       drawLine(
         (element.x * canvasRef.current.width) / 100,
         (element.y * canvasRef.current.height) / 100,
@@ -154,32 +156,35 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   };
 
   const redrawLine = (index, path, color) => {
+    // Reset starting position
     position = {
       x: (path[0].x * canvasRef.current.width) / 100,
       y: (path[0].y * canvasRef.current.height) / 100,
     };
+    // Redraw current route
     drawUsersLine(index, path, color);
   };
 
   const iterateAndDraw = (routes) => {
+    // Maps trough routes array, draws route one by one
     routes.map((route, index) => {
+      // Reset drawing postion
       position = {
         x: (routesData[index].path[0].x * canvasRef.current.width) / 100,
         y: (routesData[index].path[0].y * canvasRef.current.height) / 100,
       };
-
+      // Draw current line
       return drawUsersLine(index, route.path, ROUTE_COLORS.normal);
     });
   };
 
-  const setCanvasHeight = () => {
-    const canvasWidth = canvasRef.current.width;
-    canvasRef.current.height = canvasWidth * ratio;
+  const setCanvasHeight = (width) => {
+    canvasRef.current.width = width;
+    canvasRef.current.height = width * ratio;
   };
 
   const updateCanvasCoordinates = () => {
     // Updates Canvas coordinates, allows user to scroll and zoom image
-
     const boundingRect = canvasRef.current.getBoundingClientRect();
     let x;
     let y;
@@ -238,19 +243,23 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         );
         setHighlightedRoute(currentMousePosition);
 
-        listRef.current[currentMousePosition].style.backgroundColor =
-          DESCRIPTION_COLOR.highlight;
+        listRef.current[currentMousePosition].classList.add("highlighted");
       }
+
       // On mouse leave
       else if (
         currentMousePosition === null &&
         highlightedRoute !== null &&
         highlightedRoute !== undefined
       ) {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        contextRef.current.clearRect(
+          0,
+          0,
+          contextRef.current.canvas.width,
+          contextRef.current.canvas.height
+        );
         iterateAndDraw(routesData);
-        listRef.current[highlightedRoute].style.backgroundColor =
-          DESCRIPTION_COLOR.normal;
+        listRef.current[highlightedRoute].classList.remove("highlighted");
 
         setHighlightedRoute(null);
       }
@@ -260,28 +269,34 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   const handleMouseLeave = () => {
     setHighlightedRoute(null);
     setOnCanvas(false);
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    contextRef.current.clearRect(
+      0,
+      0,
+      contextRef.current.canvas.width,
+      contextRef.current.canvas.height
+    );
     iterateAndDraw(routesData);
   };
 
-  useEffect(() => {
+  const handleDynamicDrawingOnCanvas = () => {
     if (canvasRef.current) {
-      setCtx(canvasRef.current.getContext("2d"));
-      setCanvasHeight();
+      contextRef.current = canvasRef.current.getContext("2d");
+      // Set canvas width according to parent container
+      setCanvasHeight(canvasRef.current.parentNode.clientWidth);
       updateCanvasCoordinates();
-    }
-    createRouteArray();
-
-    // Adds event listner, removes it after component unmounts.
-    window.addEventListener("resize", updateCanvasCoordinates);
-    return () => window.removeEventListener("resize", updateCanvasCoordinates);
-  }, []);
-
-  useEffect(() => {
-    if (ctx) {
       iterateAndDraw(routesData);
     }
-  }, [ctx]);
+  };
+
+  useEffect(() => {
+    createRouteArray();
+    handleDynamicDrawingOnCanvas();
+
+    // Adds event listner, removes it after component unmounts.
+    window.addEventListener("resize", handleDynamicDrawingOnCanvas);
+    return () =>
+      window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
+  }, []);
 
   return (
     <>
@@ -293,48 +308,13 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
         onMouseLeave={() => handleMouseLeave()}
       />
 
-      <ul>
-        {routesData.map((route, index) => (
-          <li
-            style={{
-              padding: "10px",
-              backgroundColor: "lightblue",
-              margin: "20px 0",
-            }}
-            key={route.id}
-            onMouseEnter={() => {
-              redrawLine(index, route.path, ROUTE_COLORS.highlight);
-            }}
-            onMouseLeave={() => {
-              redrawLine(index, route.path, ROUTE_COLORS.normal);
-            }}
-            ref={(ref) => (listRef.current[index] = ref)}
-          >
-            <p>
-              index: {index}, {route.name}{" "}
-            </p>
-          </li>
-        ))}
-      </ul>
-
-      {/* {routeArray &&
-        routeArray.map((row) => (
-          <div>
-            {row.map((item) => {
-              if (item === null) return <span>#</span>;
-              else
-                return (
-                  <span
-                    style={{
-                      color: ROUTE_COLORS.highlight,
-                    }}
-                  >
-                    #
-                  </span>
-                );
-            })}
-          </div>
-        ))} */}
+      <RouteList
+        routes={routesData}
+        redrawLine={redrawLine}
+        listReference={listRef.current}
+        highlightLine={ROUTE_COLORS.highlight}
+        normalLine={ROUTE_COLORS.normal}
+      />
     </>
   );
 };

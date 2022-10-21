@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
+import { ButtonStyled, FlexContainer } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import PrivateContent from "../helpers/PrivateContent";
+import { LikeIcon } from "./styled/RouteCard.styled";
+
+const ALLOWED_CONTENT = ["routes", "walls", "locations"];
 
 const Like = ({ id, currentLikes, content }) => {
   const [likes, setLikes] = useState(currentLikes);
@@ -9,8 +13,7 @@ const Like = ({ id, currentLikes, content }) => {
   const { authTokens } = useContext(AuthContext);
 
   // Check if props are correct
-  const allowedContent = ["routes", "walls", "locations"];
-  if (!allowedContent.includes(content)) return null;
+  if (!ALLOWED_CONTENT.includes(content)) return null;
 
   const checkIfContentIsLiked = async () => {
     const requestOptions = {
@@ -62,20 +65,28 @@ const Like = ({ id, currentLikes, content }) => {
   }, []);
 
   return (
-    <div>
+    <FlexContainer gap="0.5rem">
+      <LikeIcon />
       {likes}
       <PrivateContent>
         {isLiked ? (
-          <button onClick={() => handleLikeButtonClick("unlike")} type="button">
+          <ButtonStyled
+            primary
+            onClick={() => handleLikeButtonClick("unlike")}
+            type="button"
+          >
             Liked
-          </button>
+          </ButtonStyled>
         ) : (
-          <button onClick={() => handleLikeButtonClick("like")} type="button">
+          <ButtonStyled
+            onClick={() => handleLikeButtonClick("like")}
+            type="button"
+          >
             Like
-          </button>
+          </ButtonStyled>
         )}
       </PrivateContent>
-    </div>
+    </FlexContainer>
   );
 };
 

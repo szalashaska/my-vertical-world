@@ -2,7 +2,9 @@ import React from "react";
 import { HomeStyled } from "./Pages.styled";
 import Search from "../components/Search";
 import {
-  H1Styled,
+  ButtonStyled,
+  Container,
+  FlexContainer,
   H2Styled,
   H3Styled,
   PStyled,
@@ -13,19 +15,31 @@ const Home = () => {
   return (
     <HomeStyled>
       <HeroHome />
-      <Search />
-      <H1Styled>Some text to show how content look like</H1Styled>
-      <H2Styled>Some text to show how content look like</H2Styled>
-      <H3Styled>Some text to show how content look like</H3Styled>
-      <PStyled>
-        {" "}
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique
-        reprehenderit quisquam modi dolorum et quaerat, illum blanditiis dicta
-        recusandae, sint exercitationem nesciunt quibusdam illo eum aliquam
-        cumque accusamus repellendus, quam eligendi doloremque natus velit iusto
-        minus hic? Odit voluptas, corrupti pariatur deserunt enim quam dolorum
-        ullam reprehenderit! Est, dolor quibusdam.{" "}
-      </PStyled>
+      <Container>
+        <H2Styled align="center">
+          Spectacular locations, iconic climbing walls and classic routes from
+          people all around the world.
+        </H2Styled>
+        <H3Styled align="center">
+          Join our community of climbers. Check out latest climbs.
+        </H3Styled>
+        <PStyled align="center">
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
+          laboriosam quaerat iusto adipisci laudantium cupiditate, nam ipsa
+          facilis maiores maxime?
+        </PStyled>
+        <FlexContainer padding="2rem 0 0 0">
+          <ButtonStyled primary as="a" href="/sign-up">
+            Sign up
+          </ButtonStyled>
+          <ButtonStyled as="a" href="/news">
+            See what's new!
+          </ButtonStyled>
+        </FlexContainer>
+
+        <H3Styled align="center">Looking for something specific?</H3Styled>
+        <Search content={"all"} />
+      </Container>
     </HomeStyled>
   );
 };

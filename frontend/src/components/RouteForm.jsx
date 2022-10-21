@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import FormInput from "../components/FormInput";
 import CanvasCreate from "../components/CanvasCreate";
 import CanvasShow from "./CanvasShow";
-import { ButtonStyled } from "../constans/GlobalStyles";
+import { ButtonStyled, Wrapper } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
 import MessageContext from "../contexts/MessageContext";
 
@@ -128,7 +128,7 @@ const RouteForm = ({
   return (
     <>
       {editRoute && canvasUrl ? (
-        <>
+        <Wrapper>
           <CanvasShow
             height={canvasHeight}
             width={canvasWidth}
@@ -141,10 +141,11 @@ const RouteForm = ({
               setEditRoute(false);
               setPath("");
             }}
+            primary
           >
             Edit route path
           </ButtonStyled>
-        </>
+        </Wrapper>
       ) : (
         <CanvasCreate
           height={canvasHeight}

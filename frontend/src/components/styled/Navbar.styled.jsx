@@ -5,7 +5,6 @@ import Cross from "../../assets/cross.svg";
 import Arrow from "../../assets/arrow-down.svg";
 
 export const NavbarStyled = styled.nav`
-  /* background-color: var(--clr-pink); */
   width: 100%;
   background: linear-gradient(to right, #a14a76, #a2557c, #f19143);
 `;
@@ -19,7 +18,7 @@ export const NavbarMaxWidthWrapper = styled.div`
 `;
 
 export const NavbarListWrapper = styled.div`
-  background: linear-gradient(to bottom, #a14a76, #a2557c, #f19143);
+  background: linear-gradient(135deg, #a14a76, #a2557c, #f19143);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,6 +27,7 @@ export const NavbarListWrapper = styled.div`
   left: ${({ sidebar }) => (sidebar ? 0 : "-100%")};
   transition: all 0.3s ease-out;
   border-radius: 0 0 15px 0;
+  z-index: 10;
   @media only screen and (min-width: 800px) {
     & {
       background: none;

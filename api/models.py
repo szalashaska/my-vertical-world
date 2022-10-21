@@ -29,6 +29,7 @@ class Location(models.Model):
     coordinates = models.JSONField(null=True) 
     likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
     liked_by = models.ManyToManyField(User, blank=True, related_name="liked_locations")
+    created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"{self.name}"
@@ -43,6 +44,7 @@ class Wall(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, related_name="walls")
     likes = models.PositiveIntegerField(null=False, blank=False, editable=False, default="0")
     liked_by = models.ManyToManyField(User, blank=True, related_name="liked_walls")
+    created = models.DateTimeField(auto_now_add=True, null=True)
 
     def __str__(self):
         return f"{self.name}"

@@ -129,19 +129,3 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
 };
 
 export default CanvasCreate;
-
-{
-  /* <button className="btn" type="button" onClick={clearCanvas}>
-  Clear
-</button>
-
-<button
-  type="button"
-  disabled={userPath.length === 0 ? true : false}
-  onClick={() => {
-    setPath(userPath);
-  }}
->
-  Save path
-</button> */
-}

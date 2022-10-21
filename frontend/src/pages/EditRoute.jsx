@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Edit from "../components/Edit";
 import RouteForm from "../components/RouteForm";
+import { Container, PStyled } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import MessageContext from "../contexts/MessageContext";
 
@@ -20,32 +21,32 @@ const EditRoute = () => {
 
   const { id, description, grade, name, path, wall } = routeData;
 
-  const handleEditContent = async (id, contentData, content) => {
-    const requestOptions = {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${String(authTokens.access)}`,
-      },
-      body: JSON.stringify(contentData),
-    };
-    const endpoint = `/api/${content}/${id}`;
+  // const handleEditContent = async (id, contentData, content) => {
+  //   const requestOptions = {
+  //     method: "PUT",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: `Bearer ${String(authTokens.access)}`,
+  //     },
+  //     body: JSON.stringify(contentData),
+  //   };
+  //   const endpoint = `/api/${content}/${id}`;
 
-    try {
-      const response = await fetch(endpoint, requestOptions);
-      const data = await response.json();
+  //   try {
+  //     const response = await fetch(endpoint, requestOptions);
+  //     const data = await response.json();
 
-      if (response.status === 200) {
-        setSuccess(data.success);
-        navigate(`/${content}/${id}`);
-      } else setError("Could not edit content.");
-    } catch (err) {
-      console.log("Unexpected error", err);
-    }
-  };
+  //     if (response.status === 200) {
+  //       setSuccess(data.success);
+  //       navigate(`/${content}/${id}`);
+  //     } else setError("Could not edit content.");
+  //   } catch (err) {
+  //     console.log("Unexpected error", err);
+  //   }
+  // };
 
   return (
-    <div>
+    <Container>
       <Edit
         id={id}
         state={routeName}
@@ -57,6 +58,9 @@ const EditRoute = () => {
         }}
         content={"routes"}
       />
+      <PStyled align="center" mb="1.5rem">
+        Edit route path, name, description and grade.
+      </PStyled>
       <RouteForm
         routeName={name}
         routeDescription={description}
@@ -74,7 +78,7 @@ const EditRoute = () => {
         }}
         edit
       />
-    </div>
+    </Container>
   );
 };
 

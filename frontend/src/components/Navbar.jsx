@@ -21,11 +21,16 @@ import {
   NavbarCross,
 } from "./styled/Navbar.styled";
 import { Link } from "react-router-dom";
+import { UpperFirstLetter } from "../constans/GlobalStyles";
 
 const Navbar = () => {
   const [dropdown, setDropdown] = useState(false);
   const [sidebar, setSidebar] = useState(false);
   const { user, logoutUser } = useContext(AuthContext);
+
+  const hideSidebarAfterClick = () => {
+    if (sidebar) setSidebar(false);
+  };
 
   return (
     <NavbarStyled>
@@ -54,6 +59,7 @@ const Navbar = () => {
                 return (
                   <NavbarItem
                     key={item.id}
+                    onClick={() => setDropdown(!dropdown)}
                     onMouseEnter={() => setDropdown(true)}
                     onMouseLeave={() => setDropdown(false)}
                     dropdown
@@ -78,7 +84,7 @@ const Navbar = () => {
               }
               // Normal item
               return (
-                <NavbarItem key={item.id}>
+                <NavbarItem key={item.id} onClick={hideSidebarAfterClick}>
                   <NavbarLink to={item.path}>{item.title}</NavbarLink>
                 </NavbarItem>
               );
@@ -89,7 +95,7 @@ const Navbar = () => {
             {user && (
               <NavbarItem>
                 <NavbarLink to={`/user/${user.user_id}`}>
-                  {user.username}
+                  <UpperFirstLetter>{user.username}</UpperFirstLetter>
                 </NavbarLink>
               </NavbarItem>
             )}

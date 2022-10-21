@@ -1,12 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import {
+  LinkStyled,
+  PStyled,
+  UpperFirstLetter,
+} from "../constans/GlobalStyles";
+import { FormInputStyled } from "./styled/FormInput.styled";
+import {
+  SearchContentContainer,
+  SearchRadioInput,
+  SearchRadioLabel,
+  SearchResult,
+  SearchResultAdditional,
+  SearchResultsContainer,
+} from "./styled/Search.styled";
 
 let controller, signal;
-const Search = () => {
+const ALLOWED_CONTENT = ["routes", "walls", "locations", "all"];
+const SELECTED_CONTENT = ["routes", "walls", "locations"];
+
+const Search = ({ content }) => {
   const [query, setQuery] = useState("");
-  const [selectedContent, setSelectedContent] = useState("routes");
+  const [selectedContent, setSelectedContent] = useState(
+    content === "all" ? "routes" : content
+  );
   const [loading, setLoading] = useState(true);
   const [results, setResults] = useState([]);
+
+  // Check if props are correct
+  if (!ALLOWED_CONTENT.includes(content)) return null;
 
   const getData = async () => {
     let endpoint = `/api/search?content=${selectedContent.trim()}&query=${query}`;
@@ -50,60 +71,84 @@ const Search = () => {
   }, [query]);
 
   return (
-    <div>
-      <input
-        type="text"
+    <>
+      {content === "all" && (
+        <SearchContentContainer>
+          {SELECTED_CONTENT.map((choice) => (
+            <SearchRadioLabel
+              key={choice}
+              onClick={() => {
+                setQuery("");
+                setResults([]);
+              }}
+            >
+              <SearchRadioInput
+                type="radio"
+                value={choice}
+                name={choice}
+                checked={selectedContent === choice}
+                onChange={(e) => setSelectedContent(e.target.value)}
+              />
+              {choice}
+            </SearchRadioLabel>
+          ))}
+        </SearchContentContainer>
+      )}
+
+      <FormInputStyled
+        placeholder="Type name..."
+        type="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <div>
-        <label>
-          <input
-            type="radio"
-            value="routes"
-            name="routes"
-            checked={selectedContent === "routes"}
-            onChange={(e) => setSelectedContent(e.target.value)}
-          />
-          Routes
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="walls"
-            name="walls"
-            checked={selectedContent === "walls"}
-            onChange={(e) => setSelectedContent(e.target.value)}
-          />
-          Walls
-        </label>
-        <label>
-          <input
-            type="radio"
-            value="locations"
-            name="locations"
-            checked={selectedContent === "locations"}
-            onChange={(e) => setSelectedContent(e.target.value)}
-          />
-          Locations
-        </label>
-      </div>
 
-      <div>
-        {results.length > 0 && (
-          <>
-            {results.map((result) => (
-              <div key={result.id}>
-                <Link to={`/${selectedContent}/${result.id}`}>
-                  {result.name}
-                </Link>
-              </div>
-            ))}
-            {loading && <p>Loading...</p>}
-          </>
-        )}
-      </div>
-    </div>
+      {results.length > 0 && (
+        <SearchResultsContainer>
+          {results.map((result) => {
+            // ---Routes---
+            if (selectedContent === SELECTED_CONTENT[0])
+              return (
+                <SearchResult key={result.id}>
+                  <LinkStyled to={`/${selectedContent}/${result.id}`}>
+                    <UpperFirstLetter>{result.name}</UpperFirstLetter>
+                    <SearchResultAdditional>
+                      {"   "} {result.grade} on the{" "}
+                      <UpperFirstLetter>{result.wall.name}</UpperFirstLetter>
+                    </SearchResultAdditional>
+                  </LinkStyled>
+                </SearchResult>
+              );
+
+            // ---Walls---
+            if (selectedContent === SELECTED_CONTENT[1])
+              return (
+                <SearchResult key={result.id}>
+                  <LinkStyled to={`/${selectedContent}/${result.id}`}>
+                    <UpperFirstLetter>{result.name}</UpperFirstLetter>
+                    <SearchResultAdditional>
+                      {"   "}at{" "}
+                      <UpperFirstLetter>
+                        {result.location.name}
+                      </UpperFirstLetter>
+                    </SearchResultAdditional>
+                  </LinkStyled>
+                </SearchResult>
+              );
+
+            // ---Locations---
+            if (selectedContent === SELECTED_CONTENT[2])
+              return (
+                <SearchResult key={result.id}>
+                  <LinkStyled to={`/${selectedContent}/${result.id}`}>
+                    <UpperFirstLetter>{result.name}</UpperFirstLetter>
+                  </LinkStyled>
+                </SearchResult>
+              );
+          })}
+          {loading && <PStyled align="center">Loading...</PStyled>}
+        </SearchResultsContainer>
+      )}
+    </>
   );
 };
 

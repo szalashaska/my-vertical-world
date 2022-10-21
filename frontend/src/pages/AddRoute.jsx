@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import LocationForm from "../components/LocationForm";
 import RouteForm from "../components/RouteForm";
 import WallForm from "../components/WallForm";
-import { ButtonStyled, H2Styled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  Container,
+  H1Styled,
+  PStyled,
+} from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import MessageContext from "../contexts/MessageContext";
 import { AddRouteStyled } from "./Pages.styled";
@@ -121,19 +126,27 @@ const AddRoute = () => {
   return (
     <AddRouteStyled>
       {activeForm !== FORM_NAMES[0] && (
-        <ButtonStyled
-          type="button"
-          onClick={() => {
-            handleGoBackClick();
-          }}
-        >
-          Go back
-        </ButtonStyled>
+        <Container>
+          <ButtonStyled
+            type="button"
+            onClick={() => {
+              handleGoBackClick();
+            }}
+          >
+            Go back
+          </ButtonStyled>
+        </Container>
       )}
 
       {activeForm === FORM_NAMES[0] && (
         <>
-          <H2Styled>Location:</H2Styled>
+          <Container>
+            <H1Styled align="center">Location:</H1Styled>
+            <PStyled align="center">
+              Click on the map to mark location and enter name below or choose
+              from existing locations.
+            </PStyled>
+          </Container>
           <LocationForm
             setLocationName={setLocationName}
             setLocationCoords={setLocationCoords}
@@ -143,20 +156,27 @@ const AddRoute = () => {
       )}
 
       {activeForm === FORM_NAMES[1] && (
-        <>
-          <H2Styled>Wall:</H2Styled>
+        <Container>
+          <H1Styled align="center">Wall:</H1Styled>
+          <PStyled align="center">
+            Add picture of the wall and enter name or add to existing walls.
+          </PStyled>
           <WallForm
             existingLocationId={existingLocationId}
             setWallName={setWallName}
             setWallImage={setWallImage}
             setExistingWallData={setExistingWallData}
           />
-        </>
+        </Container>
       )}
 
       {activeForm === FORM_NAMES[2] && (
-        <>
-          <H2Styled>Route:</H2Styled>
+        <Container>
+          <H1Styled align="center">Route:</H1Styled>
+          <PStyled align="center" mb="1.5rem">
+            On the image - draw route path with a single stroke, enter name,
+            description and don't forget about grade!
+          </PStyled>
           <RouteForm
             setRouteName={setRouteName}
             setRouteGrade={setRouteGrade}
@@ -165,7 +185,7 @@ const AddRoute = () => {
             wallImage={wallImage}
             existingWallData={existingWallData}
           />
-        </>
+        </Container>
       )}
     </AddRouteStyled>
   );

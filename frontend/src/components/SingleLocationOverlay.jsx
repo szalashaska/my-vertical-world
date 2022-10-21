@@ -1,8 +1,14 @@
 import React, { useContext, useRef, useEffect, useState } from "react";
 import MapContext from "../contexts/MapContext";
 import Overlay from "ol/Overlay";
-import { PopupContainer } from "./styled/LocationOverlay.styled";
+import {
+  CrossIcon,
+  PopupButton,
+  PopupContainer,
+  SinglePopupContent,
+} from "./styled/LocationOverlay.styled";
 import { useParams } from "react-router-dom";
+import { ButtonStyled } from "../constans/GlobalStyles";
 
 const SingleLocationOverlay = () => {
   const { map } = useContext(MapContext);
@@ -71,11 +77,15 @@ const SingleLocationOverlay = () => {
 
   return (
     <PopupContainer ref={popupContainer}>
-      <button type="button" ref={popupCloseButton} onClick={handleClosePopup}>
-        X
-      </button>
-      <div ref={popupContent} />
-      <a href="/" ref={popupLink} />
+      <PopupButton
+        type="button"
+        ref={popupCloseButton}
+        onClick={handleClosePopup}
+      >
+        <CrossIcon />
+      </PopupButton>
+      <SinglePopupContent ref={popupContent} />
+      {!locationId && <ButtonStyled as="a" href="/" ref={popupLink} />}
     </PopupContainer>
   );
 };
