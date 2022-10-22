@@ -137,6 +137,9 @@ def routes(request):
         return Response({"success": "Successfully created new route"}, status=status.HTTP_201_CREATED)
 
     if request.method == "GET":
+        #  some_text = request.query_params["order_by"]
+        #  if some_text:
+        #     print(some_text)
          return get_paginated_content(request, Route, RouteSerializer, "name")
 
 

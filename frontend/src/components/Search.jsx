@@ -6,12 +6,17 @@ import {
 } from "../constans/GlobalStyles";
 import { FormInputStyled } from "./styled/FormInput.styled";
 import {
+  CloseIcon,
+  InputButton,
+  InputWrapper,
   SearchContentContainer,
+  SearchIcon,
   SearchRadioInput,
   SearchRadioLabel,
   SearchResult,
   SearchResultAdditional,
   SearchResultsContainer,
+  SearchWrapper,
 } from "./styled/Search.styled";
 
 let controller, signal;
@@ -71,7 +76,7 @@ const Search = ({ content }) => {
   }, [query]);
 
   return (
-    <>
+    <SearchWrapper>
       {content === "all" && (
         <SearchContentContainer>
           {SELECTED_CONTENT.map((choice) => (
@@ -94,13 +99,24 @@ const Search = ({ content }) => {
           ))}
         </SearchContentContainer>
       )}
-
-      <FormInputStyled
-        placeholder="Type name..."
-        type="search"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <SearchWrapper>
+        <FormInputStyled
+          placeholder="Type name..."
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <InputButton
+          type="button"
+          onClick={() => {
+            if (query) {
+              setQuery("");
+            }
+          }}
+        >
+          {query ? <CloseIcon /> : <SearchIcon />}
+        </InputButton>
+      </SearchWrapper>
 
       {results.length > 0 && (
         <SearchResultsContainer>
@@ -148,7 +164,7 @@ const Search = ({ content }) => {
           {loading && <PStyled align="center">Loading...</PStyled>}
         </SearchResultsContainer>
       )}
-    </>
+    </SearchWrapper>
   );
 };
 

@@ -7,6 +7,8 @@ import PrivateContent from "../helpers/PrivateContent";
 import AuthorContent from "../helpers/AuthorContent";
 import FollowedUsers from "../components/FollowedUsers";
 import ActiveTabBar from "../components/ActiveTabBar";
+import HeroImage from "../components/HeroImage";
+import Climber from "../assets/climber2.jpg";
 
 const LIKED_TABS = ["Liked routes", "Liked locations", "Liked walls"];
 const AUTHOR_TABS = ["Your routes", "Your locations", "Your walls"];
@@ -52,6 +54,7 @@ const User = () => {
 
   return (
     <UserStyled>
+      <HeroImage image={Climber} text={"Climber's page"} />
       <Container>
         <H3Styled>{username}</H3Styled>
         <PStyled>Liked:</PStyled>

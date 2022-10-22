@@ -37,7 +37,14 @@ const PaginationButton = styled.button`
   }
 `;
 
-const Pagination = ({ getData, nextPage, previousPage, baseURL, count }) => {
+const Pagination = ({
+  getData,
+  nextPage,
+  previousPage,
+  baseURL,
+  count,
+  orderBy,
+}) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(3);
   const [lastPage, setLastPage] = useState(null);
@@ -53,7 +60,11 @@ const Pagination = ({ getData, nextPage, previousPage, baseURL, count }) => {
           <PaginationButton
             type="button"
             onClick={() => {
-              getData(`${baseURL}?page=${1}&size=${pageSize}`);
+              if (orderBy) {
+                getData(
+                  `${baseURL}?order_by=${orderBy}&page=${1}&size=${pageSize}`
+                );
+              } else getData(`${baseURL}?page=${1}&size=${pageSize}`);
               setPageNumber(1);
             }}
           >
@@ -62,7 +73,14 @@ const Pagination = ({ getData, nextPage, previousPage, baseURL, count }) => {
           <PaginationButton
             type="button"
             onClick={() => {
-              getData(`${baseURL}?page=${pageNumber - 1}&size=${pageSize}`);
+              if (orderBy) {
+                getData(
+                  `${baseURL}?order_by=${orderBy}&page=${
+                    pageNumber - 1
+                  }&size=${pageSize}`
+                );
+              } else
+                getData(`${baseURL}?page=${pageNumber - 1}&size=${pageSize}`);
               setPageNumber(pageNumber - 1);
             }}
           >
@@ -78,7 +96,14 @@ const Pagination = ({ getData, nextPage, previousPage, baseURL, count }) => {
           <PaginationButton
             type="button"
             onClick={() => {
-              getData(`${baseURL}?page=${pageNumber + 1}&size=${pageSize}`);
+              if (orderBy) {
+                getData(
+                  `${baseURL}?order_by=${orderBy}&page=${
+                    pageNumber + 1
+                  }&size=${pageSize}`
+                );
+              } else
+                getData(`${baseURL}?page=${pageNumber + 1}&size=${pageSize}`);
               setPageNumber(pageNumber + 1);
             }}
           >
@@ -87,7 +112,11 @@ const Pagination = ({ getData, nextPage, previousPage, baseURL, count }) => {
           <PaginationButton
             type="button"
             onClick={() => {
-              getData(`${baseURL}?page=${lastPage}&size=${pageSize}`);
+              if (orderBy) {
+                getData(
+                  `${baseURL}?order_by=${orderBy}&page=${lastPage}&size=${pageSize}`
+                );
+              } else getData(`${baseURL}?page=${lastPage}&size=${pageSize}`);
               setPageNumber(lastPage);
             }}
           >

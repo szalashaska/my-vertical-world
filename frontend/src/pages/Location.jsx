@@ -118,7 +118,7 @@ const Location = () => {
 
         <Wrapper padding="0 0 1.5rem 0">
           <H2Styled>
-            <WallIcon /> Location walls:
+            <WallIcon /> Location walls ({walls.length}):
           </H2Styled>
           <FlexContainer justify="flex-start">
             {walls.map((wall) => (
@@ -137,7 +137,7 @@ const Location = () => {
         <Wrapper padding="0 0 1.5rem 0">
           <H2Styled>
             <RouteIcon />
-            Location routes:
+            Location routes ({routes.length}):
           </H2Styled>
           <FlexContainer justify="flex-start">
             {routes.map((route) => (

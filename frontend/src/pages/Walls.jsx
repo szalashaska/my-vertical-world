@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
+import HeroImage from "../components/HeroImage";
 import Pagination from "../components/Pagination";
 import Search from "../components/Search";
-import { Container } from "../constans/GlobalStyles";
-
+import { Container, H3Styled } from "../constans/GlobalStyles";
 import { getPaginatedContent } from "../helpers/Utils.helpers";
 import { WallStyled } from "./Pages.styled";
+import Panorama from "../assets/tre-cime.jpg";
 
 const baseURL = "api/walls";
 const Walls = () => {
@@ -31,7 +32,9 @@ const Walls = () => {
 
   return (
     <WallStyled>
+      <HeroImage image={Panorama} text={"Walls"} />
       <Container>
+        <H3Styled align="center">Looking for a climbing wall?</H3Styled>
         <Search content="walls" />
         {wallsData.map((wall) => (
           <div key={wall.id}>

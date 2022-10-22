@@ -31,9 +31,10 @@ module.exports = {
         use: ["style-loader", "css-loader"],
       },
       {
-        test: /\.png/,
+        test: /\.png|.jpg/,
         type: "asset/resource",
       },
+
       {
         test: /\.mp4$/,
         use: "file-loader?name=videos/[name].[ext]",

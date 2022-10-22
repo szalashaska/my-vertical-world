@@ -21,6 +21,7 @@ import News from "./pages/News";
 import ClimbingRoutes from "./pages/ClimbingRoutes";
 import Locations from "./pages/Locations";
 import Walls from "./pages/Walls";
+import Footer from "./components/Footer";
 
 const App = () => {
   return (
@@ -82,6 +83,7 @@ const App = () => {
             />
           </Routes>
         </MessageProvider>
+        <Footer />
       </AuthProvider>
     </Router>
   );

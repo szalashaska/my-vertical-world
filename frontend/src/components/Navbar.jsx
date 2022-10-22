@@ -1,7 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import navbarList from "../constans/NavbarList";
 import AuthContext from "../contexts/AuthContext";
 import Logo from "../assets/logo.png";
+import Pin from "../assets/pin.png";
 import {
   NavbarStyled,
   NavbarMaxWidthWrapper,
@@ -19,9 +20,10 @@ import {
   NavbarDropdownArrow,
   NavbarSidebarButton,
   NavbarCross,
+  NavbarPin,
 } from "./styled/Navbar.styled";
 import { Link } from "react-router-dom";
-import { UpperFirstLetter } from "../constans/GlobalStyles";
+import { FlexContainer, UpperFirstLetter } from "../constans/GlobalStyles";
 
 const Navbar = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -36,7 +38,10 @@ const Navbar = () => {
     <NavbarStyled>
       <NavbarMaxWidthWrapper>
         <Link to="/">
-          <NavbarLogo src={Logo} />
+          <FlexContainer>
+            <NavbarPin src={Pin} />
+            <NavbarLogo src={Logo} />
+          </FlexContainer>
         </Link>
 
         <NavbarSidebarButton

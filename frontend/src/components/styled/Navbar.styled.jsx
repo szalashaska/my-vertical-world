@@ -40,8 +40,16 @@ export const NavbarListWrapper = styled.div`
   }
 `;
 
+export const NavbarPin = styled.img`
+  margin-inline: 0.75rem;
+  overflow: hidden;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(255, 185, 20, 0.6);
+  height: 30px;
+`;
+
 export const NavbarLogo = styled.img`
-  margin-inline: 0.5rem;
+  margin-right: 0.5rem;
   width: 220px;
   object-fit: contain;
 `;
