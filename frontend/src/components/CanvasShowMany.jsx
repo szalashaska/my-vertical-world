@@ -178,7 +178,7 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
     });
   };
 
-  const setCanvasHeight = (width) => {
+  const updateCanvasDimensions = (width) => {
     canvasRef.current.width = width;
     canvasRef.current.height = width * ratio;
   };
@@ -281,8 +281,9 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   const handleDynamicDrawingOnCanvas = () => {
     if (canvasRef.current) {
       contextRef.current = canvasRef.current.getContext("2d");
+
       // Set canvas width according to parent container
-      setCanvasHeight(canvasRef.current.parentNode.clientWidth);
+      updateCanvasDimensions(canvasRef.current.parentNode.clientWidth);
       updateCanvasCoordinates();
       iterateAndDraw(routesData);
     }

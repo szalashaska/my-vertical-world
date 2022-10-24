@@ -58,12 +58,15 @@ export const FormHint = styled.span`
 export const FormSelect = styled.select`
   display: block;
   font-family: var(--ff-body);
+  margin-top: 0.5rem;
   padding: 0.5rem;
   background: white;
   border-radius: 10px;
   border: none;
   outline: 2px #fbfbb8 solid;
+  text-transform: capitalize;
 `;
 export const FormOption = styled.option`
   border-radius: 10px;
+  text-transform: capitalize;
 `;

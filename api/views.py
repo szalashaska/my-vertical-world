@@ -4,7 +4,6 @@ import json
 
 import time
 
-
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes
@@ -38,7 +37,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 
 # Pagination class
 class StandardPagination(pagination.PageNumberPagination):
-    page_size = 3
+    page_size = 5
     page_query_param = "page"
     page_size_query_param  = "size"
     max_page_size = 100
@@ -72,7 +71,7 @@ def get_paginated_content(request, model, serializer, order_by=None):
         content = model.objects.all().order_by("-created")
     
     if not content:
-        return JsonResponse({"error": "Cant retrive content"}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+        return JsonResponse({"error": "Can't retrive content"}, status=status.HTTP_400_BAD_REQUEST, safe=False)
 
     paginator = StandardPagination()
     paginated_content = paginator.paginate_queryset(content, request)
@@ -84,6 +83,9 @@ def get_paginated_content(request, model, serializer, order_by=None):
 @api_view(["POST", "GET"])
 # @permission_classes([IsAuthenticated])
 def routes(request):
+    allowed_order= ["id", "name", "grade", "created", "author", 
+                   "-id", "-name", "-grade", "-created", "-author"]
+
     if request.method == "POST":
         location_name = request.data.get("location_name")
         location_coordinates = request.data.get("location_coordinates")
@@ -137,10 +139,15 @@ def routes(request):
         return Response({"success": "Successfully created new route"}, status=status.HTTP_201_CREATED)
 
     if request.method == "GET":
-        #  some_text = request.query_params["order_by"]
-        #  if some_text:
-        #     print(some_text)
-         return get_paginated_content(request, Route, RouteSerializer, "name")
+        if "order_by" in request.query_params:
+            order_by = request.query_params["order_by"]
+            
+            if order_by not in allowed_order:
+                return JsonResponse({"error": "Wrong order provided"}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+ 
+            return get_paginated_content(request, Route, RouteSerializer, order_by)     
+     
+        return get_paginated_content(request, Route, RouteSerializer)
 
 
 @api_view(["POST", "GET"])
@@ -153,8 +160,19 @@ def routes_news(request):
 
 @api_view(["GET"])
 def walls(request):
+    allowed_order= ["id", "name", "created", "author", "image",
+                   "-id", "-name", "-created", "-author", "-image"]
+
     if request.method == "GET":
-        return get_paginated_content(request, Wall, WallSerializer, "name")
+        if "order_by" in request.query_params:
+            order_by = request.query_params["order_by"]
+
+            if order_by not in allowed_order:
+                return JsonResponse({"error": "Wrong order provided"}, status=status.HTTP_400_BAD_REQUEST, safe=False)
+
+            return get_paginated_content(request, Wall, WallSerializer, order_by)     
+
+        return get_paginated_content(request, Wall, WallSerializer)
 
 
 @api_view(["GET"])

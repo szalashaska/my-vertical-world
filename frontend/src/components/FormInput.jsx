@@ -29,7 +29,7 @@ const FormInput = (props) => {
     return (
       <FormInputContainer>
         <FormLabelStyled htmlFor={randomId}>
-          {label}
+          <>{label}</>
           <FormSelect id={randomId} {...otherProps}>
             {options.map((option) => (
               <FormOption key={option} value={option}>

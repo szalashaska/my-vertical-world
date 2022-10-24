@@ -1,12 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  Container,
-  FlexContainer,
-  H3Styled,
-  LinkStyled,
-  PStyled,
-} from "../constans/GlobalStyles";
+import { Container, FlexContainer } from "../constans/GlobalStyles";
 import OpenLayers from "../assets/open-layers.png";
 import Pin from "../assets/pin.png";
 import Logo from "../assets/logo.png";
@@ -71,6 +65,10 @@ const Footer = () => {
           <LogoIcon src={Pin} />
           <LogoText src={Logo} />
         </FlexContainer>
+
+        <ImageLinkContainer as="div">
+          Website created by Kamil Petryniak
+        </ImageLinkContainer>
 
         <ImageLinkContainer href="https://www.pexels.com" target="_blank">
           Photos provided by

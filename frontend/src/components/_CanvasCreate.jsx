@@ -15,7 +15,6 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
   const [userPath, setUserPath] = useState([]);
 
   const canvasRef = useRef(null);
-  const ratio = height / width;
 
   const drawLine = (x, y) => {
     if (isMouseDown) {
@@ -75,11 +74,6 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
     setIsMouseDown(false);
   };
 
-  const updateCanvasDimensions = (width) => {
-    canvasRef.current.width = width;
-    canvasRef.current.height = width * ratio;
-  };
-
   const updateCanvasCoordinates = () => {
     // Updates Canvas coordinates, allows user to scroll and zoom image
 
@@ -107,23 +101,15 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
     });
   };
 
-  const handleDynamicDrawingOnCanvas = () => {
+  useEffect(() => {
     if (canvasRef.current) {
       setCtx(canvasRef.current.getContext("2d"));
-
-      // Set canvas width according to parent container
-      updateCanvasDimensions(canvasRef.current.parentNode.clientWidth);
       updateCanvasCoordinates();
     }
-  };
-
-  useEffect(() => {
-    handleDynamicDrawingOnCanvas();
 
     // Adds event listner, removes it after component unmounts.
-    window.addEventListener("resize", handleDynamicDrawingOnCanvas);
-    return () =>
-      window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
+    window.addEventListener("resize", updateCanvasCoordinates);
+    return () => window.removeEventListener("resize", updateCanvasCoordinates);
   }, [url]);
 
   return (
@@ -133,8 +119,8 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      // height={height}
-      // width={width}
+      height={height}
+      width={width}
       url={url}
     />
   );

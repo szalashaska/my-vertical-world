@@ -147,12 +147,14 @@ const RouteForm = ({
           </ButtonStyled>
         </Wrapper>
       ) : (
-        <CanvasCreate
-          height={canvasHeight}
-          width={canvasWidth}
-          url={canvasUrl}
-          setPath={setPath}
-        />
+        <Wrapper>
+          <CanvasCreate
+            height={canvasHeight}
+            width={canvasWidth}
+            url={canvasUrl}
+            setPath={setPath}
+          />
+        </Wrapper>
       )}
 
       <form onSubmit={handleRouteForm}>

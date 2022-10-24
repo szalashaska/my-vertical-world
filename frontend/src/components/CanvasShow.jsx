@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { StyledCanvasShow } from "./styled/Canvas.styled";
 
 const routeColor = "yellow";
@@ -75,7 +75,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
     });
   };
 
-  const updateCanvasHeight = (width) => {
+  const updateCanvasDimensions = (width) => {
     canvasRef.current.width = width;
     canvasRef.current.height = width * ratio;
   };
@@ -86,7 +86,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
       const ctx = canvasRef.current.getContext("2d");
 
       // Set canvas width depending on parent element
-      updateCanvasHeight(canvasRef.current.parentNode.clientWidth);
+      updateCanvasDimensions(canvasRef.current.parentNode.clientWidth);
 
       // Reset drawing position according to canvas dimensions
       position = {

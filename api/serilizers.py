@@ -22,10 +22,11 @@ class LocationSerializer(ModelSerializer):
 
 
 class WallSerializer(ModelSerializer):
+    author = UserSerializer()
     location = LocationSerializer()
     class Meta:
         model = Wall
-        fields = ("id", "name", "image", "image_width", "image_height", "location")
+        fields = ("id", "name", "image", "image_width", "image_height", "location", "author", "created")
 
 
 class RouteSerializer(ModelSerializer):

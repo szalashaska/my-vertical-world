@@ -1,41 +1,15 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: clamp(0.8rem, 0.6737rem + 0.5614vw, 1.2rem);
-  gap: 0.5em;
-`;
-
-const CurrentPage = styled.div``;
-
-const PaginationButton = styled.button`
-  cursor: pointer;
-  padding: 0.5em 1em;
-  background: transparent;
-  outline: none;
-  color: var(--clr-orange-strong);
-  border-top: 3px var(--clr-pink) solid;
-  border-bottom: 3px var(--clr-yellow) solid;
-  border-right: 3px var(--clr-orange-light) solid;
-  border-left: 3px var(--clr-orange-strong) solid;
-  border-radius: 5px;
-  transition: all 0.3s ease-in;
-
-  &:focus {
-    outline: 1px grey solid;
-  }
-  &:hover {
-    /* background: linear-gradient(135deg, #edd3e0, #f48dc2, #efdccd); */
-    background: var(--clr-yellow-light);
-  }
-
-  &:disabled,
-  &:hover:disabled {
-  }
-`;
+import FormInput from "./FormInput";
+import { FlexContainer } from "../constans/GlobalStyles";
+import {
+  PaginationContainer,
+  CurrentPage,
+  SelectContainer,
+  PaginationButton,
+  AscDescButton,
+  ArrowUpIcon,
+  ArrowDownIcon,
+} from "./styled/Pagination.styled";
 
 const Pagination = ({
   getData,
@@ -43,87 +17,135 @@ const Pagination = ({
   previousPage,
   baseURL,
   count,
-  orderBy,
+  tableHead,
+  pageSizes,
 }) => {
   const [pageNumber, setPageNumber] = useState(1);
-  const [pageSize, setPageSize] = useState(3);
+  const [pageSize, setPageSize] = useState(pageSizes[0]);
+  const [orderBy, setOrderBy] = useState(tableHead[0]);
   const [lastPage, setLastPage] = useState(null);
+  const [descending, setDescending] = useState(false);
+
+  const selectSizeInput = {
+    id: 1,
+    name: "select_size",
+    type: "select",
+    options: pageSizes,
+    placeholder: "Size",
+    label: "By page:",
+    value: pageSize,
+    onChange: (e) => setPageSize(+e.target.value),
+  };
+
+  const selectOrderInput = {
+    id: 2,
+    name: "select_order",
+    type: "select",
+    options: tableHead,
+    placeholder: "Order by",
+    label: "Order by:",
+    value: orderBy,
+    onChange: (e) => {
+      setOrderBy(e.target.value);
+    },
+  };
 
   useEffect(() => {
     setLastPage(Math.ceil(count / pageSize));
   }, [pageSize, count]);
 
+  useEffect(() => {
+    setPageNumber(1);
+    getData(
+      `${baseURL}?order_by=${
+        descending ? `-${orderBy}` : orderBy
+      }&page=${1}&size=${pageSize}`
+    );
+  }, [orderBy, pageSize, descending]);
+
   return (
     <PaginationContainer>
-      {previousPage && (
-        <>
-          <PaginationButton
-            type="button"
-            onClick={() => {
-              if (orderBy) {
-                getData(
-                  `${baseURL}?order_by=${orderBy}&page=${1}&size=${pageSize}`
-                );
-              } else getData(`${baseURL}?page=${1}&size=${pageSize}`);
-              setPageNumber(1);
-            }}
-          >
-            &laquo;
-          </PaginationButton>
-          <PaginationButton
-            type="button"
-            onClick={() => {
-              if (orderBy) {
-                getData(
-                  `${baseURL}?order_by=${orderBy}&page=${
-                    pageNumber - 1
-                  }&size=${pageSize}`
-                );
-              } else
-                getData(`${baseURL}?page=${pageNumber - 1}&size=${pageSize}`);
-              setPageNumber(pageNumber - 1);
-            }}
-          >
-            &lt;
-          </PaginationButton>
-        </>
-      )}
-      <CurrentPage>
-        {pageNumber} of {lastPage}
-      </CurrentPage>
-      {nextPage && (
-        <>
-          <PaginationButton
-            type="button"
-            onClick={() => {
-              if (orderBy) {
-                getData(
-                  `${baseURL}?order_by=${orderBy}&page=${
-                    pageNumber + 1
-                  }&size=${pageSize}`
-                );
-              } else
-                getData(`${baseURL}?page=${pageNumber + 1}&size=${pageSize}`);
-              setPageNumber(pageNumber + 1);
-            }}
-          >
-            &gt;
-          </PaginationButton>
-          <PaginationButton
-            type="button"
-            onClick={() => {
-              if (orderBy) {
-                getData(
-                  `${baseURL}?order_by=${orderBy}&page=${lastPage}&size=${pageSize}`
-                );
-              } else getData(`${baseURL}?page=${lastPage}&size=${pageSize}`);
-              setPageNumber(lastPage);
-            }}
-          >
-            &raquo;
-          </PaginationButton>
-        </>
-      )}
+      <SelectContainer>
+        <FormInput {...selectSizeInput} />
+      </SelectContainer>
+
+      <FlexContainer gap="0.5rem">
+        <PaginationButton
+          type="button"
+          onClick={() => {
+            getData(
+              `${baseURL}?order_by=${
+                descending ? `-${orderBy}` : orderBy
+              }&page=${1}&size=${pageSize}`
+            );
+            setPageNumber(1);
+          }}
+          disabled={!previousPage}
+        >
+          &laquo;
+        </PaginationButton>
+        <PaginationButton
+          type="button"
+          onClick={() => {
+            getData(
+              `${baseURL}?order_by=${
+                descending ? `-${orderBy}` : orderBy
+              }&page=${pageNumber - 1}&size=${pageSize}`
+            );
+            setPageNumber(pageNumber - 1);
+          }}
+          disabled={!previousPage}
+        >
+          &lt;
+        </PaginationButton>
+
+        <CurrentPage>
+          {pageNumber} of {lastPage}
+        </CurrentPage>
+
+        <PaginationButton
+          type="button"
+          onClick={() => {
+            getData(
+              `${baseURL}?order_by=${
+                descending ? `-${orderBy}` : orderBy
+              }&page=${pageNumber + 1}&size=${pageSize}`
+            );
+            setPageNumber(pageNumber + 1);
+          }}
+          disabled={!nextPage}
+        >
+          &gt;
+        </PaginationButton>
+        <PaginationButton
+          type="button"
+          onClick={() => {
+            getData(
+              `${baseURL}?order_by=${
+                descending ? `-${orderBy}` : orderBy
+              }&page=${lastPage}&size=${pageSize}`
+            );
+            setPageNumber(lastPage);
+          }}
+          disabled={!nextPage}
+        >
+          &raquo;
+        </PaginationButton>
+      </FlexContainer>
+
+      <SelectContainer>
+        <FormInput {...selectOrderInput} />
+        <AscDescButton type="button" onClick={() => setDescending(false)}>
+          <ArrowDownIcon active={!descending ? 1 : 0} />
+        </AscDescButton>
+
+        <AscDescButton type="button">
+          <ArrowUpIcon
+            active={descending ? 1 : 0}
+            onClick={() => setDescending(true)}
+          />
+        </AscDescButton>
+      </SelectContainer>
     </PaginationContainer>
   );
 };

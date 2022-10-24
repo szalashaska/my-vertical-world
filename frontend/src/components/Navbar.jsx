@@ -21,6 +21,7 @@ import {
   NavbarSidebarButton,
   NavbarCross,
   NavbarPin,
+  NavbarOverlay,
 } from "./styled/Navbar.styled";
 import { Link } from "react-router-dom";
 import { FlexContainer, UpperFirstLetter } from "../constans/GlobalStyles";
@@ -37,6 +38,7 @@ const Navbar = () => {
   return (
     <NavbarStyled>
       <NavbarMaxWidthWrapper>
+        {sidebar && <NavbarOverlay onClick={() => setSidebar(false)} />}
         <Link to="/">
           <FlexContainer>
             <NavbarPin src={Pin} />
@@ -53,7 +55,7 @@ const Navbar = () => {
           {sidebar ? <NavbarCross /> : <NavbarHamburger />}
         </NavbarSidebarButton>
 
-        <NavbarListWrapper sidebar={sidebar}>
+        <NavbarListWrapper sidebar={sidebar} onClick={hideSidebarAfterClick}>
           <NavbarList>
             {navbarList.map((item) => {
               // Do not show navigation item that are private (for logged user only)
@@ -64,7 +66,9 @@ const Navbar = () => {
                 return (
                   <NavbarItem
                     key={item.id}
-                    onClick={() => setDropdown(!dropdown)}
+                    onClick={() => {
+                      setDropdown(!dropdown);
+                    }}
                     onMouseEnter={() => setDropdown(true)}
                     onMouseLeave={() => setDropdown(false)}
                     dropdown

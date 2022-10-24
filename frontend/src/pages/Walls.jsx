@@ -6,8 +6,16 @@ import { Container, H3Styled } from "../constans/GlobalStyles";
 import { getPaginatedContent } from "../helpers/Utils.helpers";
 import { WallStyled } from "./Pages.styled";
 import Panorama from "../assets/tre-cime.jpg";
+import Table from "../components/Table";
 
 const baseURL = "api/walls";
+const tableHead = ["name", "author", "created", "image"];
+const pageSizes = [5, 10, 20];
+
+const URL = `${baseURL}?order_by=${tableHead[0]}&page=${1}&size=${
+  pageSizes[0]
+}`;
+
 const Walls = () => {
   const [wallsData, setWallsData] = useState(null);
   const [nextPage, setNextPage] = useState(null);
@@ -25,7 +33,7 @@ const Walls = () => {
   }, []);
 
   useEffect(() => {
-    handleGetWalls(baseURL);
+    handleGetWalls(URL);
   }, [handleGetWalls]);
 
   if (!wallsData) return <div>no walls</div>;
@@ -36,21 +44,8 @@ const Walls = () => {
       <Container>
         <H3Styled align="center">Looking for a climbing wall?</H3Styled>
         <Search content="walls" />
-        {wallsData.map((wall) => (
-          <div key={wall.id}>
-            <img
-              src={wall.image}
-              alt=""
-              style={{
-                width: "100px",
-                height: "100px",
-                objectFit: "cover",
-                display: "inline",
-              }}
-            />
-            {wall.name}
-          </div>
-        ))}
+
+        <Table data={wallsData} tableHead={tableHead} content={"walls"} />
 
         <Pagination
           nextPage={nextPage}
@@ -58,6 +53,8 @@ const Walls = () => {
           getData={handleGetWalls}
           baseURL={baseURL}
           count={contentCount}
+          tableHead={tableHead}
+          pageSizes={pageSizes}
         />
       </Container>
     </WallStyled>

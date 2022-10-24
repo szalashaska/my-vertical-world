@@ -1,6 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { PStyled } from "../constans/GlobalStyles";
+import {
+  ButtonStyled,
+  LinkStyled,
+  PStyled,
+  UpperFirstLetter,
+} from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
+import { UserContentWrapper } from "./UsersContent";
 
 const FollowedUsers = ({ id }) => {
   const [userData, setUserData] = useState(null);
@@ -36,16 +42,22 @@ const FollowedUsers = ({ id }) => {
   const { followed_users } = userData;
 
   return (
-    <div>
-      <PStyled>Followed users:</PStyled>
-      <ul>
+    <>
+      <ButtonStyled as="div" primary>
+        Followed users
+      </ButtonStyled>
+      <UserContentWrapper>
         {followed_users.length > 0 ? (
-          followed_users.map((user) => <li key={user.id}>{user.username}</li>)
+          followed_users.map((user) => (
+            <ButtonStyled as={LinkStyled} key={user.id} to={`/user/${user.id}`}>
+              <UpperFirstLetter>{user.username}</UpperFirstLetter>
+            </ButtonStyled>
+          ))
         ) : (
-          <p>Currently no one is followed</p>
+          <PStyled align="center">Currently no one is followed</PStyled>
         )}
-      </ul>
-    </div>
+      </UserContentWrapper>
+    </>
   );
 };
 

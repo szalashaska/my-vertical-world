@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useContext } from "react";
+import styled from "styled-components";
 import { ButtonStyled, FlexContainer } from "../constans/GlobalStyles";
 import AuthContext from "../contexts/AuthContext";
 import PrivateContent from "../helpers/PrivateContent";
 import { LikeIcon } from "./styled/RouteCard.styled";
+
+const LikeButtonActive = styled(ButtonStyled)`
+  /* outline: 3px rgba(10, 10, 10, 0.8) solid; */
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+`;
+
+const LikeButtonInactive = styled(ButtonStyled)`
+  color: rgba(10, 10, 10, 0.8);
+  outline: 3px rgba(10, 10, 10, 0.8) solid;
+`;
 
 const ALLOWED_CONTENT = ["routes", "walls", "locations"];
 
@@ -70,20 +81,20 @@ const Like = ({ id, currentLikes, content }) => {
       {likes}
       <PrivateContent>
         {isLiked ? (
-          <ButtonStyled
+          <LikeButtonInactive
             primary
             onClick={() => handleLikeButtonClick("unlike")}
             type="button"
           >
             Liked
-          </ButtonStyled>
+          </LikeButtonInactive>
         ) : (
-          <ButtonStyled
+          <LikeButtonActive
             onClick={() => handleLikeButtonClick("like")}
             type="button"
           >
             Like
-          </ButtonStyled>
+          </LikeButtonActive>
         )}
       </PrivateContent>
     </FlexContainer>

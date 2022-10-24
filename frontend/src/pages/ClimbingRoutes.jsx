@@ -6,15 +6,21 @@ import { Container, H3Styled } from "../constans/GlobalStyles";
 import { getPaginatedContent } from "../helpers/Utils.helpers";
 import { ClimbingRouteStyled } from "./Pages.styled";
 import RouteImage from "../assets/climber-rope.jpg";
-import RoutesTable from "../components/RoutesTable";
+import Table from "../components/Table";
 
 const baseURL = "api/routes";
+const tableHead = ["name", "grade", "author", "created"];
+const pageSizes = [5, 10, 20];
+
+const URL = `${baseURL}?order_by=${tableHead[0]}&page=${1}&size=${
+  pageSizes[0]
+}`;
+
 const ClimbingRoutes = () => {
   const [routesData, setRoutesData] = useState(null);
   const [nextPage, setNextPage] = useState(null);
   const [previousPage, setPreviousPage] = useState(null);
   const [contentCount, setContentCount] = useState(null);
-  const [orderBy, setOrderBy] = useState("name");
 
   const handleGetRoutes = useCallback(async (url) => {
     const routes = await getPaginatedContent(url);
@@ -27,7 +33,7 @@ const ClimbingRoutes = () => {
   }, []);
 
   useEffect(() => {
-    handleGetRoutes(baseURL);
+    handleGetRoutes(URL);
   }, [handleGetRoutes]);
 
   if (!routesData) {
@@ -41,7 +47,7 @@ const ClimbingRoutes = () => {
         <H3Styled align="center">Thinking about some specific route?</H3Styled>
         <Search content="routes" />
 
-        <RoutesTable data={routesData} />
+        <Table data={routesData} tableHead={tableHead} content={"routes"} />
 
         <Pagination
           nextPage={nextPage}
@@ -49,7 +55,8 @@ const ClimbingRoutes = () => {
           baseURL={baseURL}
           getData={handleGetRoutes}
           count={contentCount}
-          orderBy={orderBy}
+          tableHead={tableHead}
+          pageSizes={pageSizes}
         />
       </Container>
     </ClimbingRouteStyled>

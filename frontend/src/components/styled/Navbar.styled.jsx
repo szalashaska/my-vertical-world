@@ -7,6 +7,10 @@ import Arrow from "../../assets/arrow-down.svg";
 export const NavbarStyled = styled.nav`
   width: 100%;
   background: linear-gradient(to right, #a14a76, #a2557c, #f19143);
+  padding: 0.5rem 0;
+  @media only screen and (min-width: 800px) {
+    padding: 0;
+  }
 `;
 
 export const NavbarMaxWidthWrapper = styled.div`
@@ -15,28 +19,31 @@ export const NavbarMaxWidthWrapper = styled.div`
   display: flex;
   align-items: center;
   position: relative;
+  z-index: 10;
 `;
 
 export const NavbarListWrapper = styled.div`
   background: linear-gradient(135deg, #a14a76, #a2557c, #f19143);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   position: absolute;
-  top: 100%;
+  top: calc(100% + 0.5rem);
   left: ${({ sidebar }) => (sidebar ? 0 : "-100%")};
   transition: all 0.3s ease-out;
   border-radius: 0 0 15px 0;
   z-index: 10;
+  padding: 1rem;
+
   @media only screen and (min-width: 800px) {
-    & {
-      background: none;
-      border-radius: 0;
-      position: static;
-      flex-direction: row;
-      justify-content: space-between;
-      flex-grow: 1;
-    }
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
   }
 `;
 
@@ -59,9 +66,7 @@ export const NavbarList = styled.ul`
   flex-direction: column;
   list-style: none;
   @media only screen and (min-width: 800px) {
-    & {
-      flex-direction: row;
-    }
+    flex-direction: row;
   }
 `;
 
@@ -72,7 +77,7 @@ export const NavbarDropdownList = styled.ul`
   list-style: none;
   position: absolute;
   top: 0;
-  left: 100%;
+  left: calc(100% + 1rem);
   border-radius: 0 10px 10px 10px;
   background-color: var(--clr-red-light);
   @media only screen and (min-width: 800px) {
@@ -129,7 +134,10 @@ export const NavbarSubLink = styled(NavbarLink)`
 `;
 
 export const NavbarButton = styled(ButtonStyled)`
-  /* background-color: #6c98ff; */
+  margin-left: 2rem;
+  @media only screen and (min-width: 800px) {
+    margin: 0.5rem;
+  }
 `;
 
 export const NavbarSidebarButton = styled.button`
@@ -145,9 +153,25 @@ export const NavbarSidebarButton = styled.button`
   top: 50%;
   transform: translateY(-50%);
   @media only screen and (min-width: 800px) {
-    & {
-      display: none;
-    }
+    display: none;
+  }
+`;
+
+export const NavbarOverlay = styled.div`
+  z-index: 9;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    -45deg,
+    rgba(241, 145, 67, 0.7),
+    rgba(241, 145, 67, 0.4),
+    rgba(255, 255, 255, 0.2)
+  );
+  @media only screen and (min-width: 800px) {
+    display: none;
   }
 `;
 

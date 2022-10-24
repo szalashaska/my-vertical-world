@@ -107,7 +107,7 @@ export const FlexContainer = styled(Wrapper)`
   align-items: ${({ align }) => align || "center"};
   justify-content: ${({ justify }) => justify || "center"};
   flex-direction: ${({ column }) => (column ? "column" : "row")};
-  flex-wrap: ${({ wrap }) => (wrap ? "wrap" : "no-wrap")};
+  flex-wrap: ${({ wrap }) => wrap || "wrap"};
   gap: ${({ gap }) => gap || "normal"};
   flex-grow: ${({ grow }) => grow || 0};
 `;
