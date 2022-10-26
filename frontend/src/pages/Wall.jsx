@@ -9,7 +9,6 @@ import {
   Container,
   FlexContainer,
   H1Styled,
-  PStyled,
   UpperFirstLetter,
   Wrapper,
 } from "../constans/GlobalStyles";
@@ -24,6 +23,7 @@ import AuthorContent from "../helpers/AuthorContent";
 import { getContent } from "../helpers/Utils.helpers";
 import { WallStyled } from "./Pages.styled";
 import ExpendedOptions from "../components/ExpendedOptions";
+import ZoomController from "../components/ZoomController";
 
 const Wall = () => {
   const [wallData, setWallData] = useState(null);
@@ -39,8 +39,9 @@ const Wall = () => {
   useEffect(() => {
     if (wallId) {
       handleGetWallData(+wallId);
+      window.scrollTo(0, 0);
     }
-  }, [handleGetWallData]);
+  }, [handleGetWallData, wallId]);
 
   if (!wallData) {
     return <WallStyled> No wall </WallStyled>;
@@ -90,17 +91,17 @@ const Wall = () => {
           </RouteCardLink>
           <RouteCardLink as="div">
             <DateIcon />
-            <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+            <>{new Date(created).toLocaleDateString()}</>
           </RouteCardLink>
         </Wrapper>
-        <Wrapper>
+        <ZoomController>
           <CanvasShowMany
             height={image_height}
             width={image_width}
             url={image}
             routesData={routes}
           />
-        </Wrapper>
+        </ZoomController>
         <Like id={id} currentLikes={likes} content={"walls"} />
         <Comment id={id} currentComments={comments} content={"walls"} />
       </Container>

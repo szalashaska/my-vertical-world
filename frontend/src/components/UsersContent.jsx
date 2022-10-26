@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import {
   ButtonStyled,
+  LinkStyled,
   PStyled,
   UpperFirstLetter,
 } from "../constans/GlobalStyles";
@@ -24,7 +25,11 @@ const UsersContent = ({ data, content }) => {
     <UserContentWrapper>
       {data.length > 0 ? (
         data.map((item) => (
-          <ButtonStyled as="a" key={item.id} href={`/${content}/${item.id}`}>
+          <ButtonStyled
+            as={LinkStyled}
+            key={item.id}
+            to={`/${content}/${item.id}`}
+          >
             <UpperFirstLetter>{item.name}</UpperFirstLetter>{" "}
             {item.grade && <>, {item.grade} </>}
           </ButtonStyled>

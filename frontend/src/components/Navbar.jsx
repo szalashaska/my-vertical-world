@@ -24,7 +24,11 @@ import {
   NavbarOverlay,
 } from "./styled/Navbar.styled";
 import { Link } from "react-router-dom";
-import { FlexContainer, UpperFirstLetter } from "../constans/GlobalStyles";
+import {
+  FlexContainer,
+  LinkStyled,
+  UpperFirstLetter,
+} from "../constans/GlobalStyles";
 
 const Navbar = () => {
   const [dropdown, setDropdown] = useState(false);
@@ -55,7 +59,7 @@ const Navbar = () => {
           {sidebar ? <NavbarCross /> : <NavbarHamburger />}
         </NavbarSidebarButton>
 
-        <NavbarListWrapper sidebar={sidebar} onClick={hideSidebarAfterClick}>
+        <NavbarListWrapper sidebar={sidebar}>
           <NavbarList>
             {navbarList.map((item) => {
               // Do not show navigation item that are private (for logged user only)
@@ -81,7 +85,13 @@ const Navbar = () => {
                       dropdown={dropdown}
                     >
                       {item.dropdown.map((subitem) => (
-                        <NavbarSubitem key={subitem.id}>
+                        <NavbarSubitem
+                          key={subitem.id}
+                          onClick={() => {
+                            hideSidebarAfterClick();
+                            setDropdown(false);
+                          }}
+                        >
                           <NavbarSubLink to={subitem.path}>
                             {subitem.title}
                           </NavbarSubLink>
@@ -100,7 +110,7 @@ const Navbar = () => {
             })}
           </NavbarList>
 
-          <NavbarList>
+          <NavbarList onClick={hideSidebarAfterClick}>
             {user && (
               <NavbarItem>
                 <NavbarLink to={`/user/${user.user_id}`}>
@@ -114,7 +124,7 @@ const Navbar = () => {
                   Log out
                 </NavbarButton>
               ) : (
-                <NavbarButton as="a" href={"/sign-up"}>
+                <NavbarButton as={LinkStyled} to={"/sign-up"}>
                   Sign in
                 </NavbarButton>
               )}

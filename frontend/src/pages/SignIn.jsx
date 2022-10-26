@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import AuthContext from "../contexts/AuthContext";
 import { SignUpStyled } from "./Pages.styled";
@@ -82,6 +82,10 @@ const SignIn = () => {
       onChange: (e) => setConfirmPassword(e.target.value),
     },
   ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <SignUpStyled>

@@ -9,7 +9,6 @@ import Route from "../../assets/route.svg";
 import { LinkStyled } from "../../constans/GlobalStyles";
 
 export const RouteCardStyled = styled.div`
-  /* background-color: var(--clr-pink); */
   background: linear-gradient(135deg, #a14a76, #a2557c, #f19143);
   border-radius: 25px;
   margin-top: 1rem;
@@ -24,12 +23,12 @@ export const RouteCardStyled = styled.div`
 `;
 
 export const RouteCardLink = styled(LinkStyled)`
-  text-transform: capitalize;
-  font-size: clamp(0.8rem, 0.6737rem + 0.5614vw, 1.2rem);
   display: flex;
   align-items: center;
+  text-transform: capitalize;
+  font-size: clamp(0.8rem, 0.6737rem + 0.5614vw, 1.2rem);
   margin-bottom: 0.5rem;
-  gap: 5px;
+  gap: 0.4em;
 `;
 
 export const RouteCardCanvasLink = styled(LinkStyled)`
@@ -42,10 +41,50 @@ export const RouteCardCanvasLink = styled(LinkStyled)`
   }
 `;
 
-export const LikeIcon = styled(Like)``;
-export const CommentIcon = styled(Comment)``;
-export const LocationIcon = styled(Pin)``;
-export const WallIcon = styled(Mountain)``;
-export const UserIcon = styled(User)``;
-export const DateIcon = styled(Calendar)``;
-export const RouteIcon = styled(Route)``;
+export const LikeIcon = styled(Like)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;
+export const CommentIcon = styled(Comment)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;
+
+export const LocationIcon = styled(Pin)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;
+
+export const WallIcon = styled(Mountain)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;
+
+export const UserIcon = styled(User)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;
+
+export const DateIcon = styled(Calendar)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;
+
+export const RouteIcon = styled(Route)`
+  transform: scale(0.8);
+  @media screen and (min-width: 800px) {
+    transform: scale(1);
+  }
+`;

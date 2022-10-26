@@ -37,7 +37,10 @@ const User = () => {
   };
 
   useEffect(() => {
-    if (userId) handleGetUserData(+userId);
+    if (userId) {
+      handleGetUserData(+userId);
+      window.scrollTo(0, 0);
+    }
   }, [userId]);
 
   if (!userData) {

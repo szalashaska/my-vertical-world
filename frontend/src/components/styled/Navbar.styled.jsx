@@ -8,7 +8,7 @@ export const NavbarStyled = styled.nav`
   width: 100%;
   background: linear-gradient(to right, #a14a76, #a2557c, #f19143);
   padding: 0.5rem 0;
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 1050px) {
     padding: 0;
   }
 `;
@@ -33,9 +33,9 @@ export const NavbarListWrapper = styled.div`
   transition: all 0.3s ease-out;
   border-radius: 0 0 15px 0;
   z-index: 10;
-  padding: 1rem;
+  padding-block: 1rem;
 
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 1050px) {
     padding: 0;
     background: none;
     border-radius: 0;
@@ -65,7 +65,7 @@ export const NavbarList = styled.ul`
   display: flex;
   flex-direction: column;
   list-style: none;
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 1050px) {
     flex-direction: row;
   }
 `;
@@ -77,15 +77,13 @@ export const NavbarDropdownList = styled.ul`
   list-style: none;
   position: absolute;
   top: 0;
-  left: calc(100% + 1rem);
+  left: 100%;
   border-radius: 0 10px 10px 10px;
   background-color: var(--clr-red-light);
-  @media only screen and (min-width: 800px) {
-    & {
-      border-radius: 0 0 10px 10px;
-      left: 0;
-      top: 100%;
-    }
+  @media only screen and (min-width: 1050px) {
+    border-radius: 0 0 10px 10px;
+    left: 0;
+    top: 100%;
   }
 `;
 
@@ -98,7 +96,7 @@ export const NavbarItem = styled.li`
 export const NavbarItemWithDropdown = styled.div`
   font-size: clamp(0.8rem, 0.6737rem + 0.5614vw, 1.2rem);
   color: white;
-  padding: 1rem 2rem;
+  padding: 1rem 4em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,6 +104,9 @@ export const NavbarItemWithDropdown = styled.div`
   &:hover svg {
     transform: scale(1.25);
     fill: var(--clr-yellow-light);
+  }
+  @media only screen and (min-width: 1050px) {
+    padding: 1.5rem 2em;
   }
 `;
 
@@ -119,10 +120,13 @@ export const NavbarSubitem = styled.li`
 
 export const NavbarLink = styled(LinkStyled)`
   color: white;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 4em;
   transition: all 0.3s ease-in;
   &:hover {
     color: var(--clr-yellow);
+  }
+  @media only screen and (min-width: 1050px) {
+    padding: 1.5rem 2em;
   }
 `;
 
@@ -134,8 +138,8 @@ export const NavbarSubLink = styled(NavbarLink)`
 `;
 
 export const NavbarButton = styled(ButtonStyled)`
-  margin-left: 2rem;
-  @media only screen and (min-width: 800px) {
+  margin-left: 3rem;
+  @media only screen and (min-width: 1050px) {
     margin: 0.5rem;
   }
 `;
@@ -152,7 +156,7 @@ export const NavbarSidebarButton = styled.button`
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 1050px) {
     display: none;
   }
 `;
@@ -170,7 +174,7 @@ export const NavbarOverlay = styled.div`
     rgba(241, 145, 67, 0.4),
     rgba(255, 255, 255, 0.2)
   );
-  @media only screen and (min-width: 800px) {
+  @media only screen and (min-width: 1050px) {
     display: none;
   }
 `;

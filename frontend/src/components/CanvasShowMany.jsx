@@ -3,19 +3,21 @@ import RouteList from "./RouteList";
 import { StyledCanvasShow } from "./styled/Canvas.styled";
 
 const ROUTE_COLORS = {
-  normal: "blue",
+  normal: "#0909ff",
   highlight: "red",
+  shadow: "#0909ff",
 };
 
 const ROUTE_DOTS = {
   border: "white",
   end: "red",
+  numberFill: "#02064376",
 };
 
 const CanvasShowMany = ({ height, width, url, routesData }) => {
+  const observer = useRef(null);
   const canvasRef = useRef(null);
   const listRef = useRef([]);
-  // const [ctx, setCtx] = useState(null);
   const contextRef = useRef(null);
 
   const [canvasDimensions, setCanvasDimensions] = useState({
@@ -74,12 +76,12 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   let pointer = { x: 0, y: 0 };
 
   const drawCircle = (x, y, color1, color2) => {
-    const radius = 4;
+    const radius = 5;
     contextRef.current.beginPath();
     contextRef.current.arc(x, y, radius, 0, 2 * Math.PI, false);
     contextRef.current.fillStyle = color1;
     contextRef.current.fill();
-    contextRef.current.lineWidth = 1;
+    contextRef.current.lineWidth = 1.5;
     contextRef.current.strokeStyle = color2;
     contextRef.current.stroke();
 
@@ -88,13 +90,18 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
 
   const drawNumber = (x, y, index, color) => {
     let offsetY = y + 20;
-    const radius = 8;
+    const radius = 10;
     contextRef.current.beginPath();
     contextRef.current.arc(x, offsetY, radius, 0, 2 * Math.PI, false);
 
-    contextRef.current.lineWidth = 1.1;
+    contextRef.current.lineWidth = 2;
     contextRef.current.strokeStyle = color;
     contextRef.current.stroke();
+
+    // Circle fill
+    contextRef.current.fillStyle = ROUTE_DOTS.numberFill;
+    contextRef.current.fill();
+
     contextRef.current.font = `${radius}px arial`;
     contextRef.current.textBaseline = "middle";
     contextRef.current.textAlign = "center";
@@ -104,8 +111,12 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
   const drawLine = (x, y, color) => {
     const path = new Path2D();
     contextRef.current.strokeStyle = color;
-    contextRef.current.lineWidth = 2;
+    contextRef.current.lineWidth = 3;
     contextRef.current.lineJoin = "round";
+    contextRef.current.shadowColor = ROUTE_COLORS.shadow;
+    contextRef.current.shadowOffsetX = 0;
+    contextRef.current.shadowOffsetY = 0;
+    contextRef.current.shadowBlur = 0;
 
     path.moveTo(position.x, position.y);
     path.lineTo(x, y);
@@ -293,10 +304,20 @@ const CanvasShowMany = ({ height, width, url, routesData }) => {
     createRouteArray();
     handleDynamicDrawingOnCanvas();
 
+    if (canvasRef.current) {
+      observer.current = new ResizeObserver(
+        handleDynamicDrawingOnCanvas
+      ).observe(canvasRef.current.parentNode);
+
+      return () => {
+        if (observer.current) return observer.current.disconnect();
+      };
+    }
+
     // Adds event listner, removes it after component unmounts.
-    window.addEventListener("resize", handleDynamicDrawingOnCanvas);
-    return () =>
-      window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
+    // window.addEventListener("resize", handleDynamicDrawingOnCanvas);
+    // return () =>
+    //   window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
   }, []);
 
   return (

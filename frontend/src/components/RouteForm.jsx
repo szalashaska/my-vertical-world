@@ -5,6 +5,7 @@ import CanvasShow from "./CanvasShow";
 import { ButtonStyled, Wrapper } from "../constans/GlobalStyles";
 import routeGrades from "../constans/RouteGrades";
 import MessageContext from "../contexts/MessageContext";
+import ZoomController from "./ZoomController";
 
 const RouteForm = ({
   routeName,
@@ -127,41 +128,42 @@ const RouteForm = ({
 
   return (
     <>
-      {editRoute && canvasUrl ? (
-        <Wrapper>
-          <CanvasShow
-            height={canvasHeight}
-            width={canvasWidth}
-            url={canvasUrl}
-            routePath={path}
-          />
-          <ButtonStyled
-            type="button"
-            onClick={() => {
-              setEditRoute(false);
-              setPath("");
-            }}
-            primary
-          >
-            Edit route path
-          </ButtonStyled>
-        </Wrapper>
-      ) : (
-        <Wrapper>
-          <CanvasCreate
-            height={canvasHeight}
-            width={canvasWidth}
-            url={canvasUrl}
-            setPath={setPath}
-          />
-        </Wrapper>
-      )}
-
       <form onSubmit={handleRouteForm}>
         {routeInputs.map((input) => (
           <FormInput key={input.id} {...input} />
         ))}
 
+        {editRoute && canvasUrl ? (
+          <Wrapper>
+            <ZoomController>
+              <CanvasShow
+                height={canvasHeight}
+                width={canvasWidth}
+                url={canvasUrl}
+                routePath={path}
+              />
+            </ZoomController>
+            <ButtonStyled
+              type="button"
+              onClick={() => {
+                setEditRoute(false);
+                setPath("");
+              }}
+              primary
+            >
+              Edit route path
+            </ButtonStyled>
+          </Wrapper>
+        ) : (
+          <ZoomController>
+            <CanvasCreate
+              height={canvasHeight}
+              width={canvasWidth}
+              url={canvasUrl}
+              setPath={setPath}
+            />
+          </ZoomController>
+        )}
         <ButtonStyled type="submit" disabled={!name || !description || !path}>
           {edit ? "Edit route" : "Add route"}
         </ButtonStyled>

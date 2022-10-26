@@ -114,7 +114,7 @@ const Comment = ({ id, content, currentComments }) => {
                   <PStyled>{comment.body}</PStyled>
                 </Wrapper>
 
-                <Wrapper width="5%">
+                <FlexContainer width="10%">
                   <AuthorContent authorId={comment.author.id}>
                     <ExpendedOptions>
                       <ButtonStyled
@@ -125,7 +125,7 @@ const Comment = ({ id, content, currentComments }) => {
                       </ButtonStyled>
                     </ExpendedOptions>
                   </AuthorContent>
-                </Wrapper>
+                </FlexContainer>
               </FlexContainer>
             </CommentBox>
           ))}

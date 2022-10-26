@@ -8,7 +8,6 @@ import { FormInputStyled } from "./styled/FormInput.styled";
 import {
   CloseIcon,
   InputButton,
-  InputWrapper,
   SearchContentContainer,
   SearchIcon,
   SearchRadioInput,

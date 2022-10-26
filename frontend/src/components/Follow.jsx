@@ -10,7 +10,6 @@ const Follow = ({ id }) => {
 
   const checkIfUserIsFollowed = async () => {
     if (usersOwnPage) return;
-
     const requestOptions = {
       method: "GET",
       headers: {
@@ -25,7 +24,6 @@ const Follow = ({ id }) => {
 
       if (response.status === 200) {
         setIsFollowed(data.is_followed);
-        // console.log(data);
       }
     } catch (err) {
       console.log("Unexpected error", err);
@@ -59,7 +57,7 @@ const Follow = ({ id }) => {
     if (authTokens && user) {
       checkIfUserIsFollowed();
     }
-  }, []);
+  }, [id]);
 
   if (usersOwnPage) return null;
   return (

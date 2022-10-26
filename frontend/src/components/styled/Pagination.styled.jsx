@@ -38,8 +38,8 @@ export const PaginationButton = styled.button`
   outline: none;
   color: var(--clr-orange-strong);
   border-top: 3px var(--clr-pink) solid;
-  border-bottom: 3px var(--clr-yellow) solid;
-  border-right: 3px var(--clr-orange-light) solid;
+  border-bottom: 3px var(--clr-orange-strong) solid;
+  border-right: 3px var(--clr-pink) solid;
   border-left: 3px var(--clr-orange-strong) solid;
   border-radius: 5px;
   transition: all 0.3s ease-in;

@@ -20,8 +20,11 @@ export const DataTableHead = styled.th`
   cursor: pointer;
 `;
 export const DataTableHeading = styled.thead``;
+
 export const DataTableBody = styled.tbody``;
+
 export const DataTableRow = styled.tr`
+  border-radius: 10px;
   transition: all 0.3s ease-in;
   &:nth-child(even):hover,
   &:hover {

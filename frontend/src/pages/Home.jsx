@@ -7,6 +7,7 @@ import {
   FlexContainer,
   H2Styled,
   H3Styled,
+  LinkStyled,
   PStyled,
 } from "../constans/GlobalStyles";
 import HeroHome from "../components/HeroHome";
@@ -61,15 +62,18 @@ const Home = () => {
               Join our community of climbers. Check out latest climbs.
             </H3Styled>
             <PStyled align="center">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nostrum
-              laboriosam quaerat iusto adipisci laudantium cupiditate, nam ipsa
-              facilis maiores maxime?
+              Share your climbing experience, create route path, explore
+              possibilities on various walls, find out which locations hides the
+              best climbs. Comment, discuss and let others know if you like it!
+            </PStyled>
+            <PStyled align="center">
+              It is all here with our free climbing application.
             </PStyled>
             <FlexContainer padding="2rem 0 0 0">
-              <ButtonStyled primary as="a" href="/sign-up">
+              <ButtonStyled as={LinkStyled} to="/sign-up" primary={1}>
                 Sign up
               </ButtonStyled>
-              <ButtonStyled as="a" href="/news">
+              <ButtonStyled as={LinkStyled} to="/news">
                 See what's new!
               </ButtonStyled>
             </FlexContainer>

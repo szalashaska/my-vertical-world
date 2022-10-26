@@ -1,7 +1,8 @@
 import React, { useRef, useEffect } from "react";
 import { StyledCanvasShow } from "./styled/Canvas.styled";
 
-const routeColor = "yellow";
+const routeColor = "#0909ff";
+const routeShadow = "#0909ffc4";
 const routeDots = {
   border: "white",
   start: routeColor,
@@ -9,6 +10,7 @@ const routeDots = {
 };
 
 const CanvasShow = ({ height, width, url, routePath }) => {
+  const observer = useRef(null);
   const canvasRef = useRef(null);
 
   const ratio = height / width;
@@ -16,12 +18,12 @@ const CanvasShow = ({ height, width, url, routePath }) => {
   let position = {};
 
   const drawCircle = (ctx, x, y, color1, color2) => {
-    const radius = 4;
+    const radius = 5;
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = color1;
     ctx.fill();
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.strokeStyle = color2;
     ctx.stroke();
 
@@ -29,11 +31,15 @@ const CanvasShow = ({ height, width, url, routePath }) => {
   };
 
   // Draw single stroke
-  const drawLine = (ctx, x, y, color) => {
+  const drawLine = (ctx, x, y) => {
     const path = new Path2D();
-    ctx.strokeStyle = color || "blue";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = routeColor;
+    ctx.lineWidth = 3;
     ctx.lineJoin = "round";
+    ctx.shadowColor = routeShadow;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowBlur = 0;
 
     path.moveTo(position.x, position.y);
     path.lineTo(x, y);
@@ -44,7 +50,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
   };
 
   // Draw users route
-  const drawUsersLine = (ctx, path, color) => {
+  const drawUsersLine = (ctx, path) => {
     const dataLength = path.length;
     path.map((element, index) => {
       if (index === 0) {
@@ -69,8 +75,7 @@ const CanvasShow = ({ height, width, url, routePath }) => {
       drawLine(
         ctx,
         (element.x * canvasRef.current.width) / 100,
-        (element.y * canvasRef.current.height) / 100,
-        color
+        (element.y * canvasRef.current.height) / 100
       );
     });
   };
@@ -99,13 +104,21 @@ const CanvasShow = ({ height, width, url, routePath }) => {
     }
   };
 
-  // useEffect(() => {}, []);
-
   useEffect(() => {
     handleDynamicDrawingOnCanvas();
-    window.addEventListener("resize", handleDynamicDrawingOnCanvas);
-    return () =>
-      window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
+
+    if (canvasRef.current) {
+      observer.current = new ResizeObserver(
+        handleDynamicDrawingOnCanvas
+      ).observe(canvasRef.current.parentNode);
+
+      return () => {
+        if (observer.current) return observer.current.disconnect();
+      };
+    }
+    // window.addEventListener("resize", handleDynamicDrawingOnCanvas);
+    // return () =>
+    //   window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
   }, []);
 
   return <StyledCanvasShow ref={canvasRef} url={url} />;

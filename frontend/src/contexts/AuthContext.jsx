@@ -1,8 +1,8 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
 import jwt_decode from "jwt-decode";
 import dayjs from "dayjs";
+import MessageContext from "./MessageContext";
 
 const AuthContext = createContext();
 
@@ -18,28 +18,9 @@ export const AuthProvider = ({ children }) => {
   );
   const [user, setUser] = useState(() => tokensItem && jwt_decode(tokensItem));
   const [pageIsLoading, setPageIsLoading] = useState(true);
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  // Set interval for updating token before expiry date (for protected content).
-  useEffect(() => {
-    if (authTokens) {
-      // Calculate how long token would be valid
-      const expiryTime = dayjs.unix(user.exp).diff(dayjs());
-      // Set interval for updating, leve 5 seconds for delay
-      const updateInterval = expiryTime - 5000;
-
-      let interval = setInterval(() => {
-        updateTokens();
-      }, updateInterval);
-      return () => clearInterval(interval);
-    }
-  }, [authTokens]);
-
-  // Update token every time page is loaded for the first time.
-  useEffect(() => {
-    updateTokens();
-  }, []);
+  const { setError, setSuccess } = useContext(MessageContext);
 
   // Login user and save authorization token.
   const loginUser = async (username, password) => {
@@ -100,9 +81,10 @@ export const AuthProvider = ({ children }) => {
       const response = await data.json();
 
       if (data.status === 201) {
+        setSuccess("Successfully registered new user.");
         loginUser(username, password);
       } else {
-        setError(response.message);
+        setError(response.error);
       }
     } catch (err) {
       console.log("Unexpected error", err);
@@ -115,11 +97,12 @@ export const AuthProvider = ({ children }) => {
       setPageIsLoading(false);
       return;
     }
+
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        refresh: authTokens?.refresh,
+        refresh: authTokens.refresh,
       }),
     };
 
@@ -141,11 +124,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // Set interval for updating token before expiry date (for protected content).
+  useEffect(() => {
+    if (authTokens) {
+      // Calculate how long token would be valid
+      const expiryTime = dayjs.unix(user.exp).diff(dayjs());
+      // Set interval for updating, leave 10 seconds for delay
+      const updateInterval = expiryTime - 10000;
+
+      let interval = setInterval(() => {
+        updateTokens();
+      }, updateInterval);
+      return () => clearInterval(interval);
+    }
+  }, [authTokens]);
+
+  // Update token every time page is loaded for the first time.
+  useEffect(() => {
+    updateTokens();
+  }, []);
+
   // Data provided by Authorization context.
   let providedData = {
     authTokens,
     user,
-    error,
     loginUser,
     logoutUser,
     registerUser,

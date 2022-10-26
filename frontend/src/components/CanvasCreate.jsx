@@ -2,7 +2,9 @@ import React, { useRef, useState, useEffect } from "react";
 import { StyledCanvas } from "./styled/Canvas.styled";
 
 const CanvasCreate = ({ height, width, url, setPath }) => {
-  const [ctx, setCtx] = useState(null);
+  const observer = useRef(null);
+  const contextRef = useRef(null);
+  const canvasRef = useRef(null);
   const [canvasRect, setCanvasRect] = useState({
     deltaX: 0,
     deltaY: 0,
@@ -11,41 +13,45 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
     x: 0,
     y: 0,
   });
-  const [isMouseDown, setIsMouseDown] = useState(false);
+  const [userIsDrawing, setUserIsDrawing] = useState(false);
   const [userPath, setUserPath] = useState([]);
 
-  const canvasRef = useRef(null);
   const ratio = height / width;
 
   const drawLine = (x, y) => {
-    if (isMouseDown) {
-      ctx.beginPath();
-      ctx.strokeStyle = "red";
-      ctx.lineWidth = 8;
-      ctx.lineJoin = "round";
-      ctx.moveTo(position.x, position.y);
-      ctx.lineTo(x, y);
-      ctx.closePath();
-      ctx.stroke();
+    if (userIsDrawing) {
+      contextRef.current.beginPath();
+      contextRef.current.strokeStyle = "red";
+      contextRef.current.lineWidth = 8;
+      contextRef.current.lineJoin = "round";
+      contextRef.current.moveTo(position.x, position.y);
+      contextRef.current.lineTo(x, y);
+      contextRef.current.closePath();
+      contextRef.current.stroke();
 
       setPosition({ x, y });
     }
   };
 
   const recordLine = (x, y) => {
-    if (isMouseDown) {
+    if (userIsDrawing) {
       setUserPath([
         ...userPath,
         {
-          x: ((x * 100) / width).toFixed(4),
-          y: ((y * 100) / height).toFixed(4),
+          x: ((x * 100) / canvasRef.current.width).toFixed(4),
+          y: ((y * 100) / canvasRef.current.height).toFixed(4),
         },
       ]);
     }
   };
 
   const clearCanvas = () => {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    contextRef.current.clearRect(
+      0,
+      0,
+      contextRef.current.canvas.width,
+      contextRef.current.canvas.height
+    );
     setUserPath([]);
   };
 
@@ -53,7 +59,7 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
     // Clear canvas and reset user path
     clearCanvas();
     setUserPath([]);
-    setIsMouseDown(true);
+    setUserIsDrawing(true);
 
     setPosition({
       x: e.pageX - canvasRect.deltaX,
@@ -62,17 +68,50 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
   };
 
   const handleMouseMove = (e) => {
-    drawLine(e.pageX - canvasRect.deltaX, e.pageY - canvasRect.deltaY);
-    recordLine(e.pageX - canvasRect.deltaX, e.pageY - canvasRect.deltaY);
+    if (userIsDrawing) {
+      drawLine(e.pageX - canvasRect.deltaX, e.pageY - canvasRect.deltaY);
+      recordLine(e.pageX - canvasRect.deltaX, e.pageY - canvasRect.deltaY);
+    }
   };
 
   const handleMouseUp = () => {
-    setIsMouseDown(false);
+    setUserIsDrawing(false);
     if (userPath.length > 0) setPath(userPath);
   };
 
   const handleMouseLeave = () => {
-    setIsMouseDown(false);
+    setUserIsDrawing(false);
+  };
+
+  // For touchscreen devices //
+  const handleTouchStart = (e) => {
+    // Clear canvas and reset user path
+    clearCanvas();
+    setUserPath([]);
+    setUserIsDrawing(true);
+
+    setPosition({
+      x: e.changedTouches[0].pageX - canvasRect.deltaX,
+      y: e.changedTouches[0].pageY - canvasRect.deltaY,
+    });
+  };
+
+  const handleTouchMove = (e) => {
+    // console.log(e.changedTouches[0].pageX);
+
+    drawLine(
+      e.changedTouches[0].pageX - canvasRect.deltaX,
+      e.changedTouches[0].pageY - canvasRect.deltaY
+    );
+    recordLine(
+      e.changedTouches[0].pageX - canvasRect.deltaX,
+      e.changedTouches[0].pageY - canvasRect.deltaY
+    );
+  };
+
+  const handleTouchEndAndCancel = () => {
+    setUserIsDrawing(false);
+    if (userPath.length > 0) setPath(userPath);
   };
 
   const updateCanvasDimensions = (width) => {
@@ -109,7 +148,7 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
 
   const handleDynamicDrawingOnCanvas = () => {
     if (canvasRef.current) {
-      setCtx(canvasRef.current.getContext("2d"));
+      contextRef.current = canvasRef.current.getContext("2d");
 
       // Set canvas width according to parent container
       updateCanvasDimensions(canvasRef.current.parentNode.clientWidth);
@@ -120,10 +159,20 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
   useEffect(() => {
     handleDynamicDrawingOnCanvas();
 
+    if (canvasRef.current) {
+      observer.current = new ResizeObserver(
+        handleDynamicDrawingOnCanvas
+      ).observe(canvasRef.current.parentNode);
+
+      return () => {
+        if (observer.current) return observer.current.disconnect();
+      };
+    }
+
     // Adds event listner, removes it after component unmounts.
-    window.addEventListener("resize", handleDynamicDrawingOnCanvas);
-    return () =>
-      window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
+    // window.addEventListener("resize", handleDynamicDrawingOnCanvas);
+    // return () =>
+    //   window.removeEventListener("resize", handleDynamicDrawingOnCanvas);
   }, [url]);
 
   return (
@@ -133,8 +182,10 @@ const CanvasCreate = ({ height, width, url, setPath }) => {
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseLeave}
-      // height={height}
-      // width={width}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEndAndCancel}
+      onTouchCancel={handleTouchEndAndCancel}
       url={url}
     />
   );

@@ -8,11 +8,12 @@ import {
   SinglePopupContent,
 } from "./styled/LocationOverlay.styled";
 import { useParams } from "react-router-dom";
-import { ButtonStyled } from "../constans/GlobalStyles";
+import { ButtonStyled, LinkStyled } from "../constans/GlobalStyles";
 
 const SingleLocationOverlay = () => {
   const { map } = useContext(MapContext);
   const [popupOverlay, setPopupOverlay] = useState(null);
+  const [popupLinkTo, setPopupLinkTo] = useState("/");
 
   const { locationId } = useParams();
 
@@ -32,7 +33,7 @@ const SingleLocationOverlay = () => {
     popupContent.current.innerHTML = feature.get("name");
 
     if (!locationId) {
-      popupLink.current.href = `/locations/${feature.get("id")}`;
+      setPopupLinkTo(`/locations/${feature.get("id")}`);
       popupLink.current.innerHTML = "Go to location";
     }
   };
@@ -85,7 +86,9 @@ const SingleLocationOverlay = () => {
         <CrossIcon />
       </PopupButton>
       <SinglePopupContent ref={popupContent} />
-      {!locationId && <ButtonStyled as="a" href="/" ref={popupLink} />}
+      {!locationId && (
+        <ButtonStyled as={LinkStyled} to={popupLinkTo} ref={popupLink} />
+      )}
     </PopupContainer>
   );
 };

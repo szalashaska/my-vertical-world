@@ -25,6 +25,7 @@ import {
 import AuthorContent from "../helpers/AuthorContent";
 import { getContent } from "../helpers/Utils.helpers";
 import { ClimbingRouteStyled } from "./Pages.styled";
+import ZoomController from "../components/ZoomController";
 
 const ClimbingRoute = () => {
   const [routeData, setRouteData] = useState(null);
@@ -40,8 +41,9 @@ const ClimbingRoute = () => {
   useEffect(() => {
     if (routeId) {
       handleGetRoute(+routeId);
+      window.scrollTo(0, 0);
     }
-  }, [handleGetRoute]);
+  }, [handleGetRoute, routeId]);
 
   if (!routeData) {
     return <ClimbingRouteStyled>Route does not exist.</ClimbingRouteStyled>;
@@ -96,18 +98,18 @@ const ClimbingRoute = () => {
           </RouteCardLink>
           <RouteCardLink as="div">
             <DateIcon />
-            <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+            <>{new Date(created).toLocaleDateString()}</>
           </RouteCardLink>
         </Wrapper>
 
-        <Wrapper>
+        <ZoomController>
           <CanvasShowMany
             height={image_height}
             width={image_width}
             url={image}
             routesData={[routeData]}
           />
-        </Wrapper>
+        </ZoomController>
 
         <Like id={id} currentLikes={likes} content={"routes"} />
         <Wrapper margin="1rem 0">

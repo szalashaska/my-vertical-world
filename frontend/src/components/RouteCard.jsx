@@ -1,10 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  FlexContainer,
-  H2Styled,
-  LinkStyled,
-  PStyled,
-} from "../constans/GlobalStyles";
+import React from "react";
+import { FlexContainer, H2Styled } from "../constans/GlobalStyles";
 import CanvasShow from "./CanvasShow";
 import Like from "./Like";
 import {
@@ -60,7 +55,7 @@ const RouteCard = ({ route }) => {
         </RouteCardLink>
         <RouteCardLink as="div">
           <DateIcon />
-          <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+          <>{new Date(created).toLocaleDateString()}</>
         </RouteCardLink>
       </FlexContainer>
 

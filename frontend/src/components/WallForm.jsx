@@ -68,7 +68,6 @@ const WallForm = ({
   ];
 
   const handleGetWallsList = async (locationId) => {
-    // const endpoint = `/api/walls?location_id=${locationId}`;
     const endpoint = `/api/locations/${locationId}`;
     try {
       const response = await fetch(endpoint);

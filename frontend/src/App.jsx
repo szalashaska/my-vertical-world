@@ -27,9 +27,9 @@ const App = () => {
   return (
     <Router>
       <GlobalStyles />
-      <AuthProvider>
-        <Navbar />
-        <MessageProvider>
+      <MessageProvider>
+        <AuthProvider>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/news" element={<News />} />
@@ -82,9 +82,9 @@ const App = () => {
               }
             />
           </Routes>
-        </MessageProvider>
-        <Footer />
-      </AuthProvider>
+          <Footer />
+        </AuthProvider>
+      </MessageProvider>
     </Router>
   );
 };

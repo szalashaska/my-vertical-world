@@ -8,11 +8,9 @@ export const CommentContainer = styled.ul`
 `;
 
 export const CommentBox = styled.li`
-  background: #e7be9d;
+  background: white;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2);
-
   border-radius: 10px;
-
   margin-block: 1rem;
   padding: 1rem;
 `;

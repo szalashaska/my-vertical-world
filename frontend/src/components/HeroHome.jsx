@@ -6,6 +6,7 @@ import {
   FlexContainer,
   H1Styled,
   H2Styled,
+  LinkStyled,
 } from "../constans/GlobalStyles";
 
 const HeroHomeSection = styled(FlexContainer)`
@@ -61,7 +62,7 @@ const HeroHome = () => {
           <H2Styled light>
             Use My Vertical World and have a wonderful climbing experience.
           </H2Styled>
-          <HeroButton as="a" href="/sign-up">
+          <HeroButton as={LinkStyled} to="/sign-up">
             Sign up now!
           </HeroButton>
         </HeroText>

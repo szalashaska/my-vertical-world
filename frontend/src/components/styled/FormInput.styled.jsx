@@ -24,13 +24,13 @@ export const FormInputStyled = styled.input`
   margin-top: 0.5rem;
   border-radius: 10px;
   border: none;
-  outline: 2px #fbfbb8 solid;
+  outline: 2px var(--clr-pink) solid;
   transition: all 0.3s ease-in;
 
   &:focus,
   &:hover {
     outline: 3px var(--clr-orange-strong) solid;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 `;
 export const FormTextAreaStyled = styled.textarea`
@@ -38,17 +38,18 @@ export const FormTextAreaStyled = styled.textarea`
   font-size: 0.75em;
   width: 100%;
   display: block;
+  margin-top: 0.5rem;
   padding: 0.5rem;
   border-radius: 10px;
   border: none;
-  outline: 2px #fbfbb8 solid;
+  outline: 2px var(--clr-pink) solid;
   max-width: 100%;
   transition: all 0.3s ease-in;
 
   &:focus,
   &:hover {
     outline: 3px var(--clr-orange-strong) solid;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   }
 `;
 export const FormHint = styled.span`
@@ -63,7 +64,7 @@ export const FormSelect = styled.select`
   background: white;
   border-radius: 10px;
   border: none;
-  outline: 2px #fbfbb8 solid;
+  outline: 2px var(--clr-pink) solid;
   text-transform: capitalize;
 `;
 export const FormOption = styled.option`

@@ -27,6 +27,7 @@ const CrossContainer = styled(Cross)`
 `;
 
 const OptionButton = styled.button`
+  margin: 0.75rem;
   background-color: rgba(0, 0, 0, 0.05);
   border-radius: 50%;
   padding: 0.3rem;
@@ -56,18 +57,34 @@ const OptionContainer = styled.div`
   transition: all 0.3s ease-out;
   flex-direction: column;
   position: absolute;
-  right: 0;
+  right: ${({ left }) => (left ? "auto" : 0)};
+  left: ${({ left }) => (left ? 0 : "auto")};
   z-index: 2;
 `;
 
 const ExpendedOptions = ({ children }) => {
   const [showContent, setShowContent] = useState(false);
+  const [leftSide, setLeftSide] = useState(false);
+
+  const handlePopUpDirection = (e) => {
+    if (e.pageX < window.screen.width / 2) setLeftSide(true);
+    else setLeftSide(false);
+  };
+
   return (
     <ExpendedOptionsStyled>
-      <OptionButton type="button" onClick={() => setShowContent(!showContent)}>
+      <OptionButton
+        type="button"
+        onClick={(e) => {
+          handlePopUpDirection(e);
+          setShowContent(!showContent);
+        }}
+      >
         {showContent ? <CrossContainer /> : <DotsContainer />}
       </OptionButton>
-      <OptionContainer showContent={showContent}>{children}</OptionContainer>
+      <OptionContainer left={leftSide} showContent={showContent}>
+        {children}
+      </OptionContainer>
     </ExpendedOptionsStyled>
   );
 };

@@ -1,14 +1,11 @@
 import React from "react";
 import styled from "styled-components";
-import {
-  LinkStyled,
-  PStyled,
-  UpperFirstLetter,
-} from "../constans/GlobalStyles";
+import { LinkStyled, UpperFirstLetter } from "../constans/GlobalStyles";
 
 const RouteListContainer = styled.ul`
+  background: white;
   margin-block: 1rem;
-  padding: 1rem;
+  padding: 1rem 0;
   list-style: none;
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
@@ -18,7 +15,7 @@ const RouteElement = styled.li`
   align-items: center;
   justify-content: space-between;
   background: white;
-  padding: 0.5rem 0;
+  padding: 0.5rem 1rem;
   border-radius: 10px;
   transition: all 0.4s ease-in;
   font-size: clamp(0.8rem, 0.6737rem + 0.5614vw, 1.2rem);

@@ -174,8 +174,8 @@ const AddRoute = () => {
         <Container>
           <H1Styled align="center">Route:</H1Styled>
           <PStyled align="center" mb="1.5rem">
-            On the image - draw route path with a single stroke, enter name,
-            description and don't forget about grade!
+            Enter route name, description and grade. On the image - draw path
+            with a single stroke.
           </PStyled>
           <RouteForm
             setRouteName={setRouteName}

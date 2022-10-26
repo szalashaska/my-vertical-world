@@ -7,6 +7,7 @@ import {
   Container,
   FlexContainer,
   H3Styled,
+  LinkStyled,
   UpperFirstLetter,
   Wrapper,
 } from "../constans/GlobalStyles";
@@ -49,9 +50,9 @@ const Locations = () => {
               <FlexContainer justify="flex-start">
                 {locationsData.map((item) => (
                   <ButtonStyled
-                    as="a"
-                    href={`/locations/${item.id}`}
-                    primary
+                    as={LinkStyled}
+                    to={`/locations/${item.id}`}
+                    primary={1}
                     key={item.id}
                   >
                     <UpperFirstLetter>{item.name}</UpperFirstLetter>

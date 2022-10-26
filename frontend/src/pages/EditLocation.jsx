@@ -16,7 +16,7 @@ const EditLocation = () => {
   const { id, name, coordinates } = locationData;
 
   return (
-    <div>
+    <>
       <Edit
         id={id}
         state={locationName}
@@ -37,7 +37,7 @@ const EditLocation = () => {
         setExistingLocationId={() => {}}
         editedLocation={locationData}
       />
-    </div>
+    </>
   );
 };
 

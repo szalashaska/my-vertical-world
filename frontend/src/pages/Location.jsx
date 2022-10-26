@@ -11,6 +11,7 @@ import {
   FlexContainer,
   H1Styled,
   H2Styled,
+  LinkStyled,
   PStyled,
   UpperFirstLetter,
   Wrapper,
@@ -43,8 +44,9 @@ const Location = () => {
   useEffect(() => {
     if (locationId) {
       handleGetLocationData(+locationId);
+      window.scrollTo(0, 0);
     }
-  }, [handleGetLocationData]);
+  }, [handleGetLocationData, locationId]);
 
   useEffect(() => {
     if (locationData) {
@@ -103,7 +105,7 @@ const Location = () => {
         </RouteCardLink>
         <RouteCardLink as="div">
           <DateIcon />
-          <PStyled>{new Date(created).toLocaleDateString()}</PStyled>
+          <>{new Date(created).toLocaleDateString()}</>
         </RouteCardLink>
 
         <Wrapper padding="1.5rem 0">
@@ -123,10 +125,10 @@ const Location = () => {
           <FlexContainer justify="flex-start">
             {walls.map((wall) => (
               <ButtonStyled
-                as="a"
-                href={`/walls/${wall.id}`}
+                as={LinkStyled}
+                to={`/walls/${wall.id}`}
                 key={wall.id}
-                primary
+                primary={1}
               >
                 <UpperFirstLetter>{wall.name}</UpperFirstLetter>
               </ButtonStyled>
@@ -142,10 +144,10 @@ const Location = () => {
           <FlexContainer justify="flex-start">
             {routes.map((route) => (
               <ButtonStyled
-                as="a"
-                href={`/routes/${route.id}`}
+                as={LinkStyled}
+                to={`/routes/${route.id}`}
                 key={route.id}
-                primary
+                primary={1}
               >
                 <UpperFirstLetter>{route.name}</UpperFirstLetter>, {route.grade}
               </ButtonStyled>
