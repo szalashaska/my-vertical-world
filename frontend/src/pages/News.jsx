@@ -35,7 +35,11 @@ const News = () => {
   }, []);
 
   if (routesData.length === 0) {
-    return <div>Routes does not exist.</div>;
+    return (
+      <NewsStyled>
+        <Container>Routes does not exist.</Container>
+      </NewsStyled>
+    );
   }
 
   return (

@@ -30,7 +30,11 @@ const Locations = () => {
   }, [handleGetLocations]);
 
   if (!locationsData) {
-    return <div>No locations to show...</div>;
+    return (
+      <LocationStyled>
+        <Container>No locations to show...</Container>
+      </LocationStyled>
+    );
   }
 
   return (

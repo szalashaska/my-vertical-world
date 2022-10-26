@@ -36,7 +36,12 @@ const Walls = () => {
     handleGetWalls(URL);
   }, [handleGetWalls]);
 
-  if (!wallsData) return <div>no walls</div>;
+  if (!wallsData)
+    return (
+      <WallStyled>
+        <Container>No walls to show...</Container>
+      </WallStyled>
+    );
 
   return (
     <WallStyled>

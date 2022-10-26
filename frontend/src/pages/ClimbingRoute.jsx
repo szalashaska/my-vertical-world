@@ -46,7 +46,11 @@ const ClimbingRoute = () => {
   }, [handleGetRoute, routeId]);
 
   if (!routeData) {
-    return <ClimbingRouteStyled>Route does not exist.</ClimbingRouteStyled>;
+    return (
+      <ClimbingRouteStyled>
+        <Container>Route does not exist.</Container>
+      </ClimbingRouteStyled>
+    );
   }
 
   const {

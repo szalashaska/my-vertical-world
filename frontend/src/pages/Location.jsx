@@ -62,7 +62,11 @@ const Location = () => {
   }, [locationData]);
 
   if (!locationData) {
-    return <LocationStyled> No location </LocationStyled>;
+    return (
+      <LocationStyled>
+        <Container>No location to show.</Container>
+      </LocationStyled>
+    );
   }
 
   const { id, author, name, likes, routes, walls, comments, created } =

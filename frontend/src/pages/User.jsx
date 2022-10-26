@@ -44,7 +44,11 @@ const User = () => {
   }, [userId]);
 
   if (!userData) {
-    return <UserStyled> No user </UserStyled>;
+    return (
+      <UserStyled>
+        <Container>No user...</Container>
+      </UserStyled>
+    );
   }
 
   const {

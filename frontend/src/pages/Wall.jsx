@@ -44,7 +44,11 @@ const Wall = () => {
   }, [handleGetWallData, wallId]);
 
   if (!wallData) {
-    return <WallStyled> No wall </WallStyled>;
+    return (
+      <WallStyled>
+        <Container>No wall to show...</Container>
+      </WallStyled>
+    );
   }
   const {
     id,
