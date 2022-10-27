@@ -11,7 +11,7 @@ Browser based platform for climbers created with Django on the backend (REST Fra
 - [Files](#files)
 - [Setup](#setup)
 
-## Video Demo <URL: https://>
+## Video Demo <URL: https://youtu.be/fPPiosaJlfs>
 
 ## Description
 
@@ -28,15 +28,15 @@ Users who decided not to sign in can browse through existing data in the form of
 - locations on the map, which uses OpenLayers API,
 - search bar for the content.
 
-Other way to scroll data is by using "News" tab, where information is displayed in the form of separate route cards with infinite scroll.
+Other way to scroll data is by using "News" tab, where information is displayed in the form of separate route cards with infinite scroll. To display single route Canvas API is beeing used.
 
 Logged in users can add route by their own using "Add route" tab. They will be asked to:
 
 - provide location or add to existing one,
 - provide wall image or add to existing one,
-- finally, draw climbing route path - here Canvas API is beeing used.
+- finally, draw climbing route path - here Canvas API is beeing used. Event handlers for touchscreens also included.
 
-Created routes, walls and locations can be later edited.
+Created routes, walls and locations can be later edited. Entering route or wall shows the use of Canvas api - responsive redrawing and on "hoover" effect.
 
 Sign in users can also comment and like any route, wall or location, as well as follow other users.
 Data about logged user likes, follows and created content can be found in "User" tab.
@@ -69,6 +69,8 @@ Projects uses OpenLayers API: <URL: https://openlayers.org/>
 - Infinite scroll ("News" tab),
 - Data pagination, data ordering,
 - Creating and displaying data with Canvas API,
+- includes touchscreen event handlers for drawning on Canvas,
+- Responsive redrawing of routes, highlighting features created with Canvas,
 - Saving media on local server,
 - Creating and displaying data on map with OpenLayers,
 - Liking content,

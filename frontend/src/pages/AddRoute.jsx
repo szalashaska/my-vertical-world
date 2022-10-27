@@ -73,7 +73,7 @@ const AddRoute = () => {
 
       if (data.status === 201) {
         setSuccess(response.success);
-        navigate("/");
+        navigate("/news");
       } else {
         setError("Could not upload route.");
       }
