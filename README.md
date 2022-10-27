@@ -132,9 +132,13 @@ Folder with React components containing vital logic and styling. Some of them:
 - Pagination.jsx: controlls for paginated content.
 - ZoomController.jsx: zooms in and out canvas with routes.
 
+#### components/styled
+
+Folder with styled components. Some of styled components was saved separately for clearer code.
+
 #### constans
 
-Folder with files and variables that will not be changed.
+Folder with files and variables that will not be changed. Contains GlobalStyles, where some commonly used styled components are.
 
 #### contexts
 
@@ -164,7 +168,8 @@ Folder, where user images will be saved.
 
 ## Setup
 
-To run this project, open its directory, download all dependencies and requirements. After that run django web server:
+App contains prebuild frontend and databse with some content for better user experience.
+To run this project, open its directory, download and install all dependencies and requirements. After that run django web server:
 
 ```
 cd ../my-vertical-world
@@ -172,3 +177,12 @@ python manage.py runserver
 ```
 
 Enter local server.
+
+### Frontend develpoment
+
+Follow the steps from above. You should be able to run django server. In order to develop frontend further open new terminal window. In new window change directory to frontend folder. Than run development mode. Webpack will now run build every time you save file on frontend. Refresh page to see changes.
+
+...
+cd frontend
+npm run dev
+...
