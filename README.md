@@ -184,7 +184,7 @@ Enter local server.
 
 Follow the steps from above. You should be able to run django server. In order to develop frontend further open new terminal window. In new window change directory to frontend folder. Than run development mode. Webpack will now run build every time you save file on frontend. Refresh page to see changes.
 
-...
+```
 cd frontend
 npm run dev
-...
+```
