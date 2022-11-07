@@ -1,4 +1,7 @@
 /frontend/node_modules
 _enviroment
 commands.txt
+db.sqlite3
+.env
+*.env
 **_pycache__
