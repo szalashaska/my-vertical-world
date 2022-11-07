@@ -1,1 +1,1 @@
-web: gunicorn my_vertical_world.wsgi
+web: python manage.py migrate && gunicorn my_vertical_world.wsgi
