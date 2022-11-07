@@ -1,0 +1,5 @@
+[phase.setup]
+cmds = ['python38', 'postgresql', 'gcc' ]
+
+[phase.install]
+cmds = ['python -m venv /opt/venv', '. /opt/venv/bin/activate', 'pip install -r requirements.txt']
