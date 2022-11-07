@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 from datetime import timedelta
-
+import dj_database_url
 from dotenv import load_dotenv
 
 
@@ -132,15 +132,10 @@ WSGI_APPLICATION = 'my_vertical_world.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+DATABASE_URL = os.getenv("DATABASE_URL")
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': '9LO4m9Syp6PeQ5d5n2nw',
-        'HOST': 'containers-us-west-100.railway.app',
-        'PORT': '5957',
-    }
+    "default": dj_database_url.config(default=DATABASE_URL, conn_max_age=1800),
 }
 
 AUTH_USER_MODEL = "api.User"
