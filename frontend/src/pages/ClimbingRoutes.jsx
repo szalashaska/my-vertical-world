@@ -25,6 +25,8 @@ const ClimbingRoutes = () => {
   const handleGetRoutes = useCallback(async (url) => {
     const routes = await getPaginatedContent(url);
     if (routes) {
+      console.log(routes.next);
+
       setRoutesData(routes.results);
       setNextPage(routes.next);
       setPreviousPage(routes.previous);

@@ -22,6 +22,7 @@ const News = () => {
 
         // Adding with spread operator
         setRoutesData([...routesData, ...routes.results]);
+        console.log(routes.next);
         setNextPage(routes.next);
 
         setLoading(false);
