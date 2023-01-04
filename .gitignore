@@ -6,3 +6,5 @@ db.sqlite3
 *.env
 **_pycache__
 */node_modules
+list.txt
+db.sqlite3
