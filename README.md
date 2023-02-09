@@ -11,7 +11,8 @@ Browser based platform for climbers created with Django on the backend (REST Fra
 - [Files](#files)
 - [Setup](#setup)
 
-## Video Demo <URL: https://youtu.be/fPPiosaJlfs>
+## Video Demo 
+[Link](https://youtu.be/fPPiosaJlfs)
 
 ## Description
 
@@ -57,7 +58,7 @@ Project is created with:
 - dayjs: 1.11.3,
 - jwt-decode: 3.1.2",
 
-Projects uses OpenLayers API: <URL: https://openlayers.org/>
+Projects uses OpenLayers API [link](https://openlayers.org/)
 
 ## Features
 
@@ -188,3 +189,5 @@ Follow the steps from above. You should be able to run django server. In order t
 cd frontend
 npm run dev
 ```
+## Bugs
+- On live version (railway) infinite scroll does not work. Django pagination provides links to next page with "http". Live app requires "https" and fails to load content if safety protocol is not included. 
